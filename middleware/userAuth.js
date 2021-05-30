@@ -6,7 +6,7 @@ const auth = async (req, res, next) => {
     const token = req.header('Authorization').replace('Bearer ', '');
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    const employer = await Employer.findOne({
+    const user = await Employer.findOne({
       _id: decoded._id,
       'tokens.token': token,
     });
@@ -14,7 +14,7 @@ const auth = async (req, res, next) => {
       throw new Error();
     }
     req.token = token;
-    req.employer = employer;
+    req.user = user;
     next();
   } catch (err) {
     res.status(401).send({ error: 'Please authenticate' });
