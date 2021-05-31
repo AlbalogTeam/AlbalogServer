@@ -39,19 +39,14 @@ const employerSchema = new mongoose.Schema(
       {
         location: {
           type: mongoose.Schema.Types.ObjectId,
+          ref: 'Location',
         },
       },
     ],
     role: {
-      isAdmin: {
-        type: Boolean,
-        default: false,
-      },
-      isOwner: {
-        //store owner
-        type: Boolean,
-        default: true,
-      },
+      type: String,
+      enum: ['admin', 'owner', 'staff'],
+      default: 'owner',
     },
     // businessLicense: {
     //   type: String,
@@ -78,7 +73,6 @@ employerSchema.methods.toJSON = function () {
   delete employerObject.role;
   delete employerObject.password;
   delete employerObject.tokens;
-  delete employerObject.avatar;
 
   return employerObject;
 };
@@ -86,7 +80,7 @@ employerSchema.methods.toJSON = function () {
 employerSchema.methods.generateAuthToken = async function () {
   const employer = this;
   const token = jwt.sign(
-    { _id: employer._id.toString() },
+    { _id: employer._id.toString(), role: employer.role },
     process.env.JWT_SECRET
   );
 
