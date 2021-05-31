@@ -13,3 +13,4 @@ router.patch('/:_id/update', ownerAuth, noticeController.updateNotice);
 router.delete('/:_id/delete', ownerAuth, noticeController.deleteNotice);
 
 module.exports = router;
+
