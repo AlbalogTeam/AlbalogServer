@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
+import Board from "../board/board";
+import Category from "../workManual/category.js";
 
-const workManual = mongoose.Schema({
+const workManualSchema = mongoose.Schema({
     title: {
         type: String,
         maxLength: 50,
@@ -18,6 +20,28 @@ const workManual = mongoose.Schema({
     timestamps: true
 });
 
-const WorkManual = mongoose.model("WorkManual", workManual);
+workManualSchema.pre('save', async function (next) {
+
+    const workManual = this;
+
+    try {
+
+        const {_id} = board;
+
+        if(!board) {
+            throw new Error('Cannot Create Board');
+        }
+
+        await board.save();
+
+        location.board = _id;
+
+        next();
+    }catch (err) {
+        throw err;
+    }
+});
+
+const WorkManual = mongoose.model("WorkManual", workManualSchema);
 
 export default WorkManual;

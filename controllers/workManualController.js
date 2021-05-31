@@ -1,21 +1,34 @@
 import WorkManual from "../models/workManual/workManual";
-
+import Location from "../models/location/location";
+import Board from "../models/board/board";
 export const createWorkManual = async (req, res) => {
+
+    const {locationId} = req.params;
+
+    const location = await Location.findById( { _id: locationId });
+    const boardId = location.board;
+    const board = await Board.findById( {_id: boardId });
 
     try {
         const workManual = new WorkManual(req.body);
+
         if(!workManual) {
             res.status(500).send({
-                message: "Cannot create Notice"
+                message: "Cannot create Manual"
             });
         }
         await workManual.save();
+
+        board.manuals.push(workManual);
+
+        await board.save();
+
         res.status(201).send({
-            message: "Create notice Successfully"
+            message: "Create Manual Successfully"
         });
+
     } catch (err) {
 
-        console.log('Cannot create Notice');
         res.status(500).send({
             message: err
         });
@@ -29,7 +42,7 @@ export const readWorkManual = async (req, res) => {
 
         if(!workManual) {
             res.status(500).send({
-                message: "Cannot read Notice"
+                message: "Cannot read Manual"
             });
         }
 
@@ -38,7 +51,6 @@ export const readWorkManual = async (req, res) => {
         });
 
     }catch (err) {
-        console.log('Cannot create Notice');
         res.status(500).send({
             message: err
         });
@@ -51,7 +63,7 @@ export const readOneWorkManual = async (req, res) => {
         const workManual = await WorkManual.findById({ _id });
         if(!workManual) {
             res.status(500).send({
-                message: "Cannot find One Notice"
+                message: "Cannot find One Manual"
             });
         }
         res.status(201).send({
@@ -77,7 +89,7 @@ export const updateWorkManual = async (req, res) => {
 
         if(!workManual) {
             res.status(500).send({
-                message: "Cannot Update Notice"
+                message: "Cannot Update Manual"
             });
         }
 
@@ -100,7 +112,7 @@ export const deleteWorkManual = async (req, res) => {
 
         if(!workManual) {
             res.status(500).send({
-                message: "Cannot Delete Notice"
+                message: "Cannot Delete Manual"
             });
         }
 

@@ -4,7 +4,7 @@ import * as workManualController from "../controllers/workManualController.js"
 const router = new express.Router();
 
 
-router.post('/create', workManualController.createWorkManual);
+router.post('/:locationId/create', workManualController.createWorkManual);
 router.get('/', workManualController.readWorkManual);
 router.get('/:id', workManualController.readOneWorkManual);
 router.patch('/:_id/update', workManualController.updateWorkManual);

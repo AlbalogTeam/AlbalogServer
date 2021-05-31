@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 
 const boardSchema = mongoose.Schema({
+
     notices: [
         {
             notice: {
@@ -17,6 +18,6 @@ const boardSchema = mongoose.Schema({
     ]
 });
 
-const Board = mongoose.model('board',boardSchema);
+const Board = mongoose.model('Board',boardSchema);
 
-export default Board;
+module.exports = Board;

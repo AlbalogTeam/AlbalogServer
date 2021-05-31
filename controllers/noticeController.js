@@ -1,12 +1,22 @@
 import Notice from '../models/notice/notice.js';
+import Location from "../models/location/location.js";
+import Board from "../models/board/board.js";
 import mongoose from 'mongoose';
+
 export const createNotice = async (req, res) => {
+
+    const {locationId} = req.params;
+
+    const location = await Location.findById( { _id: locationId });
+
+    const boardId = location.board;
 
     const notice = new Notice({
         ...req.body,
         owner:req.user._id
     });
 
+    const board = await Board.findById( {_id: boardId });
 
     try {
 
@@ -17,6 +27,8 @@ export const createNotice = async (req, res) => {
         }
 
         await notice.save();
+        board.notices.push(notice);
+        await board.save();
         res.status(201).send({
             message: "Create notice Successfully"
         });
@@ -122,6 +134,7 @@ export const updateNotice = async (req, res) => {
 
 export const deleteNotice = async (req, res) => {
     try {
+
         const { _id } = req.params;
 
         const notice = await Notice.findByIdAndDelete({ _id} );

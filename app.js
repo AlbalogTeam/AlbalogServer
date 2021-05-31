@@ -1,12 +1,14 @@
 import express from 'express';
 import './db/mongoose';
 import dotenv from 'dotenv';
-dotenv.config('./config/');
 import morgan from 'morgan';
 import noticeRouter from "./routers/noticeRouter";
-
+import locationRouter from "./routers/locationRouter";
+import workManualRouter from "./routers/workManualRouter.js";
 import employerRouter from './routers/employerRouter';
 import ping from './routers/ping';
+
+dotenv.config('./config/');
 
 const app = express();
 
@@ -17,6 +19,8 @@ app.use(express.json());
 app.use(process.env.BASE_URL, employerRouter);
 app.use(process.env.BASE_URL, ping);
 
-app.use(`${process.env.BASE_URL}/notice`, noticeRouter)
+app.use(`${process.env.BASE_URL}/notice`, noticeRouter);
+app.use(`${process.env.BASE_URL}/manual`, workManualRouter);
+app.use(`${process.env.BASE_URL}/location`, locationRouter)
 
 module.exports = app;
