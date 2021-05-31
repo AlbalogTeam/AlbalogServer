@@ -45,6 +45,8 @@ const logout_employer = async (req, res) => {
       return token.token !== req.token;
     });
 
+    console.log(req.user.tokens);
+
     await req.user.save();
     res.send();
   } catch (error) {

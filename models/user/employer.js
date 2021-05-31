@@ -77,8 +77,7 @@ employerSchema.methods.toJSON = function () {
 
   delete employerObject.role;
   delete employerObject.password;
-  delete employerObject.tokens;
-  delete employerObject.avatar;
+  // delete employerObject.tokens;
 
   return employerObject;
 };
