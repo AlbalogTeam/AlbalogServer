@@ -25,24 +25,24 @@ const locationSchema = new mongoose.Schema(
     employees: [
       {
         employee: {
-          type: mongoose.Types.ObjectId,
+          type: mongoose.Schema.Types.ObjectId,
           required: true,
           ref: 'Employee',
         },
       },
     ],
     board: {
-      type: mongoose.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: 'Board',
     },
-    calendar: {
-      type: mongoose.Types.ObjectId,
-      ref: 'Calendar',
-    },
+    // calendar: {
+    //   type: mongoose.Types.ObjectId,
+    //   ref: 'Calendar',
+    // },
     schedule_changes: [
       {
         schedule_change: {
-          type: mongoose.Types.ObjectId,
+          type: mongoose.Schema.Types.ObjectId,
           required: true,
         },
       },
@@ -50,11 +50,20 @@ const locationSchema = new mongoose.Schema(
     transitions: [
       {
         transition: {
-          type: mongoose.Types.ObjectId,
+          type: mongoose.Schema.Types.ObjectId,
           required: true,
         },
       },
     ],
+    // owner: {
+    //   type: mongoose.Types.ObjectId,
+    //   ref: 'Employer',
+    //   required: true,
+    // },
   },
   { timestamps: true }
 );
+
+const Location = mongoose.model('Location', locationSchema);
+
+module.exports = Location;
