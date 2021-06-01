@@ -55,11 +55,11 @@ const locationSchema = new mongoose.Schema(
         },
       },
     ],
-    // owner: {
-    //   type: mongoose.Types.ObjectId,
-    //   ref: 'Employer',
-    //   required: true,
-    // },
+    owner: {
+      type: mongoose.Types.ObjectId,
+      ref: 'Employer',
+      required: true,
+    },
   },
   { timestamps: true }
 );

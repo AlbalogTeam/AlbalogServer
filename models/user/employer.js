@@ -45,7 +45,7 @@ const employerSchema = new mongoose.Schema(
     ],
     role: {
       type: String,
-      enum: ['admin', 'owner', 'staff'],
+      enum: ['admin', 'owner'],
       default: 'owner',
     },
     // businessLicense: {
@@ -107,7 +107,7 @@ employerSchema.statics.findByCredentials = async (email, password) => {
   return employer;
 };
 
-// Hash the password before the saving
+// Hash the password before saving
 employerSchema.pre('save', async function (next) {
   const employer = this;
 

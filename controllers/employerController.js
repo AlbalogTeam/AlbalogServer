@@ -1,6 +1,5 @@
 import Employer from '../models/user/employer';
 import Location from '../models/location/location';
-import mongoose from 'mongoose';
 
 //create
 const create_employer = async (req, res) => {
@@ -37,12 +36,7 @@ const login_employer = async (req, res) => {
 
 //get profile
 const get_profile_employer = async (req, res) => {
-  const locIds = req.user.stores.map((ids) => ids.location);
-
-  const locations = await Location.find({
-    _id: { $in: locIds },
-  });
-  res.send({ user: req.user, locations });
+  res.send(req.user);
 };
 
 //update profile
@@ -94,7 +88,8 @@ const kill_all_sessions = async (req, res) => {
 };
 
 const get_all_locations = async (req, res) => {
-  const locIds = req.user.stores.map((ids) => ids.location);
+  console.log('locations');
+  const locIds = req.user.stores.map((ids) => ids.location); //get all objectIds from user.stores into arrays
 
   const locations = await Location.find({
     _id: { $in: locIds },
