@@ -1,9 +1,27 @@
 import express from 'express';
 const router = new express.Router();
-import * as locationController from "../controllers/locationController.js"
-import userAuth from '../middleware/userAuth';
-import permit from '../middleware/permit';
 
-router.post('/create', userAuth, locationController.createLocation);
+import locationController from '../controllers/locationController';
+import ownerAuth from '../middleware/ownerAuth';
+import checkUsererHasLocation from '../middleware/checkUserHasLocation';
+
+//create location
+router.post('/', ownerAuth, locationController.create_location);
+
+//get single location
+router.get(
+  '/:id',
+  ownerAuth,
+  checkUsererHasLocation,
+  locationController.get_location
+);
+
+//update location info
+router.patch(
+  '/:id/update',
+  ownerAuth,
+  checkUsererHasLocation,
+  locationController.update_location
+);
 
 module.exports = router;
