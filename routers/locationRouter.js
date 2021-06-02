@@ -16,4 +16,12 @@ router.get(
   locationController.get_location
 );
 
+//update location info
+router.patch(
+  '/:id/update',
+  ownerAuth,
+  checkOwnerHasLocation,
+  locationController.update_location
+);
+
 module.exports = router;
