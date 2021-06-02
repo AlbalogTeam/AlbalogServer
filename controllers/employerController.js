@@ -42,7 +42,7 @@ const get_profile_employer = async (req, res) => {
 //update profile
 const update_employer_profile = async (req, res) => {
   const employer = req.body;
-  console.log(employer);
+
   const updates = Object.keys(employer);
   const allowedUpdates = ['name', 'email', 'password']; //업데이트가 가능한 항목들
 

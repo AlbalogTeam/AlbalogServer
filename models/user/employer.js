@@ -99,10 +99,10 @@ employerSchema.statics.checkIfEmailExist = async (email) => {
 
 employerSchema.statics.findByCredentials = async (email, password) => {
   const employer = await Employer.findOne({ email });
-  if (!employer) throw new Error('Unable to login');
+  if (!employer) throw new Error('email wrong');
 
   const isMatch = await bcrypt.compare(password, employer.password);
-  if (!isMatch) throw new Error('Unable to login');
+  if (!isMatch) throw new Error('password wrong');
 
   return employer;
 };

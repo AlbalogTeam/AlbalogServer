@@ -2,7 +2,7 @@ import express from 'express';
 const router = new express.Router();
 import locationController from '../controllers/locationController';
 import ownerAuth from '../middleware/ownerAuth';
-import checkOwnerHasLocation from '../middleware/checkOwnerHasLocation';
+import checkUsererHasLocation from '../middleware/checkUserHasLocation';
 import permit from '../middleware/permit';
 
 //create location
@@ -12,7 +12,7 @@ router.post('/', ownerAuth, locationController.create_location);
 router.get(
   '/:id',
   ownerAuth,
-  checkOwnerHasLocation,
+  checkUsererHasLocation,
   locationController.get_location
 );
 
@@ -20,7 +20,7 @@ router.get(
 router.patch(
   '/:id/update',
   ownerAuth,
-  checkOwnerHasLocation,
+  checkUsererHasLocation,
   locationController.update_location
 );
 

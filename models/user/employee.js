@@ -135,10 +135,10 @@ employeeSchema.statics.checkIfEmailExist = async (email) => {
 
 employeeSchema.statics.findByCredentials = async (email, password) => {
   const employee = await Employee.findOne({ email });
-  if (!employee) throw new Error('Unable to login');
+  if (!employee) throw new Error('abc');
 
   const isMatch = await bcrypt.compare(password, employee.password);
-  if (!isMatch) throw new Error('Unable to login');
+  if (!isMatch) throw new Error('def');
 
   return employee;
 };

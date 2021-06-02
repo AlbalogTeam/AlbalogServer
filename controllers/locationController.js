@@ -21,8 +21,8 @@ const get_location = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const location = await Location.findById(id);
-    res.send({ location });
+    const location = await Location.findOne({ _id: id, owner: req.user._id });
+    res.send(location);
   } catch (error) {
     res.status(500).send({ error });
   }
@@ -31,7 +31,7 @@ const get_location = async (req, res) => {
 //매장 정보 수정(이름 주소 우편번호 전화번호)
 const update_location = async (req, res) => {
   const { id } = req.params;
-  const location = await Location.findById(id);
+  const location = await Location.findOne({ _id: id, owner: req.user._id });
 
   const updates = Object.keys(req.body);
 
