@@ -1,10 +1,13 @@
 import jwt from 'jsonwebtoken';
 import Employer from '../models/user/employer';
 
-const auth = async (req, res, next) => {
+const ownerAuth = async (req, res, next) => {
   try {
     const token = req.header('Authorization').replace('Bearer ', '');
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    //직원이면 직원 로그인페이지로 리다이렉트
+    // if(decoded.role === 'staff') return redirect('/staff')
 
     const user = await Employer.findOne({
       _id: decoded._id,
@@ -21,4 +24,4 @@ const auth = async (req, res, next) => {
   }
 };
 
-module.exports = auth;
+module.exports = ownerAuth;

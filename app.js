@@ -5,6 +5,7 @@ dotenv.config();
 import morgan from 'morgan';
 
 import employerRouter from './routers/employerRouter';
+import locationRouter from './routers/locationRouter';
 import ping from './routers/ping';
 
 const app = express();
@@ -13,7 +14,10 @@ const app = express();
 app.use(morgan('dev'));
 app.use(express.json());
 
-app.use('/api/v1', employerRouter);
+//routes
+app.use('/api/v1/owner', employerRouter);
+// app.use('/api/v1/employer');
 app.use('/api/v1', ping);
+app.use('/api/v1/location', locationRouter);
 
 module.exports = app;

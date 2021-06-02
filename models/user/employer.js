@@ -45,7 +45,7 @@ const employerSchema = new mongoose.Schema(
     ],
     role: {
       type: String,
-      enum: ['admin', 'owner', 'staff'],
+      enum: ['admin', 'owner'],
       default: 'owner',
     },
     // businessLicense: {
@@ -99,15 +99,15 @@ employerSchema.statics.checkIfEmailExist = async (email) => {
 
 employerSchema.statics.findByCredentials = async (email, password) => {
   const employer = await Employer.findOne({ email });
-  if (!employer) throw new Error('Unable to login');
+  if (!employer) throw new Error('email wrong');
 
   const isMatch = await bcrypt.compare(password, employer.password);
-  if (!isMatch) throw new Error('Unable to login');
+  if (!isMatch) throw new Error('password wrong');
 
   return employer;
 };
 
-// Hash the password before the saving
+// Hash the password before saving
 employerSchema.pre('save', async function (next) {
   const employer = this;
 
