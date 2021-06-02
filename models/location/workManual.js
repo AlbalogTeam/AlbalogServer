@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import Board from "../board/board";
+import Board from "./board";
 import Category from "../workManual/category.js";
 
 const workManualSchema = mongoose.Schema({

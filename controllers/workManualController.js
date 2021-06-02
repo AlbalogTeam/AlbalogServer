@@ -1,6 +1,6 @@
-import WorkManual from "../models/workManual/workManual";
+import WorkManual from "../models/location/workManual";
 import Location from "../models/location/location";
-import Board from "../models/board/board";
+import Board from "../models/location/board";
 export const createWorkManual = async (req, res) => {
 
     const {locationId} = req.params;

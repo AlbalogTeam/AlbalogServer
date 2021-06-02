@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import Board from "../board/board.js";
+import Board from "./board.js";
 
 const locationSchema = new mongoose.Schema(
     {
@@ -36,10 +36,6 @@ const locationSchema = new mongoose.Schema(
             type: mongoose.Types.ObjectId,
             ref: 'Board',
         },
-        // calendar: {
-        //     type: mongoose.Types.ObjectId,
-        //     ref: 'Calendar',
-        // },
         schedule_changes: [
             {
                 schedule_change: {
@@ -83,8 +79,6 @@ locationSchema.pre('save', async function (next) {
     }
 });
 
-
 const Location = mongoose.model('location', locationSchema);
 
 module.exports = Location;
-export default Location;

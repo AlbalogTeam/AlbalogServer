@@ -1,6 +1,6 @@
-import Notice from '../models/notice/notice.js';
+import Notice from '../models/location/notice.js';
 import Location from "../models/location/location.js";
-import Board from "../models/board/board.js";
+import Board from "../models/location/board.js";
 import mongoose from 'mongoose';
 
 export const createNotice = async (req, res) => {
