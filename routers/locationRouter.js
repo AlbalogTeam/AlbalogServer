@@ -12,7 +12,7 @@ router.post('/', ownerAuth, locationController.create_location);
 router.get(
   '/:id',
   ownerAuth,
-  checkUsererHasLocation,
+  // checkUsererHasLocation,
   locationController.get_location
 );
 
@@ -20,8 +20,11 @@ router.get(
 router.patch(
   '/:id/update',
   ownerAuth,
-  checkUsererHasLocation,
+  // checkUsererHasLocation,
   locationController.update_location
 );
+
+//invite employee
+router.post('/:id/invite', ownerAuth, locationController.invite_employee);
 
 module.exports = router;

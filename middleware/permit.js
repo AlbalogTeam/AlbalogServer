@@ -1,8 +1,8 @@
 export default function permit(...permittedRoles) {
   return (req, res, next) => {
-    const { user } = req;
+    const { owner } = req;
 
-    if (user && permittedRoles.includes(user.role)) {
+    if (owner && permittedRoles.includes(owner.role)) {
       next(); //role allowed
     } else {
       res.status(403).send({
