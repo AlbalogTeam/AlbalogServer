@@ -19,28 +19,6 @@ const workManualSchema = mongoose.Schema({
     timestamps: true
 });
 
-workManualSchema.pre('save', async function (next) {
-
-    const workManual = this;
-
-    try {
-
-        const {_id} = board;
-
-        if(!board) {
-            throw new Error('Cannot Create Board');
-        }
-
-        await board.save();
-
-        location.board = _id;
-
-        next();
-    }catch (err) {
-        throw err;
-    }
-});
-
 const WorkManual = mongoose.model("WorkManual", workManualSchema);
 
 export default WorkManual;

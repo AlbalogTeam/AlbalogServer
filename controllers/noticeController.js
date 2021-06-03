@@ -5,20 +5,20 @@ import mongoose from 'mongoose';
 
 export const createNotice = async (req, res) => {
 
-    const {locationId} = req.params;
-
-    const location = await Location.findById( { _id: locationId });
-
-    const boardId = location.board;
-
-    const notice = new Notice({
-        ...req.body,
-        owner:req.owner._id
-    });
-
-    const board = await Board.findById( {_id: boardId });
-
     try {
+
+        const {locationId} = req.params;
+
+        const location = await Location.findById( { _id: locationId });
+
+        const boardId = location.board;
+
+        const notice = new Notice({
+            ...req.body,
+            owner:req.owner._id
+        });
+
+        const board = await Board.findById( {_id: boardId });
 
         if(!notice) {
             res.status(500).send({
@@ -27,6 +27,7 @@ export const createNotice = async (req, res) => {
         }
 
         await notice.save();
+
         board.notices.push(notice);
         await board.save();
         res.status(201).send({
@@ -34,10 +35,9 @@ export const createNotice = async (req, res) => {
         });
 
     } catch (err) {
-
         console.log('Cannot create Notice');
         res.status(500).send({
-            message: err
+            message: err.toString()
         });
 
     }
@@ -45,14 +45,36 @@ export const createNotice = async (req, res) => {
 
 export const readNotice = async (req, res) => {
 
-    try {
-        // 어떤 매장을 기준으로 해야하는지
-        const notice = await Notice.find();
 
-        if(!notice) {
-            res.status(500).send({
-                message: "Cannot read Notice"
-            });
+    try {
+
+        const {locationId} = req.params;
+
+        const location = await Location.findById({ _id: locationId} );
+        const board = await Board.findById({_id : location.board} );
+        const notices = board.notices;
+
+        // 어떤 매장을 기준으로 해야하는지
+        const notice = [];
+/*        notices.map((n) => {
+                Notice.findById({ _id: n._id} )
+                    .then((data) => {
+                        notice.push(data);
+                        console.log(notice);
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                    });
+        });*/
+
+        for(let i = 0; i < notices.length; i++) {
+            const tmp = await Notice.findById({ _id: notices[i]._id} );
+            if(!tmp) {
+                res.status(500).send({
+                    message: "Cannot read Notice"
+                });
+            }
+            notice.push(tmp);
         }
 
         res.status(201).send({
@@ -62,14 +84,16 @@ export const readNotice = async (req, res) => {
     }catch (err) {
         console.log('Cannot create Notice');
         res.status(500).send({
-            message: err
+            message: err.toString()
         });
     }
 };
 
 export const readOneNotice = async (req, res) => {
     try {
-        const { _id } = req.params;
+        console.log(req.params);
+        const _id = req.params._id;
+        console.log(_id);
         const notice = await Notice.findById({ _id });
         if(!notice) {
             res.status(500).send({
@@ -81,13 +105,17 @@ export const readOneNotice = async (req, res) => {
         });
     }catch (err) {
         res.status(500).send({
-            message: err
+            message: err.toString()
         });
     }
 }
 
 export const updateNotice = async (req, res) => {
     try {
+
+        if(!req.onwer) {
+            throw new Error("you are not owner");
+        }
 
         const { _id } = req.params;
         const { title, content } = req.body;
@@ -109,13 +137,17 @@ export const updateNotice = async (req, res) => {
 
     }catch (err) {
         res.status(500).send({
-            message: err
+            message: err.toString()
         });
     }
 }
 
 export const deleteNotice = async (req, res) => {
     try {
+
+        if(!req.onwer) {
+            throw new Error("you are not owner");
+        }
 
         const { _id } = req.params;
 
@@ -132,7 +164,7 @@ export const deleteNotice = async (req, res) => {
         });
     } catch (err) {
         res.status(500).send({
-            message: err
+            message: err.toString()
         });
     }
 }
