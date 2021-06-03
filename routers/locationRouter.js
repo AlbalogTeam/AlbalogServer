@@ -1,17 +1,17 @@
 import express from 'express';
 const router = new express.Router();
+
 import locationController from '../controllers/locationController';
-import ownerAuth from '../middleware/ownerAuth';
+import userAuth from '../middleware/userAuth';
 import checkUsererHasLocation from '../middleware/checkUserHasLocation';
-import permit from '../middleware/permit';
 
 //create location
-router.post('/', ownerAuth, locationController.create_location);
+router.post('/', userAuth('owner'), locationController.create_location);
 
 //get single location
 router.get(
   '/:id',
-  ownerAuth,
+    userAuth('owner' || 'staff'),
   // checkUsererHasLocation,
   locationController.get_location
 );
@@ -19,12 +19,12 @@ router.get(
 //update location info
 router.patch(
   '/:id/update',
-  ownerAuth,
+    userAuth('owner'),
   // checkUsererHasLocation,
   locationController.update_location
 );
 
 //invite employee
-router.post('/:id/invite', ownerAuth, locationController.invite_employee);
+router.post('/:id/invite', userAuth('owner'), locationController.invite_employee);
 
 module.exports = router;

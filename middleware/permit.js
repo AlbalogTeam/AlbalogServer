@@ -1,6 +1,10 @@
 export default function permit(...permittedRoles) {
   return (req, res, next) => {
-    const { owner } = req;
+    const { owner, staff } = req;
+
+    const user = owner
+        ? owner
+        : staff;
 
     if (owner && permittedRoles.includes(owner.role)) {
       next(); //role allowed
