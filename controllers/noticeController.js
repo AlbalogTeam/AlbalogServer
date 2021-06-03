@@ -13,7 +13,7 @@ export const createNotice = async (req, res) => {
 
     const notice = new Notice({
         ...req.body,
-        owner:req.user._id
+        owner:req.owner._id
     });
 
     const board = await Board.findById( {_id: boardId });
@@ -80,24 +80,6 @@ export const readOneNotice = async (req, res) => {
             notice
         });
     }catch (err) {
-        res.status(500).send({
-            message: err
-        });
-    }
-}
-
-
-export const tmp = async (req, res) => {
-
-    try {
-
-        const notice = await Notice.find({owner: mongoose.Types.ObjectId('60b3583ba7ab15d060378dcb')} );
-
-        res.status(201).send({
-            notice
-        });
-
-    } catch (err) {
         res.status(500).send({
             message: err
         });

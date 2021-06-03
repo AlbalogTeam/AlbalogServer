@@ -17,7 +17,6 @@ const app = express();
 app.use(morgan('dev'));
 app.use(express.json());
 
-app.use(process.env.BASE_URL, employerRouter);
 app.use(process.env.BASE_URL, ping);
 
 app.use(`${process.env.BASE_URL}/notice`, noticeRouter);

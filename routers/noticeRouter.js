@@ -1,37 +1,32 @@
 import express from "express";
 import * as noticeController from "../controllers/noticeController.js"
 const router = new express.Router();
-import ownerAuth from "../middleware/userAuth.js"
+import userAuth from "../middleware/userAuth.js"
 
 // CRUD
 router.post(
     '/:locationId/create',
-    ownerAuth,
-
+    userAuth('owner'),
     noticeController.createNotice);
 
 router.get(
-    '/', ownerAuth,
+    '/',
+    userAuth('staff' || 'owner'),
     noticeController.readNotice);
 
 router.get(
     '/:id',
-    ownerAuth,
+    userAuth('staff' || 'owner'),
     noticeController.readOneNotice);
-
-router.get(
-    '/test',
-    ownerAuth,
-    noticeController.tmp);
 
 router.patch(
     '/:_id/update',
-    ownerAuth,
+    userAuth('owner'),
     noticeController.updateNotice);
 
 router.delete(
     '/:_id/delete',
-    ownerAuth,
+    userAuth('owner'),
     noticeController.deleteNotice);
 
 module.exports = router;
