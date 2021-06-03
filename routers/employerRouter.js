@@ -1,7 +1,7 @@
 import express from 'express';
 const router = new express.Router();
 import employerController from '../controllers/employerController';
-import ownerAuth from '../middleware/ownerAuth';
+import ownerAuth from '../middleware/userAuth';
 import permit from '../middleware/permit';
 
 router.post('/signup', employerController.create_employer);

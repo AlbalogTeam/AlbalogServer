@@ -2,7 +2,7 @@ import express from 'express';
 const router = new express.Router();
 
 import locationController from '../controllers/locationController';
-import ownerAuth from '../middleware/ownerAuth';
+import ownerAuth from '../middleware/userAuth';
 import checkUsererHasLocation from '../middleware/checkUserHasLocation';
 
 //create location

@@ -23,7 +23,7 @@ app.use(`${process.env.BASE_URL}/notice`, noticeRouter);
 app.use(`${process.env.BASE_URL}/manual`, workManualRouter);
 app.use(`${process.env.BASE_URL}/location`, locationRouter)
 //routes
-app.use(`${process.env.BASE_URL}/owner`);
+// app.use(`${process.env.BASE_URL}/owner`);
 // app.use('/api/v1/employer');
 
 module.exports = app;
