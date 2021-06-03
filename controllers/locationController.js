@@ -1,6 +1,9 @@
 import Location from '../models/location/location';
 import Employee from '../models/user/employee';
-import { sendInvitationEmail } from '../emails/accounts';
+import {
+  sendInvitationEmail,
+  sendLocationAddedEmail,
+} from '../emails/accounts';
 
 const create_location = async (req, res) => {
   const location = new Location({ ...req.body, owner: req.owner._id });
@@ -60,14 +63,41 @@ const update_location = async (req, res) => {
 const invite_employee = async (req, res) => {
   const { name, email } = req.body;
   const { id } = req.params; //해당 매장 아이디
-  console.log(id);
 
   try {
     const location = await Location.findOne({ _id: id, owner: req.owner._id });
     if (!location)
       return res.status(400).send({ message: '매장정보가 잘못되었습니다' });
-    sendInvitationEmail(name, email, location._id);
-    res.send({ name, email, location });
+
+    const checkEmail = await Employee.checkIfEmailExist(email);
+    if (checkEmail) {
+      const existingEmployee = await Employee.findOne({ email });
+
+      const employeeIdsArr = location.employees.map((id) => id.employee);
+      console.log(employeeIdsArr);
+
+      //check if employee already belongs to the location
+      if (employeeIdsArr.includes(existingEmployee._id))
+        return res.send('이미 해당 매장의 직원으로 등록되어있습니다');
+
+      location.employees = location.employees.concat({
+        employee: existingEmployee._id,
+      });
+      await location.save();
+
+      existingEmployee.stores = existingEmployee.stores.concat({ location });
+      await existingEmployee.save();
+
+      // sendLocationAddedEmail
+      sendLocationAddedEmail(name, email, location);
+
+      return res.send({
+        message: '해당직원을 추가하였습니다',
+      });
+    } else {
+      sendInvitationEmail(name, email, location._id);
+      res.send({ name, email, location });
+    }
   } catch (error) {
     res.status(500).send(error);
   }

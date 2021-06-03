@@ -11,6 +11,16 @@ const sendInvitationEmail = (name, email, locationId) => {
   });
 };
 
+const sendLocationAddedEmail = (name, email, location) => {
+  sgMail.send({
+    to: email,
+    from: 'dongwan.don.kim@gmail.com',
+    subject: '알바로그: 직원초대',
+    text: `안녕하세요, ${name}님. ${location.name} 매장에 정상적으로 등록되었습니다.`,
+  });
+};
+
 module.exports = {
   sendInvitationEmail,
+  sendLocationAddedEmail,
 };

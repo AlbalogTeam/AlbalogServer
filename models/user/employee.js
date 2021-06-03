@@ -129,7 +129,8 @@ employeeSchema.methods.generateAuthToken = async function () {
 };
 
 employeeSchema.statics.checkIfEmailExist = async (email) => {
-  const employee = await employee.findOne({ email });
+  const employee = await Employee.findOne({ email });
+  console.log('checking');
   if (employee) return true;
   return false;
 };

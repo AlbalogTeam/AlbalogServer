@@ -13,6 +13,11 @@ const create_employee = async (req, res) => {
     }
 
     const employee = new Employee(req.body);
+
+    const checkEmail = await Employee.checkIfEmailExist(employee.email);
+    if (checkEmail)
+      return res.status(400).send({ message: 'Email is already taken' });
+
     employee.stores = employee.stores.concat({ location: location._id });
     const newEmployee = await employee.save();
 
