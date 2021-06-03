@@ -36,7 +36,7 @@ const login_employer = async (req, res) => {
 
 //get profile
 const get_profile_employer = async (req, res) => {
-  res.send(req.user);
+  res.send(req.owner);
 };
 
 //update profile
@@ -54,10 +54,11 @@ const update_employer_profile = async (req, res) => {
       message: 'invalid update',
     });
   }
+
   try {
-    updates.forEach((update) => (req.user[update] = employer[update]));
-    await req.user.save();
-    res.send(req.user);
+    updates.forEach((update) => (req.owner[update] = employer[update]));
+    await req.owner.save();
+    res.send(req.owner);
   } catch (error) {
     res.status(400).send(error);
   }
@@ -66,11 +67,11 @@ const update_employer_profile = async (req, res) => {
 //logout
 const logout_employer = async (req, res) => {
   try {
-    req.user.tokens = req.user.tokens.filter((token) => {
+    req.owner.tokens = req.owner.tokens.filter((token) => {
       return token.token !== req.token;
     });
 
-    await req.user.save();
+    await req.owner.save();
     res.send();
   } catch (error) {
     res.status(500).send();
@@ -80,8 +81,8 @@ const logout_employer = async (req, res) => {
 //kill all session
 const kill_all_sessions = async (req, res) => {
   try {
-    req.user.tokens = [];
-    await req.user.save();
+    req.owner.tokens = [];
+    await req.owner.save();
 
     res.send();
   } catch (error) {
@@ -90,8 +91,7 @@ const kill_all_sessions = async (req, res) => {
 };
 
 const get_all_locations = async (req, res) => {
-  console.log('locations');
-  const locIds = req.user.stores.map((ids) => ids.location); //get all objectIds from user.stores into arrays
+  const locIds = req.owner.stores.map((ids) => ids.location); //get all objectIds from user.stores into arrays
 
   const locations = await Location.find({
     _id: { $in: locIds },

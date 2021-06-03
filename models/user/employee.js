@@ -71,6 +71,7 @@ const employeeSchema = new mongoose.Schema(
     ],
     role: {
       type: String,
+      enum: ['staff'],
       default: 'staff',
     },
     stores: [
