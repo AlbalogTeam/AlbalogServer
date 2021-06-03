@@ -19,6 +19,13 @@ const ownerAuth = async (req, res, next) => {
     } catch (err) {
         res.status(401).send({ error: 'Please authenticate' });
     }
+    req.token = token;
+    req.owner = user;
+    next();
+  } catch (err) {
+    res.status(401).send({ error: 'Please authenticate' });
+  }
+
 };
 
 module.exports = userAuth;

@@ -5,6 +5,7 @@ import morgan from 'morgan';
 import noticeRouter from "./routers/noticeRouter";
 import workManualRouter from "./routers/workManualRouter.js";
 import employerRouter from './routers/employerRouter';
+import employeeRouter from './routers/employeeRouter';
 import locationRouter from './routers/locationRouter';
 import ping from './routers/ping';
 
@@ -23,7 +24,8 @@ app.use(`${process.env.BASE_URL}/notice`, noticeRouter);
 app.use(`${process.env.BASE_URL}/manual`, workManualRouter);
 app.use(`${process.env.BASE_URL}/location`, locationRouter)
 //routes
-// app.use(`${process.env.BASE_URL}/owner`);
-// app.use('/api/v1/employer');
+
+app.use('/api/v1/owner', employerRouter);
+app.use('/api/v1/employee', employeeRouter);
 
 module.exports = app;

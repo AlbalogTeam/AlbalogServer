@@ -6,7 +6,7 @@ export default function permit(...permittedRoles) {
         ? owner
         : staff;
 
-    if (user && permittedRoles.includes(user.role)) {
+    if (owner && permittedRoles.includes(owner.role)) {
       next(); //role allowed
     } else {
       res.status(403).send({

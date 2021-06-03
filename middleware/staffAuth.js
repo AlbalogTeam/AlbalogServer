@@ -1,8 +1,9 @@
 import jwt from 'jsonwebtoken';
 import Employee from '../models/user/employee';
 
-const ownerAuth = async (req, res, next) => {
+const staffAuth = async (req, res, next) => {
   try {
+
 
     const token = req.header('Authorization').replace('Bearer ', '');
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -21,4 +22,4 @@ const ownerAuth = async (req, res, next) => {
   }
 };
 
-module.exports = userAuth;
+module.exports = staffAuth;
