@@ -4,11 +4,15 @@ import {
   sendInvitationEmail,
   sendLocationAddedEmail,
 } from '../emails/accounts';
+import Board from "../models/location/board.js";
 
 const create_location = async (req, res) => {
-  const location = new Location({ ...req.body, owner: req.owner._id });
 
+  const location = new Location({ ...req.body, owner: req.owner._id });
+  const board = new Board();
+  location.board = board._id;
   try {
+    await board.save();
     await location.save();
 
     req.owner.stores = req.owner.stores.concat({ location });

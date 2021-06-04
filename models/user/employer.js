@@ -80,7 +80,7 @@ employerSchema.methods.toJSON = function () {
 employerSchema.methods.generateAuthToken = async function () {
   const employer = this;
   const token = jwt.sign(
-    { _id: employer._id.toString(), role: employer.role },
+    { _id: employer._id.toString(), role: employer.role, stores: employer.stores },
     process.env.JWT_SECRET
   );
 

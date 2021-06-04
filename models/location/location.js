@@ -1,6 +1,8 @@
 import mongoose from 'mongoose';
+import Board from "./board.js";
 
 const locationSchema = new mongoose.Schema(
+
   {
     name: {
       type: String,
