@@ -1,1 +1,0 @@
-// BoardController는 따로 Create가 없어도 된다고 판단해서 비워놨습니다.

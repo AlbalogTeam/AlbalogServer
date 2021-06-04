@@ -1,4 +1,3 @@
-
 import mongoose from 'mongoose';
 import validator from 'validator';
 import jwt from 'jsonwebtoken';
@@ -53,6 +52,7 @@ const employeeSchema = new mongoose.Schema(
     hourly_wage: {
       type: Number,
       trim: true,
+      default: 0,
     },
     timeclocks: [
       {
@@ -118,7 +118,11 @@ employeeSchema.methods.toJSON = function () {
 employeeSchema.methods.generateAuthToken = async function () {
   const employee = this;
   const token = jwt.sign(
-    { _id: employee._id.toString(), role: employee.role, stores: employee.stores },
+    {
+      _id: employee._id.toString(),
+      role: employee.role,
+      stores: employee.stores,
+    },
     process.env.JWT_SECRET
   );
 
@@ -131,7 +135,7 @@ employeeSchema.methods.generateAuthToken = async function () {
 
 employeeSchema.statics.checkIfEmailExist = async (email) => {
   const employee = await Employee.findOne({ email });
-  console.log('checking');
+
   if (employee) return true;
   return false;
 };
