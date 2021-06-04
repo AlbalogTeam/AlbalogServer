@@ -2,14 +2,12 @@ import jwt from 'jsonwebtoken';
 import Employer from '../models/user/employer';
 import Employee from '../models/user/employee';
 
-export default function (role) {
-  return async (req, res, next) => {
+const userAuth = async (req, res, next) => {
     try {
 
       const token = req.header('Authorization').replace('Bearer ', '');
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-      switch (role) {
+      switch (decoded.role) {
         case "owner": {
           const employer = await Employer.findOne({
             _id: decoded._id,
@@ -28,6 +26,7 @@ export default function (role) {
             _id: decoded._id,
             'tokens.token': token,
           });
+
           if (!employee) {
             throw new Error();
           }
@@ -44,5 +43,5 @@ export default function (role) {
       res.status(401).send({error: 'Please authenticate'});
     }
   };
-}
 
+module.exports = userAuth;

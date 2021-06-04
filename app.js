@@ -7,6 +7,7 @@ import workManualRouter from "./routers/workManualRouter.js";
 import employerRouter from './routers/employerRouter';
 import employeeRouter from './routers/employeeRouter';
 import locationRouter from './routers/locationRouter';
+import showUser from './routers/showUserRouter';
 import ping from './routers/ping';
 
 dotenv.config('./config/');
@@ -26,5 +27,6 @@ app.use(`${process.env.BASE_URL}/location`, locationRouter)
 
 app.use('/api/v1/owner', employerRouter);
 app.use('/api/v1/employee', employeeRouter);
+app.use('/api/v1/showUser', showUser);
 
 module.exports = app;

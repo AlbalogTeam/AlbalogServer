@@ -5,19 +5,25 @@ export const createWorkManual = async (req, res) => {
 
     const {locationId} = req.params;
 
-    const location = await Location.findById( { _id: locationId });
-    const boardId = location.board;
-    const board = await Board.findById( {_id: boardId });
-
     try {
-        const workManual = new WorkManual(req.body);
+        const workManual = new WorkManual({
+                ...req.body,
+                owner:req.owner._id
+            });
+
+        const location = await Location.findById( { _id: locationId });
+        const boardId = location.board;
+        const board = await Board.findById( {_id: boardId });
 
         if(!workManual) {
             res.status(500).send({
                 message: "Cannot create Manual"
             });
         }
+        console.log(workManual);
         await workManual.save();
+
+        console.log("보드" + board);
 
         board.manuals.push(workManual);
 
@@ -28,9 +34,9 @@ export const createWorkManual = async (req, res) => {
         });
 
     } catch (err) {
-
+        console.log(err);
         res.status(500).send({
-            message: err
+            message: err.toString()
         });
     }
 };
@@ -79,6 +85,10 @@ export const readOneWorkManual = async (req, res) => {
 export const updateWorkManual = async (req, res) => {
     try {
 
+        if(!req.onwer) {
+            throw new Error("You are not owner");
+        }
+
         const { _id } = req.params;
         const { title, content } = req.body;
 
@@ -106,6 +116,10 @@ export const updateWorkManual = async (req, res) => {
 
 export const deleteWorkManual = async (req, res) => {
     try {
+
+        if(!req.onwer) {
+            throw new Error("You are not owner");
+        }
         const { _id } = req.params;
 
         const workManual = await WorkManual.findByIdAndDelete({ _id} );

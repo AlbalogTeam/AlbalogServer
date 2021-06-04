@@ -118,7 +118,7 @@ employeeSchema.methods.toJSON = function () {
 employeeSchema.methods.generateAuthToken = async function () {
   const employee = this;
   const token = jwt.sign(
-    { _id: employee._id.toString(), role: employee.role },
+    { _id: employee._id.toString(), role: employee.role, stores: employee.stores },
     process.env.JWT_SECRET
   );
 
