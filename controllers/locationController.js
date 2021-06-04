@@ -103,7 +103,7 @@ const invite_employee = async (req, res) => {
   }
 };
 
-//매장 스태프 수정
+//매장 스태프 수정  enum: ['Working', 'Quit', 'Vacation'],
 
 //매장 스태프 삭제
 
