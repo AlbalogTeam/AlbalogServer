@@ -10,21 +10,25 @@ router.post('/', userAuth, locationController.create_location);
 
 //get single location
 router.get(
-  '/:id',
-    userAuth,
+  '/:locationId',
+  userAuth,
   // checkUsererHasLocation,
   locationController.get_location
 );
 
 //update location info
 router.patch(
-  '/:id/update',
-    userAuth,
+  '/:locationId/update',
+  userAuth,
   // checkUsererHasLocation,
   locationController.update_location
 );
 
 //invite employee
-router.post('/:id/invite', userAuth, locationController.invite_employee);
+router.post(
+  '/:locationId/invite',
+  userAuth,
+  locationController.invite_employee
+);
 
 module.exports = router;

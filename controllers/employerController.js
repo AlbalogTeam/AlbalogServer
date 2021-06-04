@@ -71,10 +71,9 @@ const logout_employer = async (req, res) => {
       return token.token !== req.token;
     });
 
-
     await req.owner.save();
     res.send({
-      message: "Success Logout"
+      message: 'Success Logout',
     });
   } catch (error) {
     res.status(500).send();
@@ -96,11 +95,10 @@ const kill_all_sessions = async (req, res) => {
 const get_all_locations = async (req, res) => {
   const locIds = req.owner.stores.map((ids) => ids.location); //get all objectIds from user.stores into arrays
 
-  console.log(locIds);
-  if(!locIds) {
+  if (locIds.length < 1) {
     return res.status(400).send({
-      message: "매장이 없습니다."
-    })
+      message: '매장이 없습니다.',
+    });
   }
 
   try {
@@ -108,12 +106,11 @@ const get_all_locations = async (req, res) => {
       _id: { $in: locIds },
     });
     res.send({ locations });
-  }catch (err) {
+  } catch (err) {
     res.status(500).send({
-      message: err
-    })
+      message: err,
+    });
   }
-
 };
 
 module.exports = {

@@ -3,25 +3,27 @@ import Employer from '../models/user/employer';
 import Employee from '../models/user/employee';
 
 const userAuth = async (req, res, next) => {
-    try {
+  try {
+    const token = req.header('Authorization').replace('Bearer ', '');
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-      const token = req.header('Authorization').replace('Bearer ', '');
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      switch (decoded.role) {
-        case "owner": {
+    switch (decoded.role) {
+      case 'owner':
+        {
           const employer = await Employer.findOne({
             _id: decoded._id,
             'tokens.token': token,
           });
-          if(!employer) {
-            throw new Error("Auth Error");
+          if (!employer) {
+            throw new Error('Auth Error');
           }
           req.owner = employer;
           req.token = token;
           next();
         }
         break;
-        case "staff": {
+      case 'staff':
+        {
           const employee = await Employee.findOne({
             _id: decoded._id,
             'tokens.token': token,
@@ -35,13 +37,12 @@ const userAuth = async (req, res, next) => {
           next();
         }
         break;
-        default:
-          throw new Error('Auth Error');
-      }
-
-    } catch (err) {
-      res.status(401).send({error: 'Please authenticate'});
+      default:
+        throw new Error('Auth Error');
     }
-  };
+  } catch (err) {
+    res.status(401).send({ error: 'Please authenticate' });
+  }
+};
 
 module.exports = userAuth;

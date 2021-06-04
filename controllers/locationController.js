@@ -4,10 +4,9 @@ import {
   sendInvitationEmail,
   sendLocationAddedEmail,
 } from '../emails/accounts';
-import Board from "../models/location/board.js";
+import Board from '../models/location/board.js';
 
 const create_location = async (req, res) => {
-
   const location = new Location({ ...req.body, owner: req.owner._id });
   const board = new Board();
   location.board = board._id;
@@ -26,10 +25,14 @@ const create_location = async (req, res) => {
 
 //매장 정보 읽기
 const get_location = async (req, res) => {
-  const { id } = req.params;
+  const { locationId } = req.params;
+  console.log(locationId);
 
   try {
-    const location = await Location.findOne({ _id: id, owner: req.owner._id });
+    const location = await Location.findOne({
+      _id: locationId,
+      owner: req.owner._id,
+    });
     res.send(location);
   } catch (error) {
     res.status(500).send({ error });
@@ -38,22 +41,30 @@ const get_location = async (req, res) => {
 
 //매장 정보 수정(이름 주소 우편번호 전화번호)
 const update_location = async (req, res) => {
-  const { id } = req.params;
-  const location = await Location.findOne({ _id: id, owner: req.owner._id });
+  if (!req.owner)
+    return res
+      .status(400)
+      .send({ message: '해당 매장의 관리자만 수정 가능합니다' });
 
-  const updates = Object.keys(req.body);
-
-  const allowedUpdates = ['name', 'address', 'postal_code', 'phone_number'];
-  const isValidUpdates = updates.every((update) =>
-    allowedUpdates.includes(update)
-  );
-
-  if (!isValidUpdates)
-    return res.status(400).send({
-      message: 'invalid update',
-    });
+  const { locationId } = req.params;
 
   try {
+    const location = await Location.findOne({
+      _id: locationId,
+      owner: req.owner._id,
+    });
+
+    const updates = Object.keys(req.body);
+
+    const allowedUpdates = ['name', 'address', 'postal_code', 'phone_number'];
+    const isValidUpdates = updates.every((update) =>
+      allowedUpdates.includes(update)
+    );
+
+    if (!isValidUpdates)
+      return res.status(400).send({
+        message: 'invalid update',
+      });
     updates.forEach((update) => (location[update] = req.body[update]));
     location.owner = req.owner._id;
     const updatedLocation = await location.save();
@@ -66,10 +77,13 @@ const update_location = async (req, res) => {
 //매장 스태프 초대
 const invite_employee = async (req, res) => {
   const { name, email } = req.body;
-  const { id } = req.params; //해당 매장 아이디
+  const { locationId } = req.params; //해당 매장 아이디
 
   try {
-    const location = await Location.findOne({ _id: id, owner: req.owner._id });
+    const location = await Location.findOne({
+      _id: locationId,
+      owner: req.owner._id,
+    });
     if (!location)
       return res.status(400).send({ message: '매장정보가 잘못되었습니다' });
 
@@ -111,9 +125,15 @@ const invite_employee = async (req, res) => {
 
 //매장 스태프 삭제
 
+//스케줄
+
+//스태프 hourly_wage 설정
+const update_employee_wage = async (req, res) => {};
+
 module.exports = {
   create_location,
   get_location,
   update_location,
   invite_employee,
+  update_employee_wage,
 };
