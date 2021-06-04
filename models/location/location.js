@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
-import Board from "./board.js";
+import Employee from '../user/employee';
+import Board from './board.js';
 
 const locationSchema = new mongoose.Schema(
-
   {
     name: {
       type: String,
@@ -59,13 +59,26 @@ const locationSchema = new mongoose.Schema(
       },
     ],
     owner: {
-      type: mongoose.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: 'Employer',
       required: true,
     },
   },
   { timestamps: true }
 );
+
+locationSchema.statics.checkIfUserBelongsToLocation = async (
+  locationId,
+  staffId
+) => {
+  const location = await Location.findById(locationId);
+  const staffIds = location.employees.map((empId) => empId.employee);
+
+  if (staffIds.includes(staffId)) {
+    return await Employee.findById(staffId);
+  }
+  return false;
+};
 
 const Location = mongoose.model('Location', locationSchema);
 

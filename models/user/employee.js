@@ -52,6 +52,7 @@ const employeeSchema = new mongoose.Schema(
     hourly_wage: {
       type: Number,
       trim: true,
+      default: 0,
     },
     timeclocks: [
       {

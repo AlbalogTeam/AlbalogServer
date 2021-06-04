@@ -31,4 +31,24 @@ router.post(
   locationController.invite_employee
 );
 
+//get location's employee list
+router.get(
+  '/:locationId/employees',
+  userAuth,
+  locationController.get_all_employees
+);
+
+//get employee info
+router.get(
+  '/:locationId/employees/:employeeId',
+  userAuth,
+  locationController.get_employee_info
+);
+
+router.patch(
+  '/:locationId/employees/:employeeId/wage',
+  userAuth,
+  locationController.update_employee_wage
+);
+
 module.exports = router;
