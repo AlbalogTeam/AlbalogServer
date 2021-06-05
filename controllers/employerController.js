@@ -93,6 +93,7 @@ const kill_all_sessions = async (req, res) => {
 };
 
 const get_all_locations = async (req, res) => {
+
   const locIds = req.owner.stores.map((ids) => ids.location); //get all objectIds from user.stores into arrays
 
   if (locIds.length < 1) {

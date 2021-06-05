@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import Board from "./board";
 
 const workManualSchema = mongoose.Schema({
     title: {
