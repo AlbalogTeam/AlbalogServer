@@ -30,7 +30,6 @@ const create_employee = async (req, res) => {
 
     res.status(201).send({ employee, token });
   } catch (error) {
-    console.log(error);
     res.status(400).send(error);
   }
 };
@@ -51,7 +50,6 @@ const login_employee = async (req, res) => {
 
 const logout_employee = async (req, res) => {
   try {
-    console.log('sdfasdfa');
     req.staff.tokens = req.staff.tokens.filter((token) => {
       return token.token !== req.token;
     });

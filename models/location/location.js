@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
 import Employee from '../user/employee';
-import Board from './board.js';
 
 const locationSchema = new mongoose.Schema(
   {
@@ -17,7 +16,7 @@ const locationSchema = new mongoose.Schema(
     postal_code: {
       type: String,
       required: true,
-      trime: true,
+      trim: true,
     },
     phone_number: {
       type: String,
@@ -34,10 +33,6 @@ const locationSchema = new mongoose.Schema(
         },
       },
     ],
-    board: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Board',
-    },
     // calendar: {
     //   type: mongoose.Types.ObjectId,
     //   ref: 'Calendar',
@@ -63,6 +58,40 @@ const locationSchema = new mongoose.Schema(
       ref: 'Employer',
       required: true,
     },
+    notices: [
+        {
+            type: new mongoose.Schema({
+                title: {
+                    type: String,
+                    maxLength: 50,
+                    required: true
+                },
+                content: {
+                    type: String,
+                    required:true
+                }
+            },{timestamps: true})
+        }
+    ],
+    workManuals: [
+        {
+            type: new mongoose.Schema({
+                title: {
+                    type: String,
+                    maxLength: 50,
+                    required: true
+                },
+                content: {
+                    type: String,
+                    required: true
+                },
+                category_id: {
+                    type: mongoose.Types.ObjectId,
+                    ref: 'Category'
+                }
+            }, {timestamps: true})
+        }
+    ]
   },
   { timestamps: true }
 );

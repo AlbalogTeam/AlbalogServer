@@ -4,17 +4,13 @@ import {
   sendInvitationEmail,
   sendLocationAddedEmail,
 } from '../emails/accounts';
-import Board from '../models/location/board.js';
 
 const create_location = async (req, res) => {
   if (!req.owner)
     return res.status(401).send({ message: '매장 생성 권한이없습니다' });
 
   const location = new Location({ ...req.body, owner: req.owner._id });
-  const board = new Board();
-  location.board = board._id;
   try {
-    await board.save();
     await location.save();
 
     req.owner.stores = req.owner.stores.concat({ location });
@@ -195,6 +191,326 @@ const update_employee_wage = async (req, res) => {
   }
 };
 
+const createNotice = async (req, res) => {
+
+  try {
+    if (!req.owner) {
+      throw new Error('you are not owner');
+    }
+    const { locationId } = req.params;
+
+    const location = await Location.findById({ _id: locationId });
+
+    const {title, content} = req.body;
+    const notice = { title, content };
+
+    if (!notice) {
+      res.status(500).send({
+        message: 'Cannot create Notice',
+      });
+    }
+
+    location.notices.push(notice);
+
+    await location.save();
+
+    res.status(201).send({
+      message: 'Create notice Successfully',
+    });
+  } catch (err) {
+    res.status(500).send({
+      message: err.toString(),
+    });
+  }
+};
+
+const readNotice = async (req, res) => {
+  const { locationId } = req.params;
+  try {
+    const location = await Location.findById({ _id: locationId });
+    const notices = location.notices;
+
+    res.status(201).send({
+      notices,
+    });
+  } catch (err) {
+    res.status(500).send({
+      message: err.toString(),
+    });
+  }
+};
+
+const readOneNotice = async (req, res) => {
+  try {
+    const {locationId, _id} = req.params;
+    const location = await Location.findById( { _id:locationId });
+
+    const notice = location.notices.filter( n => n._id.toString() === _id );
+
+    if (!notice) {
+      res.status(500).send({
+        message: 'Cannot find One Notice',
+      });
+    }
+    res.status(201).send({
+      notice,
+    });
+  } catch (err) {
+    res.status(500).send({
+      message: err.toString(),
+    });
+  }
+};
+
+const updateNotice = async (req, res) => {
+  try {
+
+
+    if (!req.owner) {
+      throw new Error('you are not owner');
+    }
+
+    const {locationId, _id} = req.params;
+    const { title, content } = req.body;
+
+    const location = await Location.findById( { _id : locationId });
+    const notices = location.notices;
+    let originNotice;
+    for(let notice of notices) {
+      if(notice._id.toString() === _id) {
+        notice.title = title;
+        notice.content = content;
+        originNotice = notice;
+        break;
+      }
+    }
+
+    await location.save();
+
+    if (!originNotice) {
+      res.status(500).send({
+        message: 'Cannot Update Notice',
+      });
+    }
+
+    res.status(201).send({
+      updatedNotice: originNotice,
+    });
+  } catch (err) {
+    res.status(500).send({
+      message: err.toString(),
+    });
+  }
+};
+
+const deleteNotice = async (req, res) => {
+  try {
+
+    if (!req.owner) {
+      throw new Error('you are not owner');
+    }
+
+    const {locationId, _id} = req.params;
+
+    const location = await Location.findById( { _id : locationId });
+
+    const notices = location.notices;
+    let deletedNotice;
+
+
+    for(let idx in notices) {
+      const notice = notices[idx];
+      if(notice._id.toString() === _id) {
+        deletedNotice = notice;
+        notice.remove(idx);
+        break;
+      }
+    }
+
+    if (!deletedNotice) {
+      res.status(500).send({
+        message: 'Cannot Delete Notice',
+      });
+    }
+
+    await location.save();
+
+    res.status(201).send({
+      deletedNotice: deletedNotice,
+    });
+  } catch (err) {
+    res.status(500).send({
+      message: err.toString(),
+    });
+  }
+};
+
+
+// workManual
+
+
+export const createWorkManual = async (req, res) => {
+
+  const { locationId, categoryId } = req.params;
+  const { title, content } = req.body;
+
+  try {
+    if (!req.owner) {
+      throw new Error('you are not owner');
+    }
+
+    const workManual = {
+      title,
+      content,
+      category_id: categoryId
+    }
+
+    const location = await Location.findById({ _id: locationId });
+
+    location.workManuals.push(workManual);
+
+    await location.save();
+
+    res.status(201).send({
+      message: 'Create Manual Successfully',
+    });
+
+  } catch (err) {
+    res.status(500).send({
+      message: err.toString(),
+    });
+  }
+};
+
+export const readWorkManual = async (req, res) => {
+
+  const {locationId} = req.params;
+
+  try {
+    const location = await Location.findById({ _id: locationId });
+
+    const workManual = location.workManuals;
+
+    res.status(201).send({
+      workManual,
+    });
+  } catch (err) {
+    res.status(500).send({
+      message: err,
+    });
+  }
+};
+
+export const readOneWorkManual = async (req, res) => {
+  try {
+    const {locationId, _id} = req.params;
+
+    const location = await Location.findById( { _id:locationId });
+
+    const workManual = location.workManuals.filter( w => w._id.toString() === _id );
+
+    if (!workManual) {
+      res.status(500).send({
+        message: 'Cannot find One Manual',
+      });
+    }
+    res.status(201).send({
+      workManual,
+    });
+  } catch (err) {
+    res.status(500).send({
+      message: err,
+    });
+  }
+};
+
+// 카테고리 수정하는것 추가해야함, 추가논의후 결정
+export const updateWorkManual = async (req, res) => {
+  try {
+
+    if (!req.owner) {
+      throw new Error('You are not owner');
+    }
+
+    const {locationId, _id} = req.params;
+    const { title, content } = req.body;
+
+    const location = await Location.findById( { _id : locationId });
+    const workManuals = location.workManuals;
+    let originManual;
+    for(let workManual of workManuals) {
+      if(workManual._id.toString() === _id) {
+        workManual.title = title;
+        workManual.content = content;
+        originManual = workManual;
+        break;
+      }
+    }
+
+    await location.save();
+
+
+    if (!originManual) {
+      res.status(500).send({
+        message: 'Cannot Update Manual',
+      });
+    }
+
+    res.status(201).send({
+      updatedWorkManual: originManual,
+    });
+  } catch (err) {
+    res.status(500).send({
+      message: err,
+    });
+  }
+};
+
+export const deleteWorkManual = async (req, res) => {
+  try {
+    if (!req.owner) {
+      throw new Error('You are not owner');
+    }
+
+    const {locationId, _id} = req.params;
+
+    const location = await Location.findById( { _id : locationId });
+
+    const workManuals = location.workManuals;
+    let deletedWorkManual;
+
+
+    for(let idx in workManuals) {
+      const workManual = workManuals[idx];
+      if(workManual._id.toString() === _id) {
+        deletedWorkManual = workManual;
+        workManual.remove(idx);
+        break;
+      }
+    }
+
+    if (!deletedWorkManual) {
+      res.status(500).send({
+        message: 'Cannot Delete Manual',
+      });
+    }
+
+    await location.save();
+
+    res.status(201).send({
+      deletedWorkManual: deletedWorkManual,
+    });
+  } catch (err) {
+    res.status(500).send({
+      message: err,
+    });
+  }
+};
+
+
+
+
+
 module.exports = {
   create_location,
   get_location,
@@ -203,4 +519,17 @@ module.exports = {
   update_employee_wage,
   get_all_employees,
   get_employee_info,
+  //notice
+  deleteNotice,
+  updateNotice,
+  readOneNotice,
+  readNotice,
+  createNotice,
+  //workManual
+  createWorkManual,
+  readWorkManual,
+  readOneWorkManual,
+  updateWorkManual,
+  deleteWorkManual
+
 };
