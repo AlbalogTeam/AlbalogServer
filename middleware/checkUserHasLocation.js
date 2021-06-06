@@ -17,7 +17,7 @@ const checkUserHasLocation = async (req, res, next) => {
     });
     next();
   } else {
-    res.send({ message: '해당 매장의 접속 권한이 없습니다' });
+    res.status(401).send({ message: '해당 매장의 접속 권한이 없습니다' });
   }
 };
 
