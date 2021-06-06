@@ -19,7 +19,7 @@ app.use(morgan('dev'));
 app.use(express.json());
 
 //routes
-app.use(process.env.BASE_URL, ping);
+app.use('/ping', ping);
 
 app.use('/api/v1/category', categoryRouter);
 app.use('/api/v1/location', locationRouter);
