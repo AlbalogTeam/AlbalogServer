@@ -2,7 +2,7 @@ import express from 'express';
 import './db/mongoose';
 import dotenv from 'dotenv';
 import morgan from 'morgan';
-import workManualRouter from './routers/workManualRouter.js';
+
 import employerRouter from './routers/employerRouter';
 import employeeRouter from './routers/employeeRouter';
 import locationRouter from './routers/locationRouter';
