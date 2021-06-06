@@ -2,6 +2,7 @@ import express from 'express';
 import './db/mongoose';
 import dotenv from 'dotenv';
 import morgan from 'morgan';
+import cors from 'cors';
 
 import employerRouter from './routers/employerRouter';
 import employeeRouter from './routers/employeeRouter';
@@ -17,6 +18,7 @@ const app = express();
 // Middleware
 app.use(morgan('dev'));
 app.use(express.json());
+app.use(cors());
 
 //routes
 app.use('/ping', ping);
