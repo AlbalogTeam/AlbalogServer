@@ -73,7 +73,7 @@ const logout_employer = async (req, res) => {
 
     await req.owner.save();
     res.send({
-      message: 'Success Logout',
+      message: 'Logged out',
     });
   } catch (error) {
     res.status(500).send();
@@ -93,7 +93,6 @@ const kill_all_sessions = async (req, res) => {
 };
 
 const get_all_locations = async (req, res) => {
-
   const locIds = req.owner.stores.map((ids) => ids.location); //get all objectIds from user.stores into arrays
 
   if (locIds.length < 1) {
