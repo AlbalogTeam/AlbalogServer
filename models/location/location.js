@@ -27,16 +27,11 @@ const locationSchema = new mongoose.Schema(
       {
         employee: {
           type: mongoose.Schema.Types.ObjectId,
-          required: true,
           ref: 'Employee',
-          unique: true,
+          default: null,
         },
       },
     ],
-    // calendar: {
-    //   type: mongoose.Types.ObjectId,
-    //   ref: 'Calendar',
-    // },
     schedule_changes: [
       {
         schedule_change: {
@@ -59,39 +54,45 @@ const locationSchema = new mongoose.Schema(
       required: true,
     },
     notices: [
-        {
-            type: new mongoose.Schema({
-                title: {
-                    type: String,
-                    maxLength: 50,
-                    required: true
-                },
-                content: {
-                    type: String,
-                    required:true
-                }
-            },{timestamps: true})
-        }
+      {
+        type: new mongoose.Schema(
+          {
+            title: {
+              type: String,
+              maxLength: 50,
+              required: true,
+            },
+            content: {
+              type: String,
+              required: true,
+            },
+          },
+          { timestamps: true }
+        ),
+      },
     ],
     workManuals: [
-        {
-            type: new mongoose.Schema({
-                title: {
-                    type: String,
-                    maxLength: 50,
-                    required: true
-                },
-                content: {
-                    type: String,
-                    required: true
-                },
-                category_id: {
-                    type: mongoose.Types.ObjectId,
-                    ref: 'Category'
-                }
-            }, {timestamps: true})
-        }
-    ]
+      {
+        type: new mongoose.Schema(
+          {
+            title: {
+              type: String,
+              maxLength: 50,
+              required: true,
+            },
+            content: {
+              type: String,
+              required: true,
+            },
+            category_id: {
+              type: mongoose.Types.ObjectId,
+              ref: 'Category',
+            },
+          },
+          { timestamps: true }
+        ),
+      },
+    ],
   },
   { timestamps: true }
 );

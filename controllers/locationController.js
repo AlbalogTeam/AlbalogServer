@@ -10,12 +10,13 @@ const create_location = async (req, res) => {
     return res.status(401).send({ message: '매장 생성 권한이없습니다' });
 
   const location = new Location({ ...req.body, owner: req.owner._id });
+  await location.save();
   try {
-    await location.save();
+    console.log(location);
 
     req.owner.stores = req.owner.stores.concat({ location });
     await req.owner.save();
-    res.status(201).send({ location });
+    res.status(201).send(location);
   } catch (error) {
     res.status(500).send(error);
   }
@@ -30,6 +31,7 @@ const get_location = async (req, res) => {
       _id: locationId,
       owner: req.owner._id,
     });
+    if (!location) return res.status(403).send('해당 매장의 권한이없습니다');
     res.send(location);
   } catch (error) {
     res.status(500).send({ error });
@@ -192,7 +194,6 @@ const update_employee_wage = async (req, res) => {
 };
 
 const createNotice = async (req, res) => {
-
   try {
     if (!req.owner) {
       throw new Error('you are not owner');
@@ -201,7 +202,7 @@ const createNotice = async (req, res) => {
 
     const location = await Location.findById({ _id: locationId });
 
-    const {title, content} = req.body;
+    const { title, content } = req.body;
     const notice = { title, content };
 
     if (!notice) {
@@ -242,10 +243,10 @@ const readNotice = async (req, res) => {
 
 const readOneNotice = async (req, res) => {
   try {
-    const {locationId, _id} = req.params;
-    const location = await Location.findById( { _id:locationId });
+    const { locationId, _id } = req.params;
+    const location = await Location.findById({ _id: locationId });
 
-    const notice = location.notices.filter( n => n._id.toString() === _id );
+    const notice = location.notices.filter((n) => n._id.toString() === _id);
 
     if (!notice) {
       res.status(500).send({
@@ -264,20 +265,18 @@ const readOneNotice = async (req, res) => {
 
 const updateNotice = async (req, res) => {
   try {
-
-
     if (!req.owner) {
       throw new Error('you are not owner');
     }
 
-    const {locationId, _id} = req.params;
+    const { locationId, _id } = req.params;
     const { title, content } = req.body;
 
-    const location = await Location.findById( { _id : locationId });
+    const location = await Location.findById({ _id: locationId });
     const notices = location.notices;
     let originNotice;
-    for(let notice of notices) {
-      if(notice._id.toString() === _id) {
+    for (let notice of notices) {
+      if (notice._id.toString() === _id) {
         notice.title = title;
         notice.content = content;
         originNotice = notice;
@@ -305,22 +304,20 @@ const updateNotice = async (req, res) => {
 
 const deleteNotice = async (req, res) => {
   try {
-
     if (!req.owner) {
       throw new Error('you are not owner');
     }
 
-    const {locationId, _id} = req.params;
+    const { locationId, _id } = req.params;
 
-    const location = await Location.findById( { _id : locationId });
+    const location = await Location.findById({ _id: locationId });
 
     const notices = location.notices;
     let deletedNotice;
 
-
-    for(let idx in notices) {
+    for (let idx in notices) {
       const notice = notices[idx];
-      if(notice._id.toString() === _id) {
+      if (notice._id.toString() === _id) {
         deletedNotice = notice;
         notice.remove(idx);
         break;
@@ -345,12 +342,9 @@ const deleteNotice = async (req, res) => {
   }
 };
 
-
 // workManual
 
-
 export const createWorkManual = async (req, res) => {
-
   const { locationId, categoryId } = req.params;
   const { title, content } = req.body;
 
@@ -362,8 +356,8 @@ export const createWorkManual = async (req, res) => {
     const workManual = {
       title,
       content,
-      category_id: categoryId
-    }
+      category_id: categoryId,
+    };
 
     const location = await Location.findById({ _id: locationId });
 
@@ -374,7 +368,6 @@ export const createWorkManual = async (req, res) => {
     res.status(201).send({
       message: 'Create Manual Successfully',
     });
-
   } catch (err) {
     res.status(500).send({
       message: err.toString(),
@@ -383,8 +376,7 @@ export const createWorkManual = async (req, res) => {
 };
 
 export const readWorkManual = async (req, res) => {
-
-  const {locationId} = req.params;
+  const { locationId } = req.params;
 
   try {
     const location = await Location.findById({ _id: locationId });
@@ -403,11 +395,13 @@ export const readWorkManual = async (req, res) => {
 
 export const readOneWorkManual = async (req, res) => {
   try {
-    const {locationId, _id} = req.params;
+    const { locationId, _id } = req.params;
 
-    const location = await Location.findById( { _id:locationId });
+    const location = await Location.findById({ _id: locationId });
 
-    const workManual = location.workManuals.filter( w => w._id.toString() === _id );
+    const workManual = location.workManuals.filter(
+      (w) => w._id.toString() === _id
+    );
 
     if (!workManual) {
       res.status(500).send({
@@ -427,19 +421,18 @@ export const readOneWorkManual = async (req, res) => {
 // 카테고리 수정하는것 추가해야함, 추가논의후 결정
 export const updateWorkManual = async (req, res) => {
   try {
-
     if (!req.owner) {
       throw new Error('You are not owner');
     }
 
-    const {locationId, _id} = req.params;
+    const { locationId, _id } = req.params;
     const { title, content } = req.body;
 
-    const location = await Location.findById( { _id : locationId });
+    const location = await Location.findById({ _id: locationId });
     const workManuals = location.workManuals;
     let originManual;
-    for(let workManual of workManuals) {
-      if(workManual._id.toString() === _id) {
+    for (let workManual of workManuals) {
+      if (workManual._id.toString() === _id) {
         workManual.title = title;
         workManual.content = content;
         originManual = workManual;
@@ -448,7 +441,6 @@ export const updateWorkManual = async (req, res) => {
     }
 
     await location.save();
-
 
     if (!originManual) {
       res.status(500).send({
@@ -472,17 +464,16 @@ export const deleteWorkManual = async (req, res) => {
       throw new Error('You are not owner');
     }
 
-    const {locationId, _id} = req.params;
+    const { locationId, _id } = req.params;
 
-    const location = await Location.findById( { _id : locationId });
+    const location = await Location.findById({ _id: locationId });
 
     const workManuals = location.workManuals;
     let deletedWorkManual;
 
-
-    for(let idx in workManuals) {
+    for (let idx in workManuals) {
       const workManual = workManuals[idx];
-      if(workManual._id.toString() === _id) {
+      if (workManual._id.toString() === _id) {
         deletedWorkManual = workManual;
         workManual.remove(idx);
         break;
@@ -507,10 +498,6 @@ export const deleteWorkManual = async (req, res) => {
   }
 };
 
-
-
-
-
 module.exports = {
   create_location,
   get_location,
@@ -530,6 +517,5 @@ module.exports = {
   readWorkManual,
   readOneWorkManual,
   updateWorkManual,
-  deleteWorkManual
-
+  deleteWorkManual,
 };
