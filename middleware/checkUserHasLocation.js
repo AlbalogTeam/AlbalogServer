@@ -9,7 +9,7 @@ const checkUserHasLocation = async (req, res, next) => {
   const { locationId } = req.params;
 
   const judge =
-    decoded.stores.filter((loc) => loc.location === locationId).length > 0;
+    decoded.stores.filter((loc) => loc.location == locationId).length > 0;
 
   if (decoded && judge) {
     req.location = await Location.findOne({

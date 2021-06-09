@@ -57,35 +57,35 @@ router.patch(
 router.post(
   '/:locationId/notice/create',
   userAuth,
-  checkUserHasLocation,
+  // checkUserHasLocation,
   locationController.createNotice
 );
 
 router.get(
   '/:locationId/notice',
   userAuth,
-  checkUserHasLocation,
+  // checkUserHasLocation,
   locationController.readNotice
 );
 
 router.get(
   '/:locationId/notice/:_id',
   userAuth,
-  checkUserHasLocation,
+  // checkUserHasLocation,
   locationController.readOneNotice
 );
 
 router.patch(
   '/:locationId/notice/:_id/update',
   userAuth,
-  checkUserHasLocation,
+  // checkUserHasLocation,
   locationController.updateNotice
 );
 
 router.delete(
   '/:locationId/notice/:_id/delete',
   userAuth,
-  checkUserHasLocation,
+  // checkUserHasLocation,
   locationController.deleteNotice
 );
 

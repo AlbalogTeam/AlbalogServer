@@ -200,7 +200,10 @@ const createNotice = async (req, res) => {
     }
     const { locationId } = req.params;
 
-    const location = await Location.findById({ _id: locationId });
+    const location = await Location.findById({
+      _id: locationId,
+      owner: req.owner._id,
+    });
 
     const { title, content } = req.body;
     const notice = { title, content };
@@ -228,7 +231,10 @@ const createNotice = async (req, res) => {
 const readNotice = async (req, res) => {
   const { locationId } = req.params;
   try {
-    const location = await Location.findById({ _id: locationId });
+    const location = await Location.findById({
+      _id: locationId,
+      owner: req.owner._id,
+    });
     const notices = location.notices;
 
     res.status(201).send({
@@ -244,7 +250,10 @@ const readNotice = async (req, res) => {
 const readOneNotice = async (req, res) => {
   try {
     const { locationId, _id } = req.params;
-    const location = await Location.findById({ _id: locationId });
+    const location = await Location.findById({
+      _id: locationId,
+      owner: req.owner._id,
+    });
 
     const notice = location.notices.filter((n) => n._id.toString() === _id);
 
@@ -272,7 +281,10 @@ const updateNotice = async (req, res) => {
     const { locationId, _id } = req.params;
     const { title, content } = req.body;
 
-    const location = await Location.findById({ _id: locationId });
+    const location = await Location.findById({
+      _id: locationId,
+      owner: req.owner._id,
+    });
     const notices = location.notices;
     let originNotice;
     for (let notice of notices) {
@@ -310,7 +322,10 @@ const deleteNotice = async (req, res) => {
 
     const { locationId, _id } = req.params;
 
-    const location = await Location.findById({ _id: locationId });
+    const location = await Location.findById({
+      _id: locationId,
+      owner: req.owner._id,
+    });
 
     const notices = location.notices;
     let deletedNotice;
