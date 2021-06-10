@@ -57,7 +57,7 @@ router.patch(
 router.post(
   '/:locationId/notice/create',
   userAuth,
-  // checkUserHasLocation,
+  checkUserHasLocation,
   locationController.createNotice
 );
 
