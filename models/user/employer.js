@@ -82,8 +82,7 @@ employerSchema.methods.generateAuthToken = async function () {
   const token = jwt.sign(
     {
       _id: employer._id.toString(),
-      role: employer.role,
-      stores: employer.stores,
+      role: employer.role
     },
     process.env.JWT_SECRET
   );
@@ -103,16 +102,17 @@ employerSchema.statics.checkIfEmailExist = async (email) => {
 
 employerSchema.statics.findByCredentials = async (email, password) => {
   const employer = await Employer.findOne({ email });
-  if (!employer) throw new Error('email wrong');
+  if (!employer) throw new Error('Invalid Information');
 
   const isMatch = await bcrypt.compare(password, employer.password);
-  if (!isMatch) throw new Error('password wrong');
+  if (!isMatch) throw new Error('Invalid Information');
 
   return employer;
 };
 
 // Hash the password before saving
 employerSchema.pre('save', async function (next) {
+
   const employer = this;
 
   if (employer.isModified('password')) {

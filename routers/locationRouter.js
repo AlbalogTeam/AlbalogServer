@@ -13,15 +13,12 @@ router.post('/', userAuth, locationController.create_location);
 router.get(
   '/:locationId',
   userAuth,
-  // checkUsererHasLocation,
-  locationController.get_location
 );
 
 //update location info
 router.patch(
   '/:locationId/update',
   userAuth,
-  // checkUsererHasLocation,
   locationController.update_location
 );
 
@@ -55,74 +52,60 @@ router.patch(
 // notice
 
 router.post(
-  '/:locationId/notice/create',
-  userAuth,
-  checkUserHasLocation,
-  locationController.createNotice
+    '/:locationId/notice/create',
+    userAuth,
+    locationController.createNotice
 );
 
 router.get(
-  '/:locationId/notice',
-  userAuth,
-  checkUserHasLocation,
-  locationController.readNotice
+    '/:locationId/notice',
+    userAuth,
+    locationController.readNotice
 );
 
 router.get(
-  '/:locationId/notice/:_id',
-  userAuth,
-  checkUserHasLocation,
-  locationController.readOneNotice
+    '/:locationId/notice/:_id',
+    userAuth,
+    locationController.readOneNotice
 );
 
 router.patch(
-  '/:locationId/notice/:_id/update',
-  userAuth,
-  checkUserHasLocation,
-  locationController.updateNotice
+    '/:locationId/notice/:_id/update',
+    userAuth,
+    locationController.updateNotice
 );
 
 router.delete(
-  '/:locationId/notice/:_id/delete',
-  userAuth,
-  checkUserHasLocation,
-  locationController.deleteNotice
+    '/:locationId/notice/:_id/delete',
+    userAuth,
+    locationController.deleteNotice
 );
 
 //workManual
 router.post(
-  '/:locationId/workmanual/:categoryId',
-  userAuth,
-  checkUserHasLocation,
-  locationController.createWorkManual
-);
+    '/:locationId/workmanual/:categoryId',
+    userAuth,
+    locationController.createWorkManual);
 
 router.get(
-  '/:locationId/workmanual',
-  userAuth,
-  checkUserHasLocation,
-  locationController.readWorkManual
-);
+    '/:locationId/workmanual/category/:categoryId',
+    userAuth,
+    locationController.readWorkManual);
 
 router.get(
-  '/:locationId/workmanual/:_id',
-  userAuth,
-  checkUserHasLocation,
-  locationController.readOneWorkManual
-);
+    '/:locationId/workmanual/:_id',
+    userAuth,
+    locationController.readOneWorkManual);
 
 router.patch(
-  '/:locationId/workmanual/:_id/update',
-  userAuth,
-  checkUserHasLocation,
-  locationController.updateWorkManual
-);
+    '/:locationId/workmanual/:_id/update',
+    userAuth,
+    locationController.updateWorkManual);
 
 router.delete(
-  '/:locationId/workmanual/:_id/delete',
-  userAuth,
-  checkUserHasLocation,
-  locationController.deleteWorkManual
-);
+    '/:locationId/workmanual/:_id/delete',
+    userAuth,
+    locationController.deleteWorkManual);
+
 
 module.exports = router;
