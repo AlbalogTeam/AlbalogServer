@@ -57,7 +57,7 @@ router.patch(
 router.post(
   '/:locationId/notice/create',
   userAuth,
-  checkUserHasLocation,
+  // checkUserHasLocation,
   locationController.createNotice
 );
 
@@ -93,35 +93,35 @@ router.delete(
 router.post(
   '/:locationId/workmanual/:categoryId',
   userAuth,
-  checkUserHasLocation,
+  // checkUserHasLocation,
   locationController.createWorkManual
 );
 
 router.get(
   '/:locationId/workmanual',
   userAuth,
-  checkUserHasLocation,
+  // checkUserHasLocation,
   locationController.readWorkManual
 );
 
 router.get(
   '/:locationId/workmanual/:_id',
   userAuth,
-  checkUserHasLocation,
+  // checkUserHasLocation,
   locationController.readOneWorkManual
 );
 
 router.patch(
   '/:locationId/workmanual/:_id/update',
   userAuth,
-  checkUserHasLocation,
+  // checkUserHasLocation,
   locationController.updateWorkManual
 );
 
 router.delete(
   '/:locationId/workmanual/:_id/delete',
   userAuth,
-  checkUserHasLocation,
+  // checkUserHasLocation,
   locationController.deleteWorkManual
 );
 
