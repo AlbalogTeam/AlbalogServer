@@ -4,7 +4,7 @@ const router = new express.Router();
 import * as locationController from '../controllers/locationController';
 
 import userAuth from '../middleware/userAuth';
-import checkUserHasLocation from '../middleware/checkUserHasLocation';
+// import checkUserHasLocation from '../middleware/checkUserHasLocation';
 
 //create location
 router.post('/', userAuth, locationController.create_location);
