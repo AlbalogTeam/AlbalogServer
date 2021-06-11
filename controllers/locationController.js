@@ -262,7 +262,7 @@ const readOneNotice = async (req, res) => {
         message: 'Cannot find One Notice',
       });
     }
-    res.status(201).send(notice);
+    res.status(201).send({ notice });
   } catch (err) {
     res.status(500).send({
       message: err.toString(),
