@@ -3,13 +3,13 @@ const router = new express.Router();
 
 import * as categoryController from '../controllers/categoryController';
 import userAuth from '../middleware/userAuth';
-import checkUserHasLocation from '../middleware/checkUserHasLocation';
+// import checkUserHasLocation from '../middleware/checkUserHasLocation';
 
 //create category
 router.post(
   '/:locationId/',
   userAuth,
-  checkUserHasLocation,
+  // checkUserHasLocation,
   categoryController.createCategory
 );
 
@@ -17,7 +17,7 @@ router.post(
 router.delete(
   '/:locationId/delete/:categoryId',
   userAuth,
-  checkUserHasLocation,
+  // checkUserHasLocation,
   categoryController.deleteCategory
 );
 
