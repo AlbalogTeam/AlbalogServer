@@ -4,7 +4,7 @@ const router = new express.Router();
 import * as locationController from '../controllers/locationController';
 
 import userAuth from '../middleware/userAuth';
-import checkUserHasLocation from "../middleware/checkUserHasLocation";
+import checkUserHasLocation from '../middleware/checkUserHasLocation';
 
 //create location
 router.post('/', userAuth, locationController.create_location);
@@ -81,7 +81,6 @@ router.delete(
     locationController.deleteNotice
 );
 
-
 //workManual
 router.post(
     '/:locationId/workmanual/:categoryId',
@@ -107,5 +106,6 @@ router.delete(
     '/:locationId/workmanual/:_id/delete',
     userAuth,
     locationController.deleteWorkManual);
+
 
 module.exports = router;
