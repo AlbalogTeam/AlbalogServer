@@ -1,8 +1,8 @@
 import express from 'express';
 import './db/mongoose';
 import dotenv from 'dotenv';
+// import cors from 'cors';
 import morgan from 'morgan';
-import workManualRouter from './routers/workManualRouter.js';
 import employerRouter from './routers/employerRouter';
 import employeeRouter from './routers/employeeRouter';
 import locationRouter from './routers/locationRouter';
@@ -15,11 +15,14 @@ dotenv.config('./config/env');
 const app = express();
 
 // Middleware
+// app.use(cors);
+
 app.use(morgan('dev'));
 app.use(express.json());
 
+
 //routes
-app.use(process.env.BASE_URL, ping);
+app.use('/ping', ping);
 
 app.use('/api/v1/category', categoryRouter);
 app.use('/api/v1/location', locationRouter);

@@ -5,6 +5,29 @@ import bcrypt from 'bcryptjs';
 import dotenv from 'dotenv';
 dotenv.config({ path: '../config/' });
 
+
+/**
+ * @swagger
+ *  components:
+ *    schemas:
+ *      employee:
+ *        type: object
+ *        required:
+ *          - name
+ *          - email
+*         properties:
+ *          name:
+ *            type: string
+ *          email:
+ *            type: string
+ *            format: email
+ *            description: Email
+ *        example:
+ *          name: joo
+ *          email: joo@adsfsad.asdfsa
+ */
+
+
 const employeeSchema = new mongoose.Schema(
   {
     name: {
@@ -103,6 +126,13 @@ const employeeSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+
+
+
+
+
+
 
 employeeSchema.methods.toJSON = function () {
   const employee = this;

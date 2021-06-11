@@ -6,12 +6,18 @@ const checkUserHasLocation = async (req, res, next) => {
   const token = req.header('Authorization').replace('Bearer ', '');
   const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
+  console.log(decoded.stores);
   const { locationId } = req.params;
+  //
+  // const judge =
+  //   decoded.stores.filter(loc => loc.location === locationId).length > 0;
 
-  const judge =
-    decoded.stores.filter((loc) => loc.location === locationId).length > 0;
+  const judge = decoded.stores.filter(loc => loc.location === locationId) > 0;
+
+  console.log(judge);
 
   if (decoded && judge) {
+    // req.owner, _id, owner
     req.location = await Location.findOne({
       _id: locationId,
     });
@@ -22,3 +28,11 @@ const checkUserHasLocation = async (req, res, next) => {
 };
 
 module.exports = checkUserHasLocation;
+/**
+ * @checkUserHasLocation
+ *  request:post
+ *    Json {
+ *        type
+ *
+ *    }
+ */

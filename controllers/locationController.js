@@ -6,19 +6,24 @@ import {
 } from '../emails/accounts';
 
 const create_location = async (req, res) => {
+
   if (!req.owner)
     return res.status(401).send({ message: '매장 생성 권한이없습니다' });
 
   const location = new Location({ ...req.body, owner: req.owner._id });
+
   try {
+
     await location.save();
 
     req.owner.stores = req.owner.stores.concat({ location });
     await req.owner.save();
     res.status(201).send({ location });
+
   } catch (error) {
     res.status(500).send(error);
   }
+
 };
 
 //매장 정보 읽기
@@ -199,7 +204,13 @@ const createNotice = async (req, res) => {
     }
     const { locationId } = req.params;
 
-    const location = await Location.findById({ _id: locationId });
+    const location = await Location.findOne({ _id: locationId, owner: req.owner._id });
+
+    if(!location) {
+      res.status(400).send({
+        message: "해당 매장 정보를 찾을 수 없습니다."
+      })
+    }
 
     const {title, content} = req.body;
     const notice = { title, content };
@@ -227,8 +238,16 @@ const createNotice = async (req, res) => {
 const readNotice = async (req, res) => {
   const { locationId } = req.params;
   try {
-    const location = await Location.findById({ _id: locationId });
+    const location = await Location.findOne({ _id: locationId, owner: req.owner._id });
+
+    if(!location) {
+      res.status(400).send({
+        message: "해당 매장 정보를 찾을 수 없습니다."
+      })
+    }
+
     const notices = location.notices;
+
 
     res.status(201).send({
       notices,
@@ -243,7 +262,14 @@ const readNotice = async (req, res) => {
 const readOneNotice = async (req, res) => {
   try {
     const {locationId, _id} = req.params;
-    const location = await Location.findById( { _id:locationId });
+
+    const location = await Location.findOne({ _id: locationId, owner: req.owner._id });
+
+    if(!location) {
+      res.status(400).send({
+        message: "해당 매장 정보를 찾을 수 없습니다."
+      })
+    }
 
     const notice = location.notices.filter( n => n._id.toString() === _id );
 
@@ -273,7 +299,14 @@ const updateNotice = async (req, res) => {
     const {locationId, _id} = req.params;
     const { title, content } = req.body;
 
-    const location = await Location.findById( { _id : locationId });
+    const location = await Location.findOne({ _id: locationId, owner: req.owner._id });
+
+    if(!location) {
+      res.status(400).send({
+        message: "해당 매장 정보를 찾을 수 없습니다."
+      })
+    }
+
     const notices = location.notices;
     let originNotice;
     for(let notice of notices) {
@@ -312,7 +345,13 @@ const deleteNotice = async (req, res) => {
 
     const {locationId, _id} = req.params;
 
-    const location = await Location.findById( { _id : locationId });
+    const location = await Location.findOne({ _id: locationId, owner: req.owner._id });
+
+    if(!location) {
+      res.status(400).send({
+        message: "해당 매장 정보를 찾을 수 없습니다."
+      })
+    }
 
     const notices = location.notices;
     let deletedNotice;
@@ -365,7 +404,13 @@ export const createWorkManual = async (req, res) => {
       category_id: categoryId
     }
 
-    const location = await Location.findById({ _id: locationId });
+    const location = await Location.findOne({ _id: locationId, owner: req.owner._id });
+
+    if(!location) {
+      res.status(400).send({
+        message: "해당 매장 정보를 찾을 수 없습니다."
+      })
+    }
 
     location.workManuals.push(workManual);
 
@@ -384,12 +429,23 @@ export const createWorkManual = async (req, res) => {
 
 export const readWorkManual = async (req, res) => {
 
-  const {locationId} = req.params;
+  const {locationId, categoryId} = req.params;
 
   try {
-    const location = await Location.findById({ _id: locationId });
+    const location = await Location.findOne({ _id: locationId, owner: req.owner._id });
+    if(!location) {
+      res.status(400).send({
+        message: "해당 매장 정보를 찾을 수 없습니다."
+      })
+    }
 
-    const workManual = location.workManuals;
+    const workManuals = location.workManuals;
+
+    const workManual = workManuals.filter(v => {
+      console.log(v.category_id, categoryId);
+      return v.category_id.toString() === categoryId;
+    });
+
 
     res.status(201).send({
       workManual,
@@ -405,7 +461,13 @@ export const readOneWorkManual = async (req, res) => {
   try {
     const {locationId, _id} = req.params;
 
-    const location = await Location.findById( { _id:locationId });
+    const location = await Location.findOne({ _id: locationId, owner: req.owner._id });
+
+    if(!location) {
+      res.status(400).send({
+        message: "해당 매장 정보를 찾을 수 없습니다."
+      })
+    }
 
     const workManual = location.workManuals.filter( w => w._id.toString() === _id );
 
@@ -435,7 +497,13 @@ export const updateWorkManual = async (req, res) => {
     const {locationId, _id} = req.params;
     const { title, content } = req.body;
 
-    const location = await Location.findById( { _id : locationId });
+    const location = await Location.findOne({ _id: locationId, owner: req.owner._id });
+
+    if(!location) {
+      res.status(400).send({
+        message: "해당 매장 정보를 찾을 수 없습니다."
+      })
+    }
     const workManuals = location.workManuals;
     let originManual;
     for(let workManual of workManuals) {
@@ -448,7 +516,6 @@ export const updateWorkManual = async (req, res) => {
     }
 
     await location.save();
-
 
     if (!originManual) {
       res.status(500).send({
@@ -474,7 +541,13 @@ export const deleteWorkManual = async (req, res) => {
 
     const {locationId, _id} = req.params;
 
-    const location = await Location.findById( { _id : locationId });
+    const location = await Location.findOne({ _id: locationId, owner: req.owner._id });
+
+    if(!location) {
+      res.status(400).send({
+        message: "해당 매장 정보를 찾을 수 없습니다."
+      })
+    }
 
     const workManuals = location.workManuals;
     let deletedWorkManual;
@@ -507,11 +580,9 @@ export const deleteWorkManual = async (req, res) => {
   }
 };
 
-
-
-
-
 module.exports = {
+
+  //location
   create_location,
   get_location,
   update_location,
@@ -533,3 +604,4 @@ module.exports = {
   deleteWorkManual
 
 };
+
