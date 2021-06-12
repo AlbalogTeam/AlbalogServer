@@ -9,7 +9,7 @@ import userAuth from '../middleware/userAuth';
 router.post('/', userAuth, locationController.create_location);
 
 //get single location
-router.get('/:locationId', userAuth);
+router.get('/:locationId', userAuth, locationController.get_location);
 
 //update location info
 router.patch(
