@@ -30,10 +30,6 @@ const readCategory = async (req, res) => {
 
   try {
     const categories = await Category.find({ locationId });
-    // console.log(categories);
-
-    // const category = [...new Set(categories)];
-    // console.log(category);
 
     res.status(200).send(categories);
   } catch (err) {
