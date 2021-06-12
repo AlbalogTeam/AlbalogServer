@@ -56,7 +56,7 @@ const logout_employee = async (req, res) => {
 
     await req.staff.save();
     res.send({
-      message: 'Success Logout',
+      message: 'logged out',
     });
   } catch (error) {
     res.status(500).send({

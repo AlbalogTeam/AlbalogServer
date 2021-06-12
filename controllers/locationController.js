@@ -6,24 +6,20 @@ import {
 } from '../emails/accounts';
 
 const create_location = async (req, res) => {
-
   if (!req.owner)
     return res.status(401).send({ message: '매장 생성 권한이없습니다' });
 
   const location = new Location({ ...req.body, owner: req.owner._id });
 
   try {
-
     await location.save();
 
     req.owner.stores = req.owner.stores.concat({ location });
     await req.owner.save();
-    res.status(201).send({ location });
-
+    res.status(200).send({ location });
   } catch (error) {
     res.status(500).send(error);
   }
-
 };
 
 //매장 정보 읽기
@@ -35,6 +31,7 @@ const get_location = async (req, res) => {
       _id: locationId,
       owner: req.owner._id,
     });
+    if (!location) return res.status(403).send('해당 매장의 권한이없습니다');
     res.send(location);
   } catch (error) {
     res.status(500).send({ error });
@@ -197,22 +194,18 @@ const update_employee_wage = async (req, res) => {
 };
 
 const createNotice = async (req, res) => {
-
   try {
     if (!req.owner) {
       throw new Error('you are not owner');
     }
     const { locationId } = req.params;
 
-    const location = await Location.findOne({ _id: locationId, owner: req.owner._id });
+    const location = await Location.findOne({
+      _id: locationId,
+      owner: req.owner._id,
+    });
 
-    if(!location) {
-      res.status(400).send({
-        message: "해당 매장 정보를 찾을 수 없습니다."
-      })
-    }
-
-    const {title, content} = req.body;
+    const { title, content } = req.body;
     const notice = { title, content };
 
     if (!notice) {
@@ -238,16 +231,11 @@ const createNotice = async (req, res) => {
 const readNotice = async (req, res) => {
   const { locationId } = req.params;
   try {
-    const location = await Location.findOne({ _id: locationId, owner: req.owner._id });
-
-    if(!location) {
-      res.status(400).send({
-        message: "해당 매장 정보를 찾을 수 없습니다."
-      })
-    }
-
-    const notices = location.notices;
-
+    const location = await Location.findOne({
+      _id: locationId,
+      owner: req.owner._id,
+    });
+    const notices = location.notices.sort((a, b) => -1);
 
     res.status(201).send({
       notices,
@@ -261,26 +249,27 @@ const readNotice = async (req, res) => {
 
 const readOneNotice = async (req, res) => {
   try {
-    const {locationId, _id} = req.params;
+    const { locationId, _id } = req.params;
 
-    const location = await Location.findOne({ _id: locationId, owner: req.owner._id });
+    const location = await Location.findOne({
+      _id: locationId,
+      owner: req.owner._id,
+    });
 
-    if(!location) {
+    if (!location) {
       res.status(400).send({
-        message: "해당 매장 정보를 찾을 수 없습니다."
-      })
+        message: '해당 매장 정보를 찾을 수 없습니다.',
+      });
     }
 
-    const notice = location.notices.filter( n => n._id.toString() === _id );
+    const notice = location.notices.filter((n) => n._id.toString() === _id);
 
     if (!notice) {
       res.status(500).send({
         message: 'Cannot find One Notice',
       });
     }
-    res.status(201).send({
-      notice,
-    });
+    res.status(201).send({ notice });
   } catch (err) {
     res.status(500).send({
       message: err.toString(),
@@ -290,21 +279,22 @@ const readOneNotice = async (req, res) => {
 
 const updateNotice = async (req, res) => {
   try {
-
-
     if (!req.owner) {
       throw new Error('you are not owner');
     }
 
-    const {locationId, _id} = req.params;
+    const { locationId, _id } = req.params;
     const { title, content } = req.body;
 
-    const location = await Location.findOne({ _id: locationId, owner: req.owner._id });
+    const location = await Location.findOne({
+      _id: locationId,
+      owner: req.owner._id,
+    });
 
-    if(!location) {
+    if (!location) {
       res.status(400).send({
-        message: "해당 매장 정보를 찾을 수 없습니다."
-      })
+        message: '해당 매장 정보를 찾을 수 없습니다.',
+      });
     }
 
     const notices = location.notices;
@@ -338,28 +328,29 @@ const updateNotice = async (req, res) => {
 
 const deleteNotice = async (req, res) => {
   try {
-
     if (!req.owner) {
       throw new Error('you are not owner');
     }
 
-    const {locationId, _id} = req.params;
+    const { locationId, _id } = req.params;
 
-    const location = await Location.findOne({ _id: locationId, owner: req.owner._id });
+    const location = await Location.findOne({
+      _id: locationId,
+      owner: req.owner._id,
+    });
 
-    if(!location) {
+    if (!location) {
       res.status(400).send({
-        message: "해당 매장 정보를 찾을 수 없습니다."
-      })
+        message: '해당 매장 정보를 찾을 수 없습니다.',
+      });
     }
 
     const notices = location.notices;
     let deletedNotice;
 
-
-    for(let idx in notices) {
+    for (let idx in notices) {
       const notice = notices[idx];
-      if(notice._id.toString() === _id) {
+      if (notice._id.toString() === _id) {
         deletedNotice = notice;
         notice.remove(idx);
         break;
@@ -384,12 +375,9 @@ const deleteNotice = async (req, res) => {
   }
 };
 
-
 // workManual
 
-
 export const createWorkManual = async (req, res) => {
-
   const { locationId, categoryId } = req.params;
   const { title, content } = req.body;
 
@@ -401,15 +389,18 @@ export const createWorkManual = async (req, res) => {
     const workManual = {
       title,
       content,
-      category_id: categoryId
-    }
+      category_id: categoryId,
+    };
 
-    const location = await Location.findOne({ _id: locationId, owner: req.owner._id });
+    const location = await Location.findOne({
+      _id: locationId,
+      owner: req.owner._id,
+    });
 
-    if(!location) {
+    if (!location) {
       res.status(400).send({
-        message: "해당 매장 정보를 찾을 수 없습니다."
-      })
+        message: '해당 매장 정보를 찾을 수 없습니다.',
+      });
     }
 
     location.workManuals.push(workManual);
@@ -419,7 +410,6 @@ export const createWorkManual = async (req, res) => {
     res.status(201).send({
       message: 'Create Manual Successfully',
     });
-
   } catch (err) {
     res.status(500).send({
       message: err.toString(),
@@ -428,24 +418,25 @@ export const createWorkManual = async (req, res) => {
 };
 
 export const readWorkManual = async (req, res) => {
-
-  const {locationId, categoryId} = req.params;
+  const { locationId, categoryId } = req.params;
 
   try {
-    const location = await Location.findOne({ _id: locationId, owner: req.owner._id });
-    if(!location) {
+    const location = await Location.findOne({
+      _id: locationId,
+      owner: req.owner._id,
+    });
+    if (!location) {
       res.status(400).send({
-        message: "해당 매장 정보를 찾을 수 없습니다."
-      })
+        message: '해당 매장 정보를 찾을 수 없습니다.',
+      });
     }
 
     const workManuals = location.workManuals;
 
-    const workManual = workManuals.filter(v => {
+    const workManual = workManuals.filter((v) => {
       console.log(v.category_id, categoryId);
       return v.category_id.toString() === categoryId;
     });
-
 
     res.status(201).send({
       workManual,
@@ -459,17 +450,22 @@ export const readWorkManual = async (req, res) => {
 
 export const readOneWorkManual = async (req, res) => {
   try {
-    const {locationId, _id} = req.params;
+    const { locationId, _id } = req.params;
 
-    const location = await Location.findOne({ _id: locationId, owner: req.owner._id });
+    const location = await Location.findOne({
+      _id: locationId,
+      owner: req.owner._id,
+    });
 
-    if(!location) {
+    if (!location) {
       res.status(400).send({
-        message: "해당 매장 정보를 찾을 수 없습니다."
-      })
+        message: '해당 매장 정보를 찾을 수 없습니다.',
+      });
     }
 
-    const workManual = location.workManuals.filter( w => w._id.toString() === _id );
+    const workManual = location.workManuals.filter(
+      (w) => w._id.toString() === _id
+    );
 
     if (!workManual) {
       res.status(500).send({
@@ -489,25 +485,27 @@ export const readOneWorkManual = async (req, res) => {
 // 카테고리 수정하는것 추가해야함, 추가논의후 결정
 export const updateWorkManual = async (req, res) => {
   try {
-
     if (!req.owner) {
       throw new Error('You are not owner');
     }
 
-    const {locationId, _id} = req.params;
+    const { locationId, _id } = req.params;
     const { title, content } = req.body;
 
-    const location = await Location.findOne({ _id: locationId, owner: req.owner._id });
+    const location = await Location.findOne({
+      _id: locationId,
+      owner: req.owner._id,
+    });
 
-    if(!location) {
+    if (!location) {
       res.status(400).send({
-        message: "해당 매장 정보를 찾을 수 없습니다."
-      })
+        message: '해당 매장 정보를 찾을 수 없습니다.',
+      });
     }
     const workManuals = location.workManuals;
     let originManual;
-    for(let workManual of workManuals) {
-      if(workManual._id.toString() === _id) {
+    for (let workManual of workManuals) {
+      if (workManual._id.toString() === _id) {
         workManual.title = title;
         workManual.content = content;
         originManual = workManual;
@@ -539,23 +537,25 @@ export const deleteWorkManual = async (req, res) => {
       throw new Error('You are not owner');
     }
 
-    const {locationId, _id} = req.params;
+    const { locationId, _id } = req.params;
 
-    const location = await Location.findOne({ _id: locationId, owner: req.owner._id });
+    const location = await Location.findOne({
+      _id: locationId,
+      owner: req.owner._id,
+    });
 
-    if(!location) {
+    if (!location) {
       res.status(400).send({
-        message: "해당 매장 정보를 찾을 수 없습니다."
-      })
+        message: '해당 매장 정보를 찾을 수 없습니다.',
+      });
     }
 
     const workManuals = location.workManuals;
     let deletedWorkManual;
 
-
-    for(let idx in workManuals) {
+    for (let idx in workManuals) {
       const workManual = workManuals[idx];
-      if(workManual._id.toString() === _id) {
+      if (workManual._id.toString() === _id) {
         deletedWorkManual = workManual;
         workManual.remove(idx);
         break;
@@ -581,7 +581,6 @@ export const deleteWorkManual = async (req, res) => {
 };
 
 module.exports = {
-
   //location
   create_location,
   get_location,
@@ -601,7 +600,5 @@ module.exports = {
   readWorkManual,
   readOneWorkManual,
   updateWorkManual,
-  deleteWorkManual
-
+  deleteWorkManual,
 };
-
