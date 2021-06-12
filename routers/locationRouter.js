@@ -80,7 +80,6 @@ router.delete(
     locationController.deleteNotice
 );
 
-
 //workManual
 router.post(
     '/:locationId/workmanual/:categoryId',
@@ -106,5 +105,6 @@ router.delete(
     '/:locationId/workmanual/:_id/delete',
     userAuth,
     locationController.deleteWorkManual);
+
 
 module.exports = router;
