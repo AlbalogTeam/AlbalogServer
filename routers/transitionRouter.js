@@ -8,7 +8,7 @@ router.post('/:locationId/signup', transitionController.create_employee);
 
 router.post('/:locationId/create', transitionController.create_transition);
 
-router.get('/:locationId', userAuth, transitionController.updateTransition);
+router.get('/:locationId', userAuth, transitionController.readTransition);
 
 router.patch(
   '/:locationId/update',

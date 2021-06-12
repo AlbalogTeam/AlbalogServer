@@ -8,6 +8,8 @@ import employerRouter from './routers/employerRouter';
 import employeeRouter from './routers/employeeRouter';
 import locationRouter from './routers/locationRouter';
 import categoryRouter from './routers/categoryRouter';
+import transitionRouter from './routers/transitionRouter';
+import timeClockRouter from './routers/timeClockRouter';
 import showUser from './routers/showUserRouter';
 import ping from './routers/ping';
 
@@ -29,5 +31,7 @@ app.use('/api/v1/location', locationRouter);
 app.use('/api/v1/owner', employerRouter);
 app.use('/api/v1/employee', employeeRouter);
 app.use('/api/v1/showUser', showUser);
+app.use('/api/v1/transition', transitionRouter);
+app.use('/api/v1/timeclock', timeClockRouter);
 
 module.exports = app;

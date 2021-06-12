@@ -299,8 +299,8 @@ const updateNotice = async (req, res) => {
 
     const notices = location.notices;
     let originNotice;
-    for(let notice of notices) {
-      if(notice._id.toString() === _id) {
+    for (let notice of notices) {
+      if (notice._id.toString() === _id) {
         originNotice = notice;
         notice.title = title;
         notice.content = content;
@@ -376,8 +376,7 @@ const deleteNotice = async (req, res) => {
 };
 
 // workManual
-
-export const createWorkManual = async (req, res) => {
+const createWorkManual = async (req, res) => {
   const { locationId, categoryId } = req.params;
   const { title, content } = req.body;
 
@@ -417,7 +416,7 @@ export const createWorkManual = async (req, res) => {
   }
 };
 
-export const readWorkManual = async (req, res) => {
+const readWorkManual = async (req, res) => {
   const { locationId, categoryId } = req.params;
 
   try {
@@ -448,7 +447,7 @@ export const readWorkManual = async (req, res) => {
   }
 };
 
-export const readOneWorkManual = async (req, res) => {
+const readOneWorkManual = async (req, res) => {
   try {
     const { locationId, _id } = req.params;
 
@@ -483,7 +482,7 @@ export const readOneWorkManual = async (req, res) => {
 };
 
 // 카테고리 수정하는것 추가해야함, 추가논의후 결정
-export const updateWorkManual = async (req, res) => {
+const updateWorkManual = async (req, res) => {
   try {
     if (!req.owner) {
       throw new Error('You are not owner');
@@ -531,7 +530,7 @@ export const updateWorkManual = async (req, res) => {
   }
 };
 
-export const deleteWorkManual = async (req, res) => {
+const deleteWorkManual = async (req, res) => {
   try {
     if (!req.owner) {
       throw new Error('You are not owner');

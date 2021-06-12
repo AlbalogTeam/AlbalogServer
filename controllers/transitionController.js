@@ -1,4 +1,3 @@
-import Transition from '../models/transition';
 import Location from '../models/location/location';
 
 const create_transition = async (req, res) => {
