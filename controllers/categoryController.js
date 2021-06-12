@@ -29,7 +29,7 @@ const readCategory = async (req, res) => {
   const { locationId } = req.params;
 
   try {
-    const categories = await Category.findOne({ locationId });
+    const categories = await Category.find({ locationId });
     // console.log(categories);
 
     // const category = [...new Set(categories)];
