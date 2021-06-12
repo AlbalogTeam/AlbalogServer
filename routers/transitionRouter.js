@@ -10,7 +10,7 @@ router.post(
     transitionController.create_transition
 );
 
-router.get('/locationId', userAuth, transitionController.updateTransition);
+router.get('/locationId', userAuth, transitionController.readTransition);
 
 router.patch('/:locationId/update', userAuth, transitionController.updateTransition);
 
