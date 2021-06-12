@@ -12,7 +12,7 @@ router.post(
 );
 
 router.get(
-    ':locationId',
+    '/:locationId',
     userAuth,
     categoryController.readCategory
 );

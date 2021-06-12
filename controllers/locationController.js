@@ -311,9 +311,9 @@ const updateNotice = async (req, res) => {
     let originNotice;
     for(let notice of notices) {
       if(notice._id.toString() === _id) {
+        originNotice = notice;
         notice.title = title;
         notice.content = content;
-        originNotice = notice;
         break;
       }
     }

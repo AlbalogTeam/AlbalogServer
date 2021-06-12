@@ -47,10 +47,22 @@ const locationSchema = new mongoose.Schema(
     ],
     transitions: [
       {
-        transition: {
-          type: mongoose.Schema.Types.ObjectId,
-          required: true,
-        },
+          type: new mongoose.Schema({
+                date: {
+                    type: Date,
+                    required: true
+                },
+                description: {
+                    type: String,
+                    required: true,
+                    trim: true
+                },
+                completed: {
+                    type: Boolean,
+                    required: true,
+                    default: false
+                }
+          })
       },
     ],
     owner: {
