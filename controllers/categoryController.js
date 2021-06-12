@@ -35,9 +35,7 @@ const readCategory = async (req, res) => {
     // const category = [...new Set(categories)];
     // console.log(category);
 
-    res.status(200).send({
-      categories,
-    });
+    res.status(200).json(categories);
   } catch (err) {
     res.status(500).send({
       message: err.toString(),
