@@ -17,13 +17,13 @@ router.get(
     categoryController.readCategory
 );
 
+router.get(':locationId', userAuth, categoryController.readCategory);
 
 // delete category
 router.delete(
-    '/:locationId/delete/:categoryId',
-    userAuth,
-    categoryController.deleteCategory
+  '/:locationId/delete/:categoryId',
+  userAuth,
+  categoryController.deleteCategory
 );
-
 
 module.exports = router;
