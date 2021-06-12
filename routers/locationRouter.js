@@ -79,8 +79,9 @@ router.post(
   locationController.createWorkManual
 );
 
+//get all work manuals
 router.get(
-  '/:locationId/workmanual/category/:categoryId',
+  '/:locationId/workmanual/',
   userAuth,
   locationController.readWorkManual
 );

@@ -417,29 +417,31 @@ const createWorkManual = async (req, res) => {
 };
 
 const readWorkManual = async (req, res) => {
-  const { locationId, categoryId } = req.params;
+  const { locationId } = req.params;
 
   try {
     const location = await Location.findOne({
       _id: locationId,
-      owner: req.owner._id,
-    });
+    }).populate('workManuals.category_id');
     if (!location) {
       res.status(400).send({
         message: '해당 매장 정보를 찾을 수 없습니다.',
       });
     }
+    const manualObject = location.toObject();
 
-    const workManuals = location.workManuals;
+    delete manualObject._id;
+    delete manualObject.address;
+    delete manualObject.postal_code;
+    delete manualObject.phone_number;
+    delete manualObject.employees;
+    delete manualObject.schedule_changes;
+    delete manualObject.transitions;
+    delete manualObject.notices;
+    delete manualObject.createdAt;
+    delete manualObject.updatedAt;
 
-    const workManual = workManuals.filter((v) => {
-      console.log(v.category_id, categoryId);
-      return v.category_id.toString() === categoryId;
-    });
-
-    res.status(201).send({
-      workManual,
-    });
+    res.status(200).send(manualObject);
   } catch (err) {
     res.status(500).send({
       message: err,
