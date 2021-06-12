@@ -1,144 +1,332 @@
-import Employee from '../models/user/employee';
 import Location from '../models/location/location';
-import mongoose from 'mongoose';
+import Employee from '../models/user/employee';
 
 //매장 스태프 만들기
-const create_employee = async (req, res) => {
+const startWork = async (req, res) => {
+
   const locationId = req.params.locationId;
+  const {start_time} = req.body;
+  let { wage } = req.body;
+
+  if(!wage)
+    wage = 8720;
+
 
   try {
-    const location = await Location.findById(locationId);
+    const location = await Location.findOne({
+      locationId,
+      'employees.employee': req.staff._id
+    });
 
     if (!location) {
       return res.status(400).send({ message: '매장정보를 찾을 수 없습니다' });
     }
 
-    const employee = new Employee(req.body);
+    const staff = await Employee.findOne({
+      _id: req.staff._id
+    });
 
-    const checkEmail = await Employee.checkIfEmailExist(employee.email);
-    if (checkEmail)
-      return res.status(400).send({ message: 'Email is already taken' });
+    const timeClock = {start_time, wage};
 
-    employee.stores = employee.stores.concat({ location: location._id });
-    const newEmployee = await employee.save();
+    if(!timeClock) {
+      res.status(500).send({
+        message: "Cannot Create TimeClock"
+      });
+    }
 
-    const token = await employee.generateAuthToken();
+    staff.timeClocks.push(timeClock);
+    await staff.save();
 
-    //add an employee who belongs to the current location
-    location.employees = location.employees.concat({ employee: newEmployee });
-    await location.save();
-
-    res.status(201).send({ employee, token });
+    res.status(201).send({
+      timeClock
+    });
   } catch (error) {
     res.status(400).send(error);
   }
 };
 
-const login_employee = async (req, res) => {
-  try {
-    const employee = await Employee.findByCredentials(
-      req.body.email,
-      req.body.password
-    );
-    const token = await employee.generateAuthToken();
+const endWork = async (req, res) => {
 
-    res.send({ employee, token });
-  } catch (error) {
-    res.status(400).send('Unable to login');
-  }
-};
-
-const logout_employee = async (req, res) => {
-  try {
-    req.staff.tokens = req.staff.tokens.filter((token) => {
-      return token.token !== req.token;
-    });
-
-    await req.staff.save();
-    res.send({
-      message: 'Success Logout',
-    });
-  } catch (error) {
-    res.status(500).send({
-      error,
-    });
-  }
-};
-
-const get_employee = async (req, res) => {
-  res.send(req.staff);
-};
-
-const get_employee_locations = async (req, res) => {
-  const locIds = req.staff.stores.map((ids) => ids.location); //get all objectIds from user.stores into arrays
-
-  if (locIds.length < 1) {
-    return res.status(400).send({
-      message: '매장이 없습니다.',
-    });
-  }
-
-  try {
-    const locations = await Location.find({
-      _id: { $in: locIds },
-    });
-    res.send({ locations });
-  } catch (err) {
-    res.status(500).send({
-      message: err,
-    });
-  }
-};
-
-const get_single_location = async (req, res) => {
-  const locationId = mongoose.Types.ObjectId(req.params.locationId);
+  const {locationId, workId } = req.params;
+  const {end_time} = req.body;
 
   try {
     const location = await Location.findOne({
-      _id: locationId,
-      'employees.employee': req.staff._id,
+      locationId,
+      'employees.employee': req.staff._id
     });
-    res.send(location);
+
+    if (!location) {
+      res.status(400).send({ message: '매장정보를 찾을 수 없습니다' });
+    }
+
+    const staff = await Employee.findOne({
+      _id: req.staff._id
+    });
+
+    const timeClock = await staff.timeClocks.findOne({ _id: workId });
+
+    if(!timeClock) {
+      res.status(500).send({
+        message: "출근하지 않으셨습니다."
+      });
+    }
+
+    !end_time
+        ? timeClock.end_time = end_time
+        : res.status(500).send({ message : "이미 퇴근 처리가 완료되었습니다."});
+
+    await staff.save();
+
+    res.status(201).send({
+      timeClock
+    });
   } catch (error) {
-    res.status(500).send(error);
+    res.status(400).send(error);
   }
 };
 
-const update_employee = async (req, res) => {
-  const body = req.body;
 
-  const updates = Object.keys(body);
-  const allowedUpdates = [
-    'name',
-    'password',
-    'birthdate',
-    'cellphone',
-    'gender',
-  ];
-  const isValidUpdates = updates.every((update) =>
-    allowedUpdates.includes(update)
-  );
-  if (!isValidUpdates) {
-    return res.status(400).send({
-      message: 'invalid update',
+
+const readTimeClockForStaff = async (req, res) => {
+  const { locationId } = req.params;
+  try {
+    const location = await Location.findOne({
+      _id: locationId,
+      'employees.employee': req.staff._id
+    });
+
+    if(!location) {
+      res.status(400).send({
+        message: "해당 매장 정보를 찾을 수 없습니다."
+      })
+    }
+
+    const staff = await Employee.findOne({
+      _id: req.staff._id
+    });
+
+    const timeClocks = staff.timeClocks;
+
+    if(!timeClocks.length) {
+      res.status(500).send({
+        message: "아직 근무 하지 않으셨습니다."
+      });
+    }
+
+    res.status(201).send({
+      timeClocks
+    });
+  } catch (error) {
+    res.status(400).send(error);
+  }
+};
+
+
+const readTimeClockForOwner = async (req, res) => {
+
+  if(!req.owner) {
+    res.status(500).send({
+      message: "You are not Owner"
     });
   }
 
+  const { locationId } = req.params;
+
   try {
-    updates.forEach((update) => (req.staff[update] = body[update]));
-    await req.staff.save();
-    res.send(req.staff);
+
+    const location = await Location.findOne({ _id: locationId, owner: req.owner._id });
+
+
+    if(!location) {
+      res.status(400).send({
+        message: "해당 매장 정보를 찾을 수 없습니다."
+      })
+    }
+
+    const employees = location.employees;
+    const allTimeClocks = [];
+
+    for(let i = 0; i < employees.length; i++) {
+      const employee = await Employee.findById( { _id: employees[i]._id });
+      allTimeClocks.push({
+        id: employees[i]._id ,
+        timeClocks: employee.timeClocks
+      });
+    }
+
+    if(!allTimeClocks.length) {
+      res.status(500).send({
+        message: "아직 직원이 없습니다."
+      });
+    }
+
+    res.status(201).send({
+      allTimeClocks
+    });
   } catch (error) {
     res.status(400).send(error);
+  }
+};
+
+
+const updateStartTime = async (req, res) => {
+  try {
+
+    if (!req.owner) {
+      throw new Error('you are not owner');
+    }
+
+    const {locationId, clockId} = req.params;
+    const { startTime, staffId } = req.body;
+
+    const location = await Location.findOne({ _id: locationId, owner: req.owner._id });
+
+    if(!location) {
+      res.status(400).send({
+        message: "해당 매장 정보를 찾을 수 없습니다."
+      })
+    }
+
+    const staff = Employee.findById({_id: staffId});
+
+    const timeClocks = staff.timeClocks;
+
+    let originTimeClock;
+    for(let timeClock of timeClocks) {
+      if(timeClock._id.toString() === clockId) {
+        originTimeClock = timeClock;
+        timeClock.start_time = startTime;
+        break;
+      }
+    }
+
+    await timeClocks.save();
+    await staff.save();
+
+    if (!originTimeClock) {
+      res.status(500).send({
+        message: 'Cannot Update TimeClock',
+      });
+    }
+
+    res.status(201).send({
+      updatedTimeClock: originTimeClock,
+    });
+  } catch (err) {
+    res.status(500).send({
+      message: err.toString(),
+    });
+  }
+};
+
+const updateEndTime = async (req, res) => {
+  try {
+
+    if (!req.owner) {
+      throw new Error('you are not owner');
+    }
+
+    const {locationId, clockId} = req.params;
+    const { endTime, staffId } = req.body;
+
+    const location = await Location.findOne({ _id: locationId, owner: req.owner._id });
+
+    if(!location) {
+      res.status(400).send({
+        message: "해당 매장 정보를 찾을 수 없습니다."
+      })
+    }
+
+    const staff = Employee.findById({_id:staffId});
+
+    const timeClocks = staff.timeClocks;
+
+    let originTimeClock;
+    for(let timeClock of timeClocks) {
+      if(timeClock._id.toString() === clockId) {
+        originTimeClock = timeClock;
+        timeClock.end_time = endTime;
+        break;
+      }
+    }
+
+    await timeClocks.save();
+    await staff.save();
+
+    if (!originTimeClock) {
+      res.status(500).send({
+        message: 'Cannot Update TimeClock',
+      });
+    }
+
+    res.status(201).send({
+      updatedTimeClock: originTimeClock,
+    });
+  } catch (err) {
+    res.status(500).send({
+      message: err.toString(),
+    });
+  }
+};
+
+const deleteTimeClock = async (req, res) => {
+  try {
+
+    if (!req.owner) {
+      throw new Error('you are not owner');
+    }
+
+    const {locationId, clockId} = req.params;
+
+    const { staffId } = req.body;
+
+    const location = await Location.findOne({ _id: locationId, owner: req.owner._id });
+
+    if(!location) {
+      res.status(400).send({
+        message: "해당 매장 정보를 찾을 수 없습니다."
+      })
+    }
+
+    const staff = Employee.findById({_id:staffId});
+
+    const timeClocks = staff.timeClocks;
+
+    let deletedTimeClock;
+    for(let idx in timeClocks) {
+      if(timeClocks[idx]._id.toString() === clockId) {
+        deletedTimeClock = timeClocks[idx];
+        timeClocks.remove(idx);
+        break;
+      }
+    }
+
+    await timeClocks.save();
+    await staff.save();
+
+    if (!deletedTimeClock) {
+      res.status(500).send({
+        message: 'Cannot Delete TimeClock',
+      });
+    }
+
+    res.status(201).send({
+      deletedTimeClock: deletedTimeClock,
+    });
+  } catch (err) {
+    res.status(500).send({
+      message: err.toString(),
+    });
   }
 };
 
 module.exports = {
-  create_employee,
-  login_employee,
-  logout_employee,
-  get_employee,
-  get_employee_locations,
-  get_single_location,
-  update_employee,
+  startWork,
+  endWork,
+  readTimeClockForStaff,
+  readTimeClockForOwner,
+  updateStartTime,
+  updateEndTime,
+  deleteTimeClock
 };

@@ -6,26 +6,20 @@ import userAuth from '../middleware/userAuth';
 
 router.post('/:locationId/signup', transitionController.create_employee);
 
-//get employee's all locations
-router.get('/locations', userAuth, transitionController.get_employee_locations);
+router.post('/:locationId/create', transitionController.create_transition);
 
-//get employee's single location
-router.get('/:locationId', userAuth, transitionController.get_single_location);
+router.get('/locationId', userAuth, transitionController.updateTransition);
 
-//get employee
-router.get('/:employeeId', userAuth, transitionController.get_employee);
-
-//update employee
 router.patch(
-  '/:employeeId/update',
+  '/:locationId/update',
   userAuth,
-  transitionController.update_employee
+  transitionController.updateTransition
 );
 
-//employee login
-router.post('/login', userAuth, transitionController.login_employee);
-
-//employee logout
-router.post('/logout', userAuth, transitionController.logout_employee);
+router.delete(
+  '/:locationId/delete',
+  userAuth,
+  transitionController.deleteTransition
+);
 
 module.exports = router;

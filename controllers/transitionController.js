@@ -1,10 +1,10 @@
 import Transition from '../models/transition';
 import Location from '../models/location/location';
-import mongoose from 'mongoose';
-
 
 const create_transition = async (req, res) => {
+
   const locationId = req.params.locationId;
+
   try {
     const location = await Location.findById(locationId);
 
@@ -31,7 +31,9 @@ const create_transition = async (req, res) => {
     res.status(400).send(error);
   }
 };
+
 const readTransition = async (req, res) => {
+
   const { locationId } = req.params;
   try {
     const location = await Location.findOne({ _id: locationId, owner: req.owner._id });
@@ -54,12 +56,10 @@ const readTransition = async (req, res) => {
     });
   }
 };
-const updateTransition = async (req, res) => {
-  try {
 
-    if (!req.owner) {
-      throw new Error('you are not owner');
-    }
+const updateTransition = async (req, res) => {
+
+  try {
 
     const {locationId, _id} = req.params;
     const { title, content } = req.body;
@@ -72,27 +72,72 @@ const updateTransition = async (req, res) => {
       })
     }
 
-    const notices = location.notices;
-    let originNotice;
-    for(let notice of notices) {
-      if(notice._id.toString() === _id) {
-        notice.title = title;
-        notice.content = content;
-        originNotice = notice;
+    const transitions = location.transitions;
+
+    let originalTransition;
+    for(let transition of transitions) {
+      if(transition._id.toString() === _id) {
+        originalTransition = transition;
+        transition.title = title;
+        transition.content = content;
         break;
       }
     }
 
     await location.save();
 
-    if (!originNotice) {
+    if (!originalTransition) {
       res.status(500).send({
-        message: 'Cannot Update Notice',
+        message: 'Cannot Update Transition',
       });
     }
 
     res.status(201).send({
-      updatedNotice: originNotice,
+      updatedTransition: originalTransition,
+    });
+  } catch (err) {
+    res.status(500).send({
+      message: err.toString(),
+    });
+  }
+};
+
+const deleteTransition = async (req, res) => {
+  try {
+
+    const {locationId, _id} = req.params;
+
+    const location = await Location.findOne({ _id: locationId, owner: req.owner._id });
+
+    if(!location) {
+      res.status(400).send({
+        message: "해당 매장 정보를 찾을 수 없습니다."
+      })
+    }
+
+    const transitions = location.transitions;
+    let deletedTransition;
+
+
+    for(let idx in transitions) {
+      const transition = transitions[idx];
+      if(transition._id.toString() === _id) {
+        deletedTransition = transition;
+        transitions.remove(idx);
+        break;
+      }
+    }
+
+    if (!deletedTransition) {
+      res.status(500).send({
+        message: 'Cannot Delete Notice',
+      });
+    }
+
+    await location.save();
+
+    res.status(201).send({
+      deletedTransition
     });
   } catch (err) {
     res.status(500).send({
@@ -102,11 +147,8 @@ const updateTransition = async (req, res) => {
 };
 
 module.exports = {
-  create_employee,
-  login_employee,
-  logout_employee,
-  get_employee,
-  get_employee_locations,
-  get_single_location,
-  update_employee,
+  create_transition,
+  readTransition,
+  updateTransition,
+  deleteTransition
 };

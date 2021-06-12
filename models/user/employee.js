@@ -77,12 +77,24 @@ const employeeSchema = new mongoose.Schema(
       trim: true,
       default: 0,
     },
-    timeclocks: [
+    timeClocks: [
       {
-        timeclock: {
-          type: mongoose.Schema.Types.ObjectId,
-          required: true,
-        },
+          type: new mongoose.Schema({
+              start_time: {
+                  type: Date,
+                  required: true
+              },
+              end_time: {
+                  type: Date,
+              },
+              wage: {
+                  type: Number,
+                  required: true
+              },
+              total: {
+                  type: Number,
+              }
+          })
       },
     ],
     shifts: [
