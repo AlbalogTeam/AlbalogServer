@@ -20,9 +20,10 @@ app.use(cors);
 app.use(morgan('dev'));
 app.use(express.json());
 
-//routes
+//ping
 app.use('/ping', ping);
 
+//routes
 app.use('/api/v1/category', categoryRouter);
 app.use('/api/v1/location', locationRouter);
 app.use('/api/v1/owner', employerRouter);

@@ -4,14 +4,9 @@ const router = new express.Router();
 import * as transitionController from '../controllers/transitionController';
 import userAuth from '../middleware/userAuth';
 
+router.post('/:locationId/signup', transitionController.create_employee);
 
-router.post(
-  '/:locationId/signup',
-    transitionController.create_employee
-);
-
-//get employees all locations
-
+//get employee's all locations
 router.get('/locations', userAuth, transitionController.get_employee_locations);
 
 //get employee's single location
@@ -24,7 +19,7 @@ router.get('/:employeeId', userAuth, transitionController.get_employee);
 router.patch(
   '/:employeeId/update',
   userAuth,
-    transitionController.update_employee
+  transitionController.update_employee
 );
 
 //employee login
