@@ -235,7 +235,7 @@ const readNotice = async (req, res) => {
       _id: locationId,
       owner: req.owner._id,
     });
-    const notices = location.notices;
+    const notices = location.notices.sort((a, b) => -1);
 
     res.status(201).send({
       notices,
