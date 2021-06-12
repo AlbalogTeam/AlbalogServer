@@ -5,31 +5,35 @@ import * as timeClockController from '../controllers/timeClockController';
 import userAuth from '../middleware/userAuth';
 
 router.post(
-  '/:locationId/signup',
-    timeClockController.create_employee
+  '/:locationId/start',
+    timeClockController.startWork
 );
 
-//get employees all locations
 
-router.get('/locations', userAuth, timeClockController.get_employee_locations);
+router.post('/:locationId:end',
+    userAuth,
+    timeClockController.endWork);
 
-//get employee's single location
-router.get('/:locationId', userAuth, timeClockController.get_single_location);
+router.get('/:locationId/staff',
+    userAuth,
+    timeClockController.readTimeClockForStaff);
 
-//get employee
-router.get('/:employeeId', userAuth, timeClockController.get_employee);
+router.get('/:locationId/owner',
+    userAuth,
+    timeClockController.readTimeClockForOwner);
 
-//update employee
-router.patch(
-  '/:employeeId/update',
-  userAuth,
-    timeClockController.update_employee
+router.patch('/:locationId/update/start',
+    userAuth,
+    timeClockController.updateStartTime);
+
+router.patch('/:locationId/update/end',
+    userAuth,
+    timeClockController.updateEndTime);
+
+router.delete(
+  '/:locationId/delete',
+    userAuth,
+    timeClockController.deleteTimeClock
 );
-
-//employee login
-router.post('/login', userAuth, employeeController.login_employee);
-
-//employee logout
-router.post('/logout', userAuth, employeeController.logout_employee);
 
 module.exports = router;
