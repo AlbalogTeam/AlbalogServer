@@ -4,16 +4,13 @@ const router = new express.Router();
 import * as locationController from '../controllers/locationController';
 
 import userAuth from '../middleware/userAuth';
-import checkUserHasLocation from '../middleware/checkUserHasLocation';
+// import checkUserHasLocation from '../middleware/checkUserHasLocation';
 
 //create location
 router.post('/', userAuth, locationController.create_location);
 
 //get single location
-router.get(
-  '/:locationId',
-  userAuth,
-);
+router.get('/:locationId', userAuth);
 
 //update location info
 router.patch(
@@ -52,60 +49,60 @@ router.patch(
 // notice
 
 router.post(
-    '/:locationId/notice/create',
-    userAuth,
-    locationController.createNotice
+  '/:locationId/notice/create',
+  userAuth,
+  locationController.createNotice
 );
 
-router.get(
-    '/:locationId/notice',
-    userAuth,
-    locationController.readNotice
-);
+router.get('/:locationId/notice', userAuth, locationController.readNotice);
 
 router.get(
-    '/:locationId/notice/:_id',
-    userAuth,
-    locationController.readOneNotice
+  '/:locationId/notice/:_id',
+  userAuth,
+  locationController.readOneNotice
 );
 
 router.patch(
-    '/:locationId/notice/:_id/update',
-    userAuth,
-    locationController.updateNotice
+  '/:locationId/notice/:_id/update',
+  userAuth,
+  locationController.updateNotice
 );
 
 router.delete(
-    '/:locationId/notice/:_id/delete',
-    userAuth,
-    locationController.deleteNotice
+  '/:locationId/notice/:_id/delete',
+  userAuth,
+  locationController.deleteNotice
 );
 
 //workManual
 router.post(
-    '/:locationId/workmanual/:categoryId',
-    userAuth,
-    locationController.createWorkManual);
+  '/:locationId/workmanual/:categoryId',
+  userAuth,
+  locationController.createWorkManual
+);
 
 router.get(
-    '/:locationId/workmanual/category/:categoryId',
-    userAuth,
-    locationController.readWorkManual);
+  '/:locationId/workmanual/category/:categoryId',
+  userAuth,
+  locationController.readWorkManual
+);
 
 router.get(
-    '/:locationId/workmanual/:_id',
-    userAuth,
-    locationController.readOneWorkManual);
+  '/:locationId/workmanual/:_id',
+  userAuth,
+  locationController.readOneWorkManual
+);
 
 router.patch(
-    '/:locationId/workmanual/:_id/update',
-    userAuth,
-    locationController.updateWorkManual);
+  '/:locationId/workmanual/:_id/update',
+  userAuth,
+  locationController.updateWorkManual
+);
 
 router.delete(
-    '/:locationId/workmanual/:_id/delete',
-    userAuth,
-    locationController.deleteWorkManual);
-
+  '/:locationId/workmanual/:_id/delete',
+  userAuth,
+  locationController.deleteWorkManual
+);
 
 module.exports = router;
