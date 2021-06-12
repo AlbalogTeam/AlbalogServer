@@ -13,6 +13,7 @@ import userAuth from '../middleware/userAuth';
 router.post('/:locationId/signup', employeeController.create_employee);
 
 //get employees all locations
+
 router.get('/locations', userAuth, employeeController.get_employee_locations);
 
 //get employee's single location

@@ -1,4 +1,3 @@
-import mongoose from 'mongoose';
 import Category from '../models/location/category';
 
 const createCategory = async (req, res) => {
@@ -27,9 +26,28 @@ const createCategory = async (req, res) => {
     }
 }
 
+
+const readCategory = async (req, res) => {
+    const { locationId } = req.params;
+    try {
+
+        const tmpCategory = Category.find({ locationId });
+        const category = [...new Set(tmpCategory)];
+
+
+        res.status(201).send({
+            category,
+        });
+    } catch (err) {
+        res.status(500).send({
+            message: err.toString(),
+        });
+    }
+};
+
 const deleteCategory = async (req, res) => {
 
-    const {locationId, categoryId} = req.params;
+    const { categoryId } = req.params;
 
     try {
         const category = await Category.findByIdAndDelete({ _id :categoryId});
@@ -52,5 +70,7 @@ const deleteCategory = async (req, res) => {
 
 module.exports = {
     createCategory,
+    readCategory,
     deleteCategory
 }
+

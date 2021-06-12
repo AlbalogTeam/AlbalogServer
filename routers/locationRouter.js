@@ -10,18 +10,12 @@ import userAuth from '../middleware/userAuth';
 router.post('/', userAuth, locationController.create_location);
 
 //get single location
-router.get(
-  '/:locationId',
-  userAuth,
-  // checkUsererHasLocation,
-  locationController.get_location
-);
+router.get('/:locationId', userAuth);
 
 //update location info
 router.patch(
   '/:locationId/update',
   userAuth,
-  // checkUsererHasLocation,
   locationController.update_location
 );
 
@@ -57,35 +51,26 @@ router.patch(
 router.post(
   '/:locationId/notice/create',
   userAuth,
-  // checkUserHasLocation,
   locationController.createNotice
 );
 
-router.get(
-  '/:locationId/notice',
-  userAuth,
-  // checkUserHasLocation,
-  locationController.readNotice
-);
+router.get('/:locationId/notice', userAuth, locationController.readNotice);
 
 router.get(
   '/:locationId/notice/:_id',
   userAuth,
-  // checkUserHasLocation,
   locationController.readOneNotice
 );
 
 router.patch(
   '/:locationId/notice/:_id/update',
   userAuth,
-  // checkUserHasLocation,
   locationController.updateNotice
 );
 
 router.delete(
   '/:locationId/notice/:_id/delete',
   userAuth,
-  // checkUserHasLocation,
   locationController.deleteNotice
 );
 
@@ -93,35 +78,30 @@ router.delete(
 router.post(
   '/:locationId/workmanual/:categoryId',
   userAuth,
-  // checkUserHasLocation,
   locationController.createWorkManual
 );
 
 router.get(
-  '/:locationId/workmanual',
+  '/:locationId/workmanual/category/:categoryId',
   userAuth,
-  // checkUserHasLocation,
   locationController.readWorkManual
 );
 
 router.get(
   '/:locationId/workmanual/:_id',
   userAuth,
-  // checkUserHasLocation,
   locationController.readOneWorkManual
 );
 
 router.patch(
   '/:locationId/workmanual/:_id/update',
   userAuth,
-  // checkUserHasLocation,
   locationController.updateWorkManual
 );
 
 router.delete(
   '/:locationId/workmanual/:_id/delete',
   userAuth,
-  // checkUserHasLocation,
   locationController.deleteWorkManual
 );
 
