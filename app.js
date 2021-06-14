@@ -18,7 +18,7 @@ dotenv.config('./config/env');
 const app = express();
 
 // Middleware
-app.use(cors);
+app.use(cors());
 
 app.use(morgan('dev'));
 app.use(express.json());

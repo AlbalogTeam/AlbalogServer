@@ -75,13 +75,13 @@ router.delete(
 
 //workManual
 router.post(
-  '/:locationId/workmanual/:categoryId',
+  '/:locationId/workmanual/:category',
   userAuth,
   locationController.createWorkManual
 );
 
 router.get(
-  '/:locationId/workmanual/category/:categoryId',
+  '/:locationId/workmanual/category',
   userAuth,
   locationController.readWorkManual
 );

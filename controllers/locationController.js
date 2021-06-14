@@ -1,5 +1,6 @@
 import Location from '../models/location/location';
 import Employee from '../models/user/employee';
+import Category from '../models/location/category';
 import {
   sendInvitationEmail,
   sendLocationAddedEmail,
@@ -262,6 +263,7 @@ const readOneNotice = async (req, res) => {
       });
     }
 
+
     const notice = location.notices.filter((n) => n._id.toString() === _id);
 
     if (!notice) {
@@ -378,18 +380,20 @@ const deleteNotice = async (req, res) => {
 // workManual
 
 export const createWorkManual = async (req, res) => {
-  const { locationId, categoryId } = req.params;
-  const { title, content } = req.body;
+  const { locationId } = req.params;
+  const { title, content, category } = req.body;
 
   try {
     if (!req.owner) {
       throw new Error('you are not owner');
     }
 
+    const category = await Category.findOne({name: category});
+
     const workManual = {
       title,
       content,
-      category_id: categoryId,
+      category_id: category._id,
     };
 
     const location = await Location.findOne({
@@ -418,29 +422,27 @@ export const createWorkManual = async (req, res) => {
 };
 
 export const readWorkManual = async (req, res) => {
-  const { locationId, categoryId } = req.params;
+  const { locationId } = req.params;
 
   try {
-    const location = await Location.findOne({
+    const location = await Location.findById({
       _id: locationId,
-      owner: req.owner._id,
-    });
+    }).populate('workManuals.category_id');
+
     if (!location) {
       res.status(400).send({
         message: '해당 매장 정보를 찾을 수 없습니다.',
       });
     }
 
-    const workManuals = location.workManuals;
+    const manualObject = {
+      location : location.name,
+      workManuals : location.workManuals
+    };
 
-    const workManual = workManuals.filter((v) => {
-      console.log(v.category_id, categoryId);
-      return v.category_id.toString() === categoryId;
-    });
-
-    res.status(201).send({
-      workManual,
-    });
+    res.status(200).send(
+        manualObject
+    );
   } catch (err) {
     res.status(500).send({
       message: err,
