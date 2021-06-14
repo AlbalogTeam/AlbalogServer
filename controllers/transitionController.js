@@ -1,7 +1,6 @@
 import Location from '../models/location/location';
 
 const create_transition = async (req, res) => {
-
   const locationId = req.params.locationId;
 
   try {
@@ -11,12 +10,11 @@ const create_transition = async (req, res) => {
       return res.status(400).send({ message: '매장정보를 찾을 수 없습니다' });
     }
 
-
     const transition = new Transition(req.body);
 
-    if(!transition) {
+    if (!transition) {
       res.status(500).send({
-        message: 'Cannot Create Transition'
+        message: 'Cannot Create Transition',
       });
     }
 
@@ -25,22 +23,23 @@ const create_transition = async (req, res) => {
     await location.save();
 
     res.status(201).send(location.transitions);
-
   } catch (error) {
     res.status(400).send(error);
   }
 };
 
 const readTransition = async (req, res) => {
-
   const { locationId } = req.params;
   try {
-    const location = await Location.findOne({ _id: locationId, owner: req.owner._id });
+    const location = await Location.findOne({
+      _id: locationId,
+      owner: req.owner._id,
+    });
 
-    if(!location) {
+    if (!location) {
       res.status(400).send({
-        message: "해당 매장 정보를 찾을 수 없습니다."
-      })
+        message: '해당 매장 정보를 찾을 수 없습니다.',
+      });
     }
 
     const transitions = location.transitions;
@@ -48,7 +47,6 @@ const readTransition = async (req, res) => {
     res.status(201).send({
       transitions,
     });
-
   } catch (err) {
     res.status(500).send({
       message: err.toString(),
@@ -57,25 +55,26 @@ const readTransition = async (req, res) => {
 };
 
 const updateTransition = async (req, res) => {
-
   try {
-
-    const {locationId, _id} = req.params;
+    const { locationId, _id } = req.params;
     const { title, content } = req.body;
 
-    const location = await Location.findOne({ _id: locationId, owner: req.owner._id });
+    const location = await Location.findOne({
+      _id: locationId,
+      owner: req.owner._id,
+    });
 
-    if(!location) {
+    if (!location) {
       res.status(400).send({
-        message: "해당 매장 정보를 찾을 수 없습니다."
-      })
+        message: '해당 매장 정보를 찾을 수 없습니다.',
+      });
     }
 
     const transitions = location.transitions;
 
     let originalTransition;
-    for(let transition of transitions) {
-      if(transition._id.toString() === _id) {
+    for (let transition of transitions) {
+      if (transition._id.toString() === _id) {
         originalTransition = transition;
         transition.title = title;
         transition.content = content;
@@ -103,24 +102,25 @@ const updateTransition = async (req, res) => {
 
 const deleteTransition = async (req, res) => {
   try {
+    const { locationId, _id } = req.params;
 
-    const {locationId, _id} = req.params;
+    const location = await Location.findOne({
+      _id: locationId,
+      owner: req.owner._id,
+    });
 
-    const location = await Location.findOne({ _id: locationId, owner: req.owner._id });
-
-    if(!location) {
+    if (!location) {
       res.status(400).send({
-        message: "해당 매장 정보를 찾을 수 없습니다."
-      })
+        message: '해당 매장 정보를 찾을 수 없습니다.',
+      });
     }
 
     const transitions = location.transitions;
     let deletedTransition;
 
-
-    for(let idx in transitions) {
+    for (let idx in transitions) {
       const transition = transitions[idx];
-      if(transition._id.toString() === _id) {
+      if (transition._id.toString() === _id) {
         deletedTransition = transition;
         transitions.remove(idx);
         break;
@@ -136,7 +136,7 @@ const deleteTransition = async (req, res) => {
     await location.save();
 
     res.status(201).send({
-      deletedTransition
+      deletedTransition,
     });
   } catch (err) {
     res.status(500).send({
@@ -149,5 +149,5 @@ module.exports = {
   create_transition,
   readTransition,
   updateTransition,
-  deleteTransition
+  deleteTransition,
 };
