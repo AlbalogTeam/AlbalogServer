@@ -378,7 +378,7 @@ const deleteNotice = async (req, res) => {
 // workManual
 const createWorkManual = async (req, res) => {
   const { locationId, categoryId } = req.params;
-  const { title, content } = req.body;
+  const { title, content, categoryName } = req.body;
 
   try {
     if (!req.owner) {
