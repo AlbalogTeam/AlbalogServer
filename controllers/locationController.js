@@ -1,9 +1,11 @@
 import Location from '../models/location/location';
 import Employee from '../models/user/employee';
+import Category from '../models/location/category';
 import {
   sendInvitationEmail,
   sendLocationAddedEmail,
 } from '../emails/accounts';
+import mongoose from 'mongoose';
 
 const create_location = async (req, res) => {
   if (!req.owner)
@@ -376,13 +378,25 @@ const deleteNotice = async (req, res) => {
 };
 
 // workManual
-const createWorkManual = async (req, res) => {
-  const { locationId, categoryId } = req.params;
-  const { title, content, categoryName } = req.body;
 
+export const createWorkManual = async (req, res) => {
+  const { locationId } = req.params;
+  const { title, content, category } = req.body;
+
+  const categoryId = new mongoose.Types.ObjectId(category);
+
+  console.log(typeof categoryId);
   try {
     if (!req.owner) {
       throw new Error('you are not owner');
+    }
+
+    const category = await Category.findById(categoryId);
+
+    if (!category) {
+      res.status(500).send({
+        message: 'Cannot Find Category',
+      });
     }
 
     const workManual = {
@@ -416,11 +430,11 @@ const createWorkManual = async (req, res) => {
   }
 };
 
-const readWorkManual = async (req, res) => {
+export const readWorkManual = async (req, res) => {
   const { locationId } = req.params;
 
   try {
-    const location = await Location.findOne({
+    const location = await Location.findById({
       _id: locationId,
     }).populate('workManuals.category_id');
     if (!location) {
@@ -428,18 +442,11 @@ const readWorkManual = async (req, res) => {
         message: '해당 매장 정보를 찾을 수 없습니다.',
       });
     }
-    const manualObject = location.toObject();
 
-    delete manualObject._id;
-    delete manualObject.address;
-    delete manualObject.postal_code;
-    delete manualObject.phone_number;
-    delete manualObject.employees;
-    delete manualObject.schedule_changes;
-    delete manualObject.transitions;
-    delete manualObject.notices;
-    delete manualObject.createdAt;
-    delete manualObject.updatedAt;
+    const manualObject = {
+      location: location.name,
+      workManuals: location.workManuals,
+    };
 
     res.status(200).send(manualObject);
   } catch (err) {

@@ -74,14 +74,14 @@ router.delete(
 
 //workManual
 router.post(
-  '/:locationId/workmanual/:categoryId',
+  '/:locationId/workmanual/create',
   userAuth,
   locationController.createWorkManual
 );
 
 //get all work manuals
 router.get(
-  '/:locationId/workmanual/',
+  '/:locationId/workmanual',
   userAuth,
   locationController.readWorkManual
 );
