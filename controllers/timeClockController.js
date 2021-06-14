@@ -3,19 +3,16 @@ import Employee from '../models/user/employee';
 
 //매장 스태프 만들기
 const startWork = async (req, res) => {
-
   const locationId = req.params.locationId;
-  const {start_time} = req.body;
+  const { start_time } = req.body;
   let { wage } = req.body;
 
-  if(!wage)
-    wage = 8720;
-
+  if (!wage) wage = 8720;
 
   try {
     const location = await Location.findOne({
       locationId,
-      'employees.employee': req.staff._id
+      'employees.employee': req.staff._id,
     });
 
     if (!location) {
@@ -23,14 +20,14 @@ const startWork = async (req, res) => {
     }
 
     const staff = await Employee.findOne({
-      _id: req.staff._id
+      _id: req.staff._id,
     });
 
-    const timeClock = {start_time, wage};
+    const timeClock = { start_time, wage };
 
-    if(!timeClock) {
+    if (!timeClock) {
       res.status(500).send({
-        message: "Cannot Create TimeClock"
+        message: 'Cannot Create TimeClock',
       });
     }
 
@@ -38,7 +35,7 @@ const startWork = async (req, res) => {
     await staff.save();
 
     res.status(201).send({
-      timeClock
+      timeClock,
     });
   } catch (error) {
     res.status(400).send(error);
@@ -46,14 +43,13 @@ const startWork = async (req, res) => {
 };
 
 const endWork = async (req, res) => {
-
-  const {locationId, workId } = req.params;
-  const {end_time} = req.body;
+  const { locationId, workId } = req.params;
+  const { end_time } = req.body;
 
   try {
     const location = await Location.findOne({
       locationId,
-      'employees.employee': req.staff._id
+      'employees.employee': req.staff._id,
     });
 
     if (!location) {
@@ -61,140 +57,138 @@ const endWork = async (req, res) => {
     }
 
     const staff = await Employee.findOne({
-      _id: req.staff._id
+      _id: req.staff._id,
     });
 
     const timeClock = await staff.timeClocks.findOne({ _id: workId });
 
-    if(!timeClock) {
+    if (!timeClock) {
       res.status(500).send({
-        message: "출근하지 않으셨습니다."
+        message: '출근하지 않으셨습니다.',
       });
     }
 
     !end_time
-        ? timeClock.end_time = end_time
-        : res.status(500).send({ message : "이미 퇴근 처리가 완료되었습니다."});
+      ? (timeClock.end_time = end_time)
+      : res.status(500).send({ message: '이미 퇴근 처리가 완료되었습니다.' });
 
     await staff.save();
 
     res.status(201).send({
-      timeClock
+      timeClock,
     });
   } catch (error) {
     res.status(400).send(error);
   }
 };
-
-
 
 const readTimeClockForStaff = async (req, res) => {
   const { locationId } = req.params;
   try {
     const location = await Location.findOne({
       _id: locationId,
-      'employees.employee': req.staff._id
+      'employees.employee': req.staff._id,
     });
 
-    if(!location) {
+    if (!location) {
       res.status(400).send({
-        message: "해당 매장 정보를 찾을 수 없습니다."
-      })
+        message: '해당 매장 정보를 찾을 수 없습니다.',
+      });
     }
 
     const staff = await Employee.findOne({
-      _id: req.staff._id
+      _id: req.staff._id,
     });
 
     const timeClocks = staff.timeClocks;
 
-    if(!timeClocks.length) {
+    if (!timeClocks.length) {
       res.status(500).send({
-        message: "아직 근무 하지 않으셨습니다."
+        message: '아직 근무 하지 않으셨습니다.',
       });
     }
 
     res.status(201).send({
-      timeClocks
+      timeClocks,
     });
   } catch (error) {
     res.status(400).send(error);
   }
 };
 
-
 const readTimeClockForOwner = async (req, res) => {
-
-  if(!req.owner) {
+  if (!req.owner) {
     res.status(500).send({
-      message: "You are not Owner"
+      message: 'You are not Owner',
     });
   }
 
   const { locationId } = req.params;
 
   try {
+    const location = await Location.findOne({
+      _id: locationId,
+      owner: req.owner._id,
+    });
 
-    const location = await Location.findOne({ _id: locationId, owner: req.owner._id });
-
-
-    if(!location) {
+    if (!location) {
       res.status(400).send({
-        message: "해당 매장 정보를 찾을 수 없습니다."
-      })
+        message: '해당 매장 정보를 찾을 수 없습니다.',
+      });
     }
 
     const employees = location.employees;
     const allTimeClocks = [];
 
-    for(let i = 0; i < employees.length; i++) {
-      const employee = await Employee.findById( { _id: employees[i]._id });
+    for (let i = 0; i < employees.length; i++) {
+      const employee = await Employee.findById({ _id: employees[i]._id });
       allTimeClocks.push({
-        id: employees[i]._id ,
-        timeClocks: employee.timeClocks
+        id: employees[i]._id,
+        timeClocks: employee.timeClocks,
       });
     }
 
-    if(!allTimeClocks.length) {
+    if (!allTimeClocks.length) {
       res.status(500).send({
-        message: "아직 직원이 없습니다."
+        message: '아직 직원이 없습니다.',
       });
     }
 
     res.status(201).send({
-      allTimeClocks
+      allTimeClocks,
     });
   } catch (error) {
     res.status(400).send(error);
   }
 };
 
-
 const updateStartTime = async (req, res) => {
   try {
-
     if (!req.owner) {
       throw new Error('you are not owner');
     }
 
-    const {locationId, clockId} = req.params;
+    const { locationId, clockId } = req.params;
     const { startTime, staffId } = req.body;
 
-    const location = await Location.findOne({ _id: locationId, owner: req.owner._id });
+    const location = await Location.findOne({
+      _id: locationId,
+      owner: req.owner._id,
+    });
 
-    if(!location) {
+    if (!location) {
       res.status(400).send({
-        message: "해당 매장 정보를 찾을 수 없습니다."
-      })
+        message: '해당 매장 정보를 찾을 수 없습니다.',
+      });
     }
 
-    const staff = Employee.findById({_id: staffId});
+    const staff = Employee.findById({ _id: staffId });
 
     const timeClocks = staff.timeClocks;
 
     let originTimeClock;
-    for(let timeClock of timeClocks) {
-      if(timeClock._id.toString() === clockId) {
+    for (let timeClock of timeClocks) {
+      if (timeClock._id.toString() === clockId) {
         originTimeClock = timeClock;
         timeClock.start_time = startTime;
         break;
@@ -222,29 +216,31 @@ const updateStartTime = async (req, res) => {
 
 const updateEndTime = async (req, res) => {
   try {
-
     if (!req.owner) {
       throw new Error('you are not owner');
     }
 
-    const {locationId, clockId} = req.params;
+    const { locationId, clockId } = req.params;
     const { endTime, staffId } = req.body;
 
-    const location = await Location.findOne({ _id: locationId, owner: req.owner._id });
+    const location = await Location.findOne({
+      _id: locationId,
+      owner: req.owner._id,
+    });
 
-    if(!location) {
+    if (!location) {
       res.status(400).send({
-        message: "해당 매장 정보를 찾을 수 없습니다."
-      })
+        message: '해당 매장 정보를 찾을 수 없습니다.',
+      });
     }
 
-    const staff = Employee.findById({_id:staffId});
+    const staff = Employee.findById({ _id: staffId });
 
     const timeClocks = staff.timeClocks;
 
     let originTimeClock;
-    for(let timeClock of timeClocks) {
-      if(timeClock._id.toString() === clockId) {
+    for (let timeClock of timeClocks) {
+      if (timeClock._id.toString() === clockId) {
         originTimeClock = timeClock;
         timeClock.end_time = endTime;
         break;
@@ -272,30 +268,32 @@ const updateEndTime = async (req, res) => {
 
 const deleteTimeClock = async (req, res) => {
   try {
-
     if (!req.owner) {
       throw new Error('you are not owner');
     }
 
-    const {locationId, clockId} = req.params;
+    const { locationId, clockId } = req.params;
 
     const { staffId } = req.body;
 
-    const location = await Location.findOne({ _id: locationId, owner: req.owner._id });
+    const location = await Location.findOne({
+      _id: locationId,
+      owner: req.owner._id,
+    });
 
-    if(!location) {
+    if (!location) {
       res.status(400).send({
-        message: "해당 매장 정보를 찾을 수 없습니다."
-      })
+        message: '해당 매장 정보를 찾을 수 없습니다.',
+      });
     }
 
-    const staff = Employee.findById({_id:staffId});
+    const staff = Employee.findById({ _id: staffId });
 
     const timeClocks = staff.timeClocks;
 
     let deletedTimeClock;
-    for(let idx in timeClocks) {
-      if(timeClocks[idx]._id.toString() === clockId) {
+    for (let idx in timeClocks) {
+      if (timeClocks[idx]._id.toString() === clockId) {
         deletedTimeClock = timeClocks[idx];
         timeClocks.remove(idx);
         break;
@@ -328,5 +326,5 @@ module.exports = {
   readTimeClockForOwner,
   updateStartTime,
   updateEndTime,
-  deleteTimeClock
+  deleteTimeClock,
 };

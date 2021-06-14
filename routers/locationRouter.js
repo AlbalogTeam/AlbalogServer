@@ -1,7 +1,7 @@
 import express from 'express';
 const router = new express.Router();
 
-import * as locationController from '../controllers/locationController';
+import locationController from '../controllers/locationController';
 
 import userAuth from '../middleware/userAuth';
 
@@ -9,7 +9,7 @@ import userAuth from '../middleware/userAuth';
 router.post('/', userAuth, locationController.create_location);
 
 //get single location
-router.get('/:locationId', userAuth);
+router.get('/:locationId', userAuth, locationController.get_location);
 
 //update location info
 router.patch(
@@ -46,7 +46,6 @@ router.patch(
 );
 
 // notice
-
 router.post(
   '/:locationId/notice/create',
   userAuth,
