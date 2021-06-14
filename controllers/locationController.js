@@ -5,6 +5,7 @@ import {
   sendInvitationEmail,
   sendLocationAddedEmail,
 } from '../emails/accounts';
+import mongoose from 'mongoose';
 
 const create_location = async (req, res) => {
   if (!req.owner)
@@ -383,17 +384,26 @@ export const createWorkManual = async (req, res) => {
   const { locationId } = req.params;
   const { title, content, category } = req.body;
 
+  const categoryId = new mongoose.Types.ObjectId(category);
+
+  console.log(typeof categoryId);
   try {
     if (!req.owner) {
       throw new Error('you are not owner');
     }
 
-    const category = await Category.findOne({name: category});
+    const category = await Category.findById(categoryId);
+
+    if(!category) {
+      res.status(500).send({
+        message: "Cannot Find Category"
+      });
+    }
 
     const workManual = {
       title,
       content,
-      category_id: category._id,
+      category_id: categoryId
     };
 
     const location = await Location.findOne({
