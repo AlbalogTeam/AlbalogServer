@@ -1,9 +1,11 @@
 import Location from '../models/location/location';
 import Employee from '../models/user/employee';
+import Category from '../models/location/category';
 import {
   sendInvitationEmail,
   sendLocationAddedEmail,
 } from '../emails/accounts';
+import mongoose from 'mongoose';
 
 const create_location = async (req, res) => {
   if (!req.owner)
@@ -262,6 +264,7 @@ const readOneNotice = async (req, res) => {
       });
     }
 
+
     const notice = location.notices.filter((n) => n._id.toString() === _id);
 
     if (!notice) {
@@ -376,19 +379,31 @@ const deleteNotice = async (req, res) => {
 };
 
 // workManual
-const createWorkManual = async (req, res) => {
-  const { locationId, categoryId } = req.params;
-  const { title, content } = req.body;
 
+export const createWorkManual = async (req, res) => {
+  const { locationId } = req.params;
+  const { title, content, category } = req.body;
+
+  const categoryId = new mongoose.Types.ObjectId(category);
+
+  console.log(typeof categoryId);
   try {
     if (!req.owner) {
       throw new Error('you are not owner');
     }
 
+    const category = await Category.findById(categoryId);
+
+    if(!category) {
+      res.status(500).send({
+        message: "Cannot Find Category"
+      });
+    }
+
     const workManual = {
       title,
       content,
-      category_id: categoryId,
+      category_id: categoryId
     };
 
     const location = await Location.findOne({
@@ -416,30 +431,29 @@ const createWorkManual = async (req, res) => {
   }
 };
 
-const readWorkManual = async (req, res) => {
-  const { locationId, categoryId } = req.params;
+export const readWorkManual = async (req, res) => {
+  const { locationId } = req.params;
+
 
   try {
-    const location = await Location.findOne({
+    const location = await Location.findById({
       _id: locationId,
-      owner: req.owner._id,
-    });
+    }).populate('workManuals.category_id');
+
     if (!location) {
       res.status(400).send({
         message: '해당 매장 정보를 찾을 수 없습니다.',
       });
     }
 
-    const workManuals = location.workManuals;
+    const manualObject = {
+      location : location.name,
+      workManuals : location.workManuals
+    };
 
-    const workManual = workManuals.filter((v) => {
-      console.log(v.category_id, categoryId);
-      return v.category_id.toString() === categoryId;
-    });
-
-    res.status(201).send({
-      workManual,
-    });
+    res.status(200).send(
+        manualObject
+    );
   } catch (err) {
     res.status(500).send({
       message: err,

@@ -74,22 +74,22 @@ router.delete(
 
 //workManual
 router.post(
-  '/:locationId/workmanual/:categoryId',
+  '/:locationId/workmanual/create',
   userAuth,
   locationController.createWorkManual
 );
 
 router.get(
-  '/:locationId/workmanual/category/:categoryId',
+  '/:locationId/workmanual',
   userAuth,
   locationController.readWorkManual
 );
 
-router.get(
-  '/:locationId/workmanual/:_id',
-  userAuth,
-  locationController.readOneWorkManual
-);
+// router.get(
+//   '/:locationId/workmanual/:_id',
+//   userAuth,
+//   locationController.readOneWorkManual
+// );
 
 router.patch(
   '/:locationId/workmanual/:_id/update',

@@ -97,7 +97,7 @@ const locationSchema = new mongoose.Schema(
               required: true,
             },
             category_id: {
-              type: mongoose.Types.ObjectId,
+              type: mongoose.SchemaTypes.ObjectId,
               ref: 'Category',
             },
           },
