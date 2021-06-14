@@ -82,7 +82,7 @@ employerSchema.methods.generateAuthToken = async function () {
   const token = jwt.sign(
     {
       _id: employer._id.toString(),
-      role: employer.role
+      role: employer.role,
     },
     process.env.JWT_SECRET
   );
@@ -100,6 +100,13 @@ employerSchema.statics.checkIfEmailExist = async (email) => {
   return false;
 };
 
+employerSchema.methods.comparePasswords = async function (currentPassword) {
+  const employer = this;
+  const isMatch = await bcrypt.compare(currentPassword, employer.password);
+
+  return isMatch;
+};
+
 employerSchema.statics.findByCredentials = async (email, password) => {
   const employer = await Employer.findOne({ email });
   if (!employer) throw new Error('Invalid Information');
@@ -112,7 +119,6 @@ employerSchema.statics.findByCredentials = async (email, password) => {
 
 // Hash the password before saving
 employerSchema.pre('save', async function (next) {
-
   const employer = this;
 
   if (employer.isModified('password')) {

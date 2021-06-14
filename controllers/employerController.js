@@ -41,22 +41,15 @@ const get_profile_employer = async (req, res) => {
 
 //update profile
 const update_employer_profile = async (req, res) => {
-  const employer = req.body;
-
-  const updates = Object.keys(employer);
-  const allowedUpdates = ['name', 'email', 'password']; //업데이트가 가능한 항목들
-
-  const isValidUpdates = updates.every((update) =>
-    allowedUpdates.includes(update)
-  );
-  if (!isValidUpdates) {
-    return res.status(400).send({
-      message: 'invalid update',
-    });
-  }
+  const { name, password, newPassword } = req.body;
 
   try {
-    updates.forEach((update) => (req.owner[update] = employer[update]));
+    const isMatch = await req.owner.comparePasswords(password);
+    if (!isMatch)
+      return res.status(400).send({ message: '현재 비밀번호가 다릅니다' });
+    req.owner.name = name;
+    req.owner.password = newPassword;
+
     await req.owner.save();
     res.send(req.owner);
   } catch (error) {
