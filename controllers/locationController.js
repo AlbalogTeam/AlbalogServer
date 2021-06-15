@@ -32,7 +32,9 @@ const get_location = async (req, res) => {
     const location = await Location.findOne({
       _id: locationId,
       owner: req.owner._id,
-    });
+    })
+      .populate('workManuals.category_id')
+      .populate('employees.employee');
     if (!location) return res.status(403).send('해당 매장의 권한이없습니다');
     res.send(location);
   } catch (error) {
@@ -383,9 +385,11 @@ export const createWorkManual = async (req, res) => {
   const { locationId } = req.params;
   const { title, content, category } = req.body;
 
-  const categoryId = new mongoose.Types.ObjectId(category);
+  if (!category)
+    return res.status(400).send('카테고리 id 혹은 정보가가 잘못되었습니다');
 
-  console.log(typeof categoryId);
+  const categoryId = mongoose.Types.ObjectId(category);
+
   try {
     if (!req.owner) {
       throw new Error('you are not owner');
@@ -393,6 +397,7 @@ export const createWorkManual = async (req, res) => {
 
     const category = await Category.findById(categoryId);
 
+    console.log(category);
     if (!category) {
       res.status(500).send({
         message: 'Cannot Find Category',
