@@ -5,7 +5,6 @@ import bcrypt from 'bcryptjs';
 import dotenv from 'dotenv';
 dotenv.config({ path: '../config/' });
 
-
 /**
  * @swagger
  *  components:
@@ -15,7 +14,7 @@ dotenv.config({ path: '../config/' });
  *        required:
  *          - name
  *          - email
-*         properties:
+ *         properties:
  *          name:
  *            type: string
  *          email:
@@ -26,7 +25,6 @@ dotenv.config({ path: '../config/' });
  *          name: joo
  *          email: joo@adsfsad.asdfsa
  */
-
 
 const employeeSchema = new mongoose.Schema(
   {
@@ -79,22 +77,22 @@ const employeeSchema = new mongoose.Schema(
     },
     timeClocks: [
       {
-          type: new mongoose.Schema({
-              start_time: {
-                  type: Date,
-                  required: true
-              },
-              end_time: {
-                  type: Date,
-              },
-              wage: {
-                  type: Number,
-                  required: true
-              },
-              total: {
-                  type: Number,
-              }
-          })
+        type: new mongoose.Schema({
+          start_time: {
+            type: Date,
+            required: true,
+          },
+          end_time: {
+            type: Date,
+          },
+          wage: {
+            type: Number,
+            required: true,
+          },
+          total: {
+            type: Number,
+          },
+        }),
       },
     ],
     shifts: [
@@ -122,8 +120,8 @@ const employeeSchema = new mongoose.Schema(
     status: {
       //현재 재직상태
       type: String,
-      enum: ['Working', 'Quit', 'Vacation'],
-      default: 'Working',
+      enum: ['재직자', '퇴직자'],
+      default: '재직자',
     },
     tokens: [
       {
@@ -138,13 +136,6 @@ const employeeSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
-
-
-
-
-
-
-
 
 employeeSchema.methods.toJSON = function () {
   const employee = this;

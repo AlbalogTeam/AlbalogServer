@@ -171,12 +171,17 @@ const get_employee_info = async (req, res) => {
   }
 };
 
-//스태프 hourly_wage 설정
-const update_employee_wage = async (req, res) => {
-  const { hourly_wage } = req.body;
+//스태프 hourly_wage, status 설정
+//enum: ['Working', 'Quit', 'Vacation'],
+const update_employee_wage_status = async (req, res) => {
+  const { hourly_wage, status } = req.body;
 
   if (typeof hourly_wage !== 'number')
     return res.status(400).send({ message: '숫자만 가능' });
+  if (typeof status !== 'string')
+    return res.status(400).send({
+      message: '직원 상태는 문자열만 가능 "재직자", "퇴직자"',
+    });
 
   const { locationId, employeeId } = req.params;
 
@@ -190,12 +195,17 @@ const update_employee_wage = async (req, res) => {
       return res.status(400).send({ message: '해당 매장의 직원이 아닙니다' });
     }
     isEmployee.hourly_wage = hourly_wage;
+    isEmployee.status = status;
+
     await isEmployee.save();
     res.send({ message: '시급 수정 완료', isEmployee });
   } catch (error) {
     res.status(500).send(error);
   }
 };
+
+//직원 스케줄 생성
+const create_employee_shift = async (req, res) => {};
 
 const createNotice = async (req, res) => {
   try {
@@ -599,7 +609,7 @@ module.exports = {
   get_location,
   update_location,
   invite_employee,
-  update_employee_wage,
+  update_employee_wage_status,
   get_all_employees,
   get_employee_info,
   //notice

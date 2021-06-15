@@ -40,9 +40,9 @@ router.get(
 );
 
 router.patch(
-  '/:locationId/employees/:employeeId/wage',
+  '/:locationId/employees/:employeeId/update',
   userAuth,
-  locationController.update_employee_wage
+  locationController.update_employee_wage_status
 );
 
 // notice
