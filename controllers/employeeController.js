@@ -139,8 +139,10 @@ const update_employee = async (req, res) => {
     if (!isMatch)
       return res.status(400).send({ message: '현재 비밀번호가 다릅니다' });
 
+    if (newPassword === '' || !newPassword || newPassword.length < 1)
+      req.staff.password = newPassword;
+
     req.staff.name = name;
-    req.staff.password = newPassword;
     req.staff.cellphone = phone;
     req.staff.gender = gender;
     req.staff.birthdate = birthdate;
