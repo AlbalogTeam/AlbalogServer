@@ -67,7 +67,7 @@ const employeeSchema = new mongoose.Schema(
     },
     gender: {
       type: String,
-      enum: ['Man', 'Woman'],
+      enum: ['남성', '여성'],
       required: true,
     },
     hourly_wage: {
@@ -181,6 +181,13 @@ employeeSchema.statics.findByCredentials = async (email, password) => {
   if (!isMatch) throw new Error('def');
 
   return employee;
+};
+
+employeeSchema.methods.comparePasswords = async function (currentPassword) {
+  const employee = this;
+  const isMatch = await bcrypt.compare(currentPassword, employee.password);
+
+  return isMatch;
 };
 
 // Hash the password before saving

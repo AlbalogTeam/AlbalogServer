@@ -18,7 +18,7 @@ const create_location = async (req, res) => {
 
     req.owner.stores = req.owner.stores.concat({ location });
     await req.owner.save();
-    res.status(200).send({ location });
+    res.status(201).send({ location });
   } catch (error) {
     res.status(500).send(error);
   }
@@ -34,7 +34,9 @@ const get_location = async (req, res) => {
       owner: req.owner._id,
     })
       .populate('workManuals.category_id')
-      .populate('employees.employee');
+      .populate('employees.employee')
+      .sort({ 'notices.createdAt': 1 });
+
     if (!location) return res.status(403).send('해당 매장의 권한이없습니다');
     res.send(location);
   } catch (error) {
@@ -123,11 +125,7 @@ const invite_employee = async (req, res) => {
   }
 };
 
-//매장 스태프 수정  enum: ['Working', 'Quit', 'Vacation'],
-
 //매장 스태프 삭제
-
-//스케줄
 
 //해당 매장 직원 리스트
 const get_all_employees = async (req, res) => {
@@ -172,7 +170,7 @@ const get_employee_info = async (req, res) => {
 };
 
 //스태프 hourly_wage, status 설정
-//enum: ['Working', 'Quit', 'Vacation'],
+//enum: ['재직자', '퇴직자'],
 const update_employee_wage_status = async (req, res) => {
   const { hourly_wage, status } = req.body;
 
