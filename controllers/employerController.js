@@ -47,8 +47,10 @@ const update_employer_profile = async (req, res) => {
     const isMatch = await req.owner.comparePasswords(password);
     if (!isMatch)
       return res.status(400).send({ message: '현재 비밀번호가 다릅니다' });
+
+    if (newPassword === '' || !newPassword || newPassword.length < 1)
+      req.owner.password = password;
     req.owner.name = name;
-    req.owner.password = newPassword;
 
     await req.owner.save();
     res.send(req.owner);
