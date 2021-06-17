@@ -30,7 +30,9 @@ const login_employer = async (req, res) => {
 
     res.send({ employer, token });
   } catch (error) {
-    res.status(400).send('Unable to login');
+    res
+      .status(400)
+      .send({ message: 'Unable to login', error: error.toString() });
   }
 };
 
@@ -42,6 +44,8 @@ const get_profile_employer = async (req, res) => {
 //update profile
 const update_employer_profile = async (req, res) => {
   const { name, password, newPassword } = req.body;
+
+  if (!req.owner) return res.status(400).send('권한이 없습니다');
 
   try {
     const isMatch = await req.owner.comparePasswords(password);
@@ -55,7 +59,7 @@ const update_employer_profile = async (req, res) => {
     await req.owner.save();
     res.send(req.owner);
   } catch (error) {
-    res.status(400).send(error);
+    res.status(400).send(error.toString());
   }
 };
 

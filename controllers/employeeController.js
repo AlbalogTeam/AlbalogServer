@@ -40,7 +40,7 @@ const login_employee = async (req, res) => {
       req.body.email,
       req.body.password
     );
-    console.log(employee);
+
     const token = await employee.generateAuthToken();
 
     res.send({ employee, token });

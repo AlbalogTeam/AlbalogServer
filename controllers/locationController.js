@@ -34,13 +34,18 @@ const get_location = async (req, res) => {
       owner: req.owner._id,
     })
       .populate('workManuals.category_id')
-      .populate('employees.employee')
-      .sort({ 'notices.createdAt': 1 });
+      .populate('employees.employee');
+
+    // const location = await Location.aggregate([
+    //   { $search: { _id: locationId } },
+    //   { $unwind: '$notices' },
+    //   { $sort: { 'notices.createdAt': 1 } },
+    // ]);
 
     if (!location) return res.status(403).send('해당 매장의 권한이없습니다');
     res.send(location);
   } catch (error) {
-    res.status(500).send({ error });
+    res.status(500).send({ error: error.toString() });
   }
 };
 
@@ -405,7 +410,6 @@ export const createWorkManual = async (req, res) => {
 
     const category = await Category.findById(categoryId);
 
-    console.log(category);
     if (!category) {
       res.status(500).send({
         message: 'Cannot Find Category',

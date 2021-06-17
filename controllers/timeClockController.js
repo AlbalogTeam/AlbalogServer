@@ -1,7 +1,7 @@
 import Location from '../models/location/location';
 import Employee from '../models/user/employee';
 
-//매장 스태프 만들기
+//
 const startWork = async (req, res) => {
   const locationId = req.params.locationId;
   const { start_time } = req.body;

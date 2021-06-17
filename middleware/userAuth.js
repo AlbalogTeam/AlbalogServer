@@ -7,7 +7,6 @@ const userAuth = async (req, res, next) => {
     const token = req.header('Authorization').replace('Bearer ', '');
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    console.log(decoded);
     switch (decoded.role) {
       case 'owner':
         {
