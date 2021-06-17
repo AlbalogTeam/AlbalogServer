@@ -7,7 +7,7 @@ const sendInvitationEmail = (name, email, locationId) => {
     to: email,
     from: 'dongwan.don.kim@gmail.com',
     subject: '알바로그: 직원초대',
-    text: `안녕하세요, ${name}님. 아래 링크를 눌러 회원가입을 완료하세요 http://localhost:3000/parttime/${locationId}/signup`,
+    text: `안녕하세요, ${name}님. 아래 링크를 눌러 회원가입을 완료하세요 \b http://localhost:3000/parttime/${locationId}/signup`,
   });
 };
 

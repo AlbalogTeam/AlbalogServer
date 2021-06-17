@@ -61,7 +61,7 @@ const employeeSchema = new mongoose.Schema(
       required: true,
     },
     cellphone: {
-      type: Number,
+      type: String,
       required: true,
       trim: true,
     },
