@@ -18,7 +18,7 @@ const create_location = async (req, res) => {
 
     req.owner.stores = req.owner.stores.concat({ location });
     await req.owner.save();
-    res.status(200).send({ location });
+    res.status(201).send({ location });
   } catch (error) {
     res.status(500).send(error);
   }
@@ -32,11 +32,20 @@ const get_location = async (req, res) => {
     const location = await Location.findOne({
       _id: locationId,
       owner: req.owner._id,
-    });
+    })
+      .populate('workManuals.category_id')
+      .populate('employees.employee');
+
+    // const location = await Location.aggregate([
+    //   { $search: { _id: locationId } },
+    //   { $unwind: '$notices' },
+    //   { $sort: { 'notices.createdAt': 1 } },
+    // ]);
+
     if (!location) return res.status(403).send('해당 매장의 권한이없습니다');
     res.send(location);
   } catch (error) {
-    res.status(500).send({ error });
+    res.status(500).send({ error: error.toString() });
   }
 };
 
@@ -121,11 +130,7 @@ const invite_employee = async (req, res) => {
   }
 };
 
-//매장 스태프 수정  enum: ['Working', 'Quit', 'Vacation'],
-
 //매장 스태프 삭제
-
-//스케줄
 
 //해당 매장 직원 리스트
 const get_all_employees = async (req, res) => {
@@ -169,12 +174,17 @@ const get_employee_info = async (req, res) => {
   }
 };
 
-//스태프 hourly_wage 설정
-const update_employee_wage = async (req, res) => {
-  const { hourly_wage } = req.body;
+//스태프 hourly_wage, status 설정
+//enum: ['재직자', '퇴직자'],
+const update_employee_wage_status = async (req, res) => {
+  const { hourly_wage, status } = req.body;
 
   if (typeof hourly_wage !== 'number')
     return res.status(400).send({ message: '숫자만 가능' });
+  if (typeof status !== 'string')
+    return res.status(400).send({
+      message: '직원 상태는 문자열만 가능 "재직자", "퇴직자"',
+    });
 
   const { locationId, employeeId } = req.params;
 
@@ -188,12 +198,17 @@ const update_employee_wage = async (req, res) => {
       return res.status(400).send({ message: '해당 매장의 직원이 아닙니다' });
     }
     isEmployee.hourly_wage = hourly_wage;
+    isEmployee.status = status;
+
     await isEmployee.save();
     res.send({ message: '시급 수정 완료', isEmployee });
   } catch (error) {
     res.status(500).send(error);
   }
 };
+
+//직원 스케줄 생성
+const create_employee_shift = async (req, res) => {};
 
 const createNotice = async (req, res) => {
   try {
@@ -263,7 +278,6 @@ const readOneNotice = async (req, res) => {
         message: '해당 매장 정보를 찾을 수 없습니다.',
       });
     }
-
 
     const notice = location.notices.filter((n) => n._id.toString() === _id);
 
@@ -384,9 +398,11 @@ export const createWorkManual = async (req, res) => {
   const { locationId } = req.params;
   const { title, content, category } = req.body;
 
-  const categoryId = new mongoose.Types.ObjectId(category);
+  if (!category)
+    return res.status(400).send('카테고리 id 혹은 정보가가 잘못되었습니다');
 
-  console.log(typeof categoryId);
+  const categoryId = mongoose.Types.ObjectId(category);
+
   try {
     if (!req.owner) {
       throw new Error('you are not owner');
@@ -394,16 +410,16 @@ export const createWorkManual = async (req, res) => {
 
     const category = await Category.findById(categoryId);
 
-    if(!category) {
+    if (!category) {
       res.status(500).send({
-        message: "Cannot Find Category"
+        message: 'Cannot Find Category',
       });
     }
 
     const workManual = {
       title,
       content,
-      category_id: categoryId
+      category_id: categoryId,
     };
 
     const location = await Location.findOne({
@@ -434,12 +450,10 @@ export const createWorkManual = async (req, res) => {
 export const readWorkManual = async (req, res) => {
   const { locationId } = req.params;
 
-
   try {
     const location = await Location.findById({
       _id: locationId,
     }).populate('workManuals.category_id');
-
     if (!location) {
       res.status(400).send({
         message: '해당 매장 정보를 찾을 수 없습니다.',
@@ -447,13 +461,11 @@ export const readWorkManual = async (req, res) => {
     }
 
     const manualObject = {
-      location : location.name,
-      workManuals : location.workManuals
+      location: location.name,
+      workManuals: location.workManuals,
     };
 
-    res.status(200).send(
-        manualObject
-    );
+    res.status(200).send(manualObject);
   } catch (err) {
     res.status(500).send({
       message: err,
@@ -599,7 +611,7 @@ module.exports = {
   get_location,
   update_location,
   invite_employee,
-  update_employee_wage,
+  update_employee_wage_status,
   get_all_employees,
   get_employee_info,
   //notice

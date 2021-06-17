@@ -4,9 +4,9 @@ const router = new express.Router();
 import * as timeClockController from '../controllers/timeClockController';
 import userAuth from '../middleware/userAuth';
 
-router.post('/:locationId/start', timeClockController.startWork);
+router.post('/:locationId/start', userAuth, timeClockController.startWork);
 
-router.post('/:locationId:end', userAuth, timeClockController.endWork);
+router.post('/:locationId/end', userAuth, timeClockController.endWork);
 
 router.get(
   '/:locationId/staff',

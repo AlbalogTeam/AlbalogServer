@@ -30,7 +30,9 @@ const login_employer = async (req, res) => {
 
     res.send({ employer, token });
   } catch (error) {
-    res.status(400).send('Unable to login');
+    res
+      .status(400)
+      .send({ message: 'Unable to login', error: error.toString() });
   }
 };
 
@@ -41,26 +43,23 @@ const get_profile_employer = async (req, res) => {
 
 //update profile
 const update_employer_profile = async (req, res) => {
-  const employer = req.body;
+  const { name, password, newPassword } = req.body;
 
-  const updates = Object.keys(employer);
-  const allowedUpdates = ['name', 'email', 'password']; //업데이트가 가능한 항목들
-
-  const isValidUpdates = updates.every((update) =>
-    allowedUpdates.includes(update)
-  );
-  if (!isValidUpdates) {
-    return res.status(400).send({
-      message: 'invalid update',
-    });
-  }
+  if (!req.owner) return res.status(400).send('권한이 없습니다');
 
   try {
-    updates.forEach((update) => (req.owner[update] = employer[update]));
+    const isMatch = await req.owner.comparePasswords(password);
+    if (!isMatch)
+      return res.status(400).send({ message: '현재 비밀번호가 다릅니다' });
+
+    if (newPassword === '' || !newPassword || newPassword.length < 1)
+      req.owner.password = password;
+    req.owner.name = name;
+
     await req.owner.save();
     res.send(req.owner);
   } catch (error) {
-    res.status(400).send(error);
+    res.status(400).send(error.toString());
   }
 };
 

@@ -40,9 +40,9 @@ router.get(
 );
 
 router.patch(
-  '/:locationId/employees/:employeeId/wage',
+  '/:locationId/employees/:employeeId/update',
   userAuth,
-  locationController.update_employee_wage
+  locationController.update_employee_wage_status
 );
 
 // notice
@@ -79,17 +79,18 @@ router.post(
   locationController.createWorkManual
 );
 
+//get all work manuals
 router.get(
   '/:locationId/workmanual',
   userAuth,
   locationController.readWorkManual
 );
 
-// router.get(
-//   '/:locationId/workmanual/:_id',
-//   userAuth,
-//   locationController.readOneWorkManual
-// );
+router.get(
+  '/:locationId/workmanual/:_id',
+  userAuth,
+  locationController.readOneWorkManual
+);
 
 router.patch(
   '/:locationId/workmanual/:_id/update',

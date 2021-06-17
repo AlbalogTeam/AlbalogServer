@@ -40,6 +40,7 @@ const login_employee = async (req, res) => {
       req.body.email,
       req.body.password
     );
+
     const token = await employee.generateAuthToken();
 
     res.send({ employee, token });
@@ -105,31 +106,51 @@ const get_single_location = async (req, res) => {
 };
 
 const update_employee = async (req, res) => {
-  const body = req.body;
+  // const body = req.body;
 
-  const updates = Object.keys(body);
-  const allowedUpdates = [
-    'name',
-    'password',
-    'birthdate',
-    'cellphone',
-    'gender',
-  ];
-  const isValidUpdates = updates.every((update) =>
-    allowedUpdates.includes(update)
-  );
-  if (!isValidUpdates) {
-    return res.status(400).send({
-      message: 'invalid update',
-    });
-  }
+  // const updates = Object.keys(body);
+  // const allowedUpdates = [
+  //   'name',
+  //   'password',
+  //   'birthdate',
+  //   'cellphone',
+  //   'gender',
+  // ];
+  // const isValidUpdates = updates.every((update) =>
+  //   allowedUpdates.includes(update)
+  // );
+  // if (!isValidUpdates) {
+  //   return res.status(400).send({
+  //     message: 'invalid update',
+  //   });
+  // }
+
+  // try {
+  //   updates.forEach((update) => (req.staff[update] = body[update]));
+  //   await req.staff.save();
+  //   res.send(req.staff);
+  // } catch (error) {
+  //   res.status(400).send(error);
+  // }
+  const { name, password, newPassword, phone, gender, birthdate } = req.body;
 
   try {
-    updates.forEach((update) => (req.staff[update] = body[update]));
+    const isMatch = await req.staff.comparePasswords(password);
+    if (!isMatch)
+      return res.status(400).send({ message: '현재 비밀번호가 다릅니다' });
+
+    if (newPassword === '' || !newPassword || newPassword.length < 1)
+      req.staff.password = password;
+
+    req.staff.name = name;
+    req.staff.cellphone = phone;
+    req.staff.gender = gender;
+    req.staff.birthdate = birthdate;
+
     await req.staff.save();
     res.send(req.staff);
   } catch (error) {
-    res.status(400).send(error);
+    res.status(400).send(error.toString());
   }
 };
 

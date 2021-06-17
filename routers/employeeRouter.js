@@ -30,7 +30,7 @@ router.patch(
 );
 
 //employee login
-router.post('/login', userAuth, employeeController.login_employee);
+router.post('/login', employeeController.login_employee);
 
 //employee logout
 router.post('/logout', userAuth, employeeController.logout_employee);
