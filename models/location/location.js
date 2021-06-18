@@ -44,7 +44,7 @@ const locationSchema = new mongoose.Schema(
       {
           type: new mongoose.Schema({
                 date: {
-                    type: Date,
+                    type: String,
                     required: true
                 },
                 description: {
@@ -56,8 +56,8 @@ const locationSchema = new mongoose.Schema(
                     type: Boolean,
                     required: true,
                     default: false
-                }
-          })
+                },
+          }),
       },
     ],
     owner: {

@@ -1,7 +1,8 @@
 import Location from '../models/location/location';
 
 const create_transition = async (req, res) => {
-  const locationId = req.params.locationId;
+
+  const {locationId, date, description} = req.body;
 
   try {
     const location = await Location.findById(locationId);
@@ -10,13 +11,12 @@ const create_transition = async (req, res) => {
       return res.status(400).send({ message: '매장정보를 찾을 수 없습니다' });
     }
 
-    const transition = new Transition(req.body);
+    const transition = {
+      date,
+      description,
+      completed: false
+    };
 
-    if (!transition) {
-      res.status(500).send({
-        message: 'Cannot Create Transition',
-      });
-    }
 
     location.transitions.push(transition);
 
@@ -29,11 +29,11 @@ const create_transition = async (req, res) => {
 };
 
 const readTransition = async (req, res) => {
-  const { locationId } = req.params;
+  const {locationId, date} = req.body;
   try {
+
     const location = await Location.findOne({
       _id: locationId,
-      owner: req.owner._id,
     });
 
     if (!location) {
@@ -43,9 +43,24 @@ const readTransition = async (req, res) => {
     }
 
     const transitions = location.transitions;
+    const satisfyTransitions = [];
+
+    // transitions.forEach(v => {
+    //   if(v.date === date) {
+    //     satisfyTransitions.push(v);
+    //   }
+    // });
+
+    for(let i = 0; i < transitions.length; i++) {
+      const transition = transitions[i];
+      if(transition.date === date) {
+        satisfyTransitions.push(transition);
+      }
+    }
+
 
     res.status(201).send({
-      transitions,
+      satisfyTransitions,
     });
   } catch (err) {
     res.status(500).send({
@@ -55,9 +70,9 @@ const readTransition = async (req, res) => {
 };
 
 const updateTransition = async (req, res) => {
+
+  const { locationId, transitionId, description} = req.body;
   try {
-    const { locationId, _id } = req.params;
-    const { title, content } = req.body;
 
     const location = await Location.findOne({
       _id: locationId,
@@ -74,10 +89,9 @@ const updateTransition = async (req, res) => {
 
     let originalTransition;
     for (let transition of transitions) {
-      if (transition._id.toString() === _id) {
+      if (transition._id.toString() === transitionId) {
         originalTransition = transition;
-        transition.title = title;
-        transition.content = content;
+        transition.description = description;
         break;
       }
     }
@@ -101,13 +115,15 @@ const updateTransition = async (req, res) => {
 };
 
 const deleteTransition = async (req, res) => {
+  const { locationId, transitionId } = req.body;
   try {
-    const { locationId, _id } = req.params;
+
 
     const location = await Location.findOne({
       _id: locationId,
       owner: req.owner._id,
     });
+
 
     if (!location) {
       res.status(400).send({
@@ -120,9 +136,9 @@ const deleteTransition = async (req, res) => {
 
     for (let idx in transitions) {
       const transition = transitions[idx];
-      if (transition._id.toString() === _id) {
+      if (transition._id.toString() === transitionId) {
         deletedTransition = transition;
-        transitions.remove(idx);
+        transitions.remove(transitions[idx]);
         break;
       }
     }
