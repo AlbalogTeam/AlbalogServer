@@ -250,7 +250,6 @@ const readNotice = async (req, res) => {
   try {
     const location = await Location.findOne({
       _id: locationId,
-      owner: req.owner._id,
     });
     const notices = location.notices.sort((a, b) => -1);
 
@@ -270,7 +269,6 @@ const readOneNotice = async (req, res) => {
 
     const location = await Location.findOne({
       _id: locationId,
-      owner: req.owner._id,
     });
 
     if (!location) {

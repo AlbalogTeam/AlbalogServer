@@ -3,25 +3,11 @@ import Employee from '../models/user/employee';
 
 //
 const startWork = async (req, res) => {
-  const locationId = req.params.locationId;
-  const { start_time } = req.body;
-  let { wage } = req.body;
-
-  if (!wage) wage = 8720;
+  const { locationId, start_time, wage } = req.body;
 
   try {
-    const location = await Location.findOne({
-      locationId,
-      'employees.employee': req.staff._id,
-    });
 
-    if (!location) {
-      return res.status(400).send({ message: '매장정보를 찾을 수 없습니다' });
-    }
-
-    const staff = await Employee.findOne({
-      _id: req.staff._id,
-    });
+    const employee = await Location.checkIfUserBelongsToLocation(locationId, req.staff._id);
 
     const timeClock = { start_time, wage };
 
@@ -31,59 +17,58 @@ const startWork = async (req, res) => {
       });
     }
 
-    staff.timeClocks.push(timeClock);
-    await staff.save();
+    employee.timeClocks.push(timeClock);
+    await employee.save();
 
     res.status(201).send({
       timeClock,
     });
   } catch (error) {
-    res.status(400).send(error);
+    res.status(400).send(error.toString());
   }
 };
 
 const endWork = async (req, res) => {
-  const { locationId, workId } = req.params;
-  const { end_time } = req.body;
+  const { locationId, timeClockId, end_time } = req.body;
 
   try {
-    const location = await Location.findOne({
-      locationId,
-      'employees.employee': req.staff._id,
-    });
+    const employee = await Location.checkIfUserBelongsToLocation(locationId, req.staff._id);
 
-    if (!location) {
-      res.status(400).send({ message: '매장정보를 찾을 수 없습니다' });
+    const timeClocks = employee.timeClocks;
+
+
+    let updatedTimeClock;
+    for(let timeClock of timeClocks) {
+      if(timeClock._id.toString() === timeClockId) {
+        updatedTimeClock = timeClock;
+        !timeClock.end_time
+            ? (timeClock.end_time = end_time)
+            : res.status(500).send({ message: '이미 퇴근 처리가 완료되었습니다.' });
+
+        break;
+      }
     }
 
-    const staff = await Employee.findOne({
-      _id: req.staff._id,
-    });
-
-    const timeClock = await staff.timeClocks.findOne({ _id: workId });
-
-    if (!timeClock) {
+    if (!updatedTimeClock) {
       res.status(500).send({
         message: '출근하지 않으셨습니다.',
       });
     }
 
-    !end_time
-      ? (timeClock.end_time = end_time)
-      : res.status(500).send({ message: '이미 퇴근 처리가 완료되었습니다.' });
 
-    await staff.save();
+
+    await employee.save();
 
     res.status(201).send({
-      timeClock,
+      updatedTimeClock,
     });
   } catch (error) {
-    res.status(400).send(error);
+    res.status(400).send(error.toString());
   }
 };
 
 const readTimeClockForStaff = async (req, res) => {
-  const { locationId } = req.params;
+  const { locationId } = req.body;
   try {
     const location = await Location.findOne({
       _id: locationId,
@@ -116,6 +101,7 @@ const readTimeClockForStaff = async (req, res) => {
   }
 };
 
+// 영훈님
 const readTimeClockForOwner = async (req, res) => {
   if (!req.owner) {
     res.status(500).send({
@@ -123,7 +109,7 @@ const readTimeClockForOwner = async (req, res) => {
     });
   }
 
-  const { locationId } = req.params;
+  const { locationId } = req.body;
 
   try {
     const location = await Location.findOne({
@@ -168,7 +154,7 @@ const updateStartTime = async (req, res) => {
       throw new Error('you are not owner');
     }
 
-    const { locationId, clockId } = req.params;
+    const { timeClockId } = req.params;
     const { startTime, staffId } = req.body;
 
     const location = await Location.findOne({
@@ -220,8 +206,7 @@ const updateEndTime = async (req, res) => {
       throw new Error('you are not owner');
     }
 
-    const { locationId, clockId } = req.params;
-    const { endTime, staffId } = req.body;
+    const { clockId, endTime, staffId } = req.body;
 
     const location = await Location.findOne({
       _id: locationId,
@@ -272,9 +257,8 @@ const deleteTimeClock = async (req, res) => {
       throw new Error('you are not owner');
     }
 
-    const { locationId, clockId } = req.params;
 
-    const { staffId } = req.body;
+    const { clockId, staffId } = req.body;
 
     const location = await Location.findOne({
       _id: locationId,
