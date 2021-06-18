@@ -123,6 +123,7 @@ const update_employee = async (req, res) => {
     req.staff.cellphone = phone;
     req.staff.gender = gender;
     req.staff.birthdate = birthdate;
+    req.staff.password = newPassword;
 
     await req.staff.save();
     res.send(req.staff);

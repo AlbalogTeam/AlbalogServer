@@ -55,7 +55,9 @@ const update_employer_profile = async (req, res) => {
 
     if (newPassword === '' || !newPassword || newPassword.length < 1)
       req.owner.password = password;
+
     req.owner.name = name;
+    req.owner.password = newPassword;
 
     await req.owner.save();
     res.send(req.owner);
