@@ -70,7 +70,9 @@ const get_employee = async (req, res) => {
   res.send(req.staff);
 };
 
+//해당 직원의 모든 매장보기
 const get_employee_locations = async (req, res) => {
+  if (!req.staff) return res.status(400).send('권한이 없습니다');
   const locIds = req.staff.stores.map((ids) => ids.location); //get all objectIds from user.stores into arrays
 
   if (locIds.length < 1) {
@@ -93,12 +95,12 @@ const get_employee_locations = async (req, res) => {
 
 const get_single_location = async (req, res) => {
   const locationId = mongoose.Types.ObjectId(req.params.locationId);
-
+  if (!req.staff) return res.status(400).send('권한이 없습니다');
   try {
     const location = await Location.findOne({
       _id: locationId,
       'employees.employee': req.staff._id,
-    });
+    }).populate('workManuals.category_id');
     res.send(location);
   } catch (error) {
     res.status(500).send(error);
@@ -106,6 +108,7 @@ const get_single_location = async (req, res) => {
 };
 
 const update_employee = async (req, res) => {
+  if (!req.staff) return res.status(400).send('권한이 없습니다');
   const { name, password, newPassword, phone, gender, birthdate } = req.body;
 
   try {

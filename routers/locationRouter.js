@@ -1,8 +1,8 @@
 import express from 'express';
 const router = new express.Router();
-
+//controller
 import locationController from '../controllers/locationController';
-
+//middleware
 import userAuth from '../middleware/userAuth';
 
 //create location

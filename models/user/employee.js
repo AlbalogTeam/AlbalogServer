@@ -95,14 +95,6 @@ const employeeSchema = new mongoose.Schema(
         }),
       },
     ],
-    shifts: [
-      {
-        shift: {
-          type: mongoose.Schema.Types.ObjectId,
-          required: true,
-        },
-      },
-    ],
     role: {
       type: String,
       enum: ['staff'],

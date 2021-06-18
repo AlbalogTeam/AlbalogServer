@@ -10,6 +10,7 @@ import locationRouter from './routers/locationRouter';
 import categoryRouter from './routers/categoryRouter';
 import transitionRouter from './routers/transitionRouter';
 import timeClockRouter from './routers/timeClockRouter';
+import shiftRouter from './routers/shiftRouter';
 // import showUser from './routers/showUserRouter';
 import ping from './routers/ping';
 
@@ -30,7 +31,7 @@ app.use('/api/v1/category', categoryRouter);
 app.use('/api/v1/location', locationRouter);
 app.use('/api/v1/owner', employerRouter);
 app.use('/api/v1/employee', employeeRouter);
-// app.use('/api/v1/showUser', showUser);
+app.use('/api/v1/shift', shiftRouter);
 app.use('/api/v1/transition', transitionRouter);
 app.use('/api/v1/timeclock', timeClockRouter);
 

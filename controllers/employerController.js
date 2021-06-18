@@ -38,6 +38,7 @@ const login_employer = async (req, res) => {
 
 //get profile
 const get_profile_employer = async (req, res) => {
+  if (!req.owner) return res.status(400).send('권한이 없습니다');
   res.send(req.owner);
 };
 
@@ -92,6 +93,7 @@ const kill_all_sessions = async (req, res) => {
 };
 
 const get_all_locations = async (req, res) => {
+  if (!req.owner) return res.status(400).send('권한이 없습니다');
   const locIds = req.owner.stores.map((ids) => ids.location); //get all objectIds from user.stores into arrays
 
   if (locIds.length < 1) {

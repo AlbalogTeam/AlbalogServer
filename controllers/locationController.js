@@ -209,9 +209,6 @@ const update_employee_wage_status = async (req, res) => {
   }
 };
 
-//직원 스케줄 생성
-const create_employee_shift = async (req, res) => {};
-
 const createNotice = async (req, res) => {
   try {
     if (!req.owner) {
