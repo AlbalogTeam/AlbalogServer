@@ -106,32 +106,6 @@ const get_single_location = async (req, res) => {
 };
 
 const update_employee = async (req, res) => {
-  // const body = req.body;
-
-  // const updates = Object.keys(body);
-  // const allowedUpdates = [
-  //   'name',
-  //   'password',
-  //   'birthdate',
-  //   'cellphone',
-  //   'gender',
-  // ];
-  // const isValidUpdates = updates.every((update) =>
-  //   allowedUpdates.includes(update)
-  // );
-  // if (!isValidUpdates) {
-  //   return res.status(400).send({
-  //     message: 'invalid update',
-  //   });
-  // }
-
-  // try {
-  //   updates.forEach((update) => (req.staff[update] = body[update]));
-  //   await req.staff.save();
-  //   res.send(req.staff);
-  // } catch (error) {
-  //   res.status(400).send(error);
-  // }
   const { name, password, newPassword, phone, gender, birthdate } = req.body;
 
   try {

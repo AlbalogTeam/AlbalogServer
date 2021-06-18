@@ -88,7 +88,8 @@ const update_location = async (req, res) => {
 const invite_employee = async (req, res) => {
   const { name, email } = req.body;
   const { locationId } = req.params; //해당 매장 아이디
-
+  if (!req.owner)
+    return res.status(400).send({ message: '관리자 로그인이 필요합니다' });
   try {
     const location = await Location.findOne({
       _id: locationId,
@@ -135,6 +136,7 @@ const invite_employee = async (req, res) => {
 //해당 매장 직원 리스트
 const get_all_employees = async (req, res) => {
   const { locationId } = req.params;
+  if (!req.owner) return res.status(400).send({ message: '권한이 없습니다' });
   try {
     const location = await Location.findOne({
       _id: locationId,
@@ -250,7 +252,6 @@ const readNotice = async (req, res) => {
   try {
     const location = await Location.findOne({
       _id: locationId,
-      owner: req.owner._id,
     });
     const notices = location.notices.sort((a, b) => -1);
 
@@ -270,7 +271,6 @@ const readOneNotice = async (req, res) => {
 
     const location = await Location.findOne({
       _id: locationId,
-      owner: req.owner._id,
     });
 
     if (!location) {
