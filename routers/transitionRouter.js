@@ -5,21 +5,24 @@ import * as transitionController from '../controllers/transitionController';
 import userAuth from '../middleware/userAuth';
 
 router.post(
-  '/:locationId/create',
+  '/create',
   userAuth,
   transitionController.create_transition
 );
 
-router.get('/:locationId', userAuth, transitionController.updateTransition);
+router.get(
+    '/',
+    userAuth,
+    transitionController.readTransition);
 
 router.patch(
-  '/:locationId/update',
+  '/desc/update',
   userAuth,
   transitionController.updateTransition
 );
 
 router.delete(
-  '/:locationId/delete',
+  '/delete',
   userAuth,
   transitionController.deleteTransition
 );
