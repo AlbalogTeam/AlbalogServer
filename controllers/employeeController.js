@@ -2,6 +2,21 @@ import Employee from '../models/user/employee';
 import Location from '../models/location/location';
 import mongoose from 'mongoose';
 
+const send_location_name = async (req, res) => {
+  const locationId = req.params.locationId;
+
+  try {
+    const location = await Location.findById(locationId);
+
+    if (!location) {
+      return res.status(400).send({ message: '매장정보를 찾을 수 없습니다' });
+    }
+    res.send(location.name);
+  } catch (error) {
+    res.status(500).send(error.toString());
+  }
+};
+
 //매장 스태프 만들기
 const create_employee = async (req, res) => {
   const locationId = req.params.locationId;
@@ -140,4 +155,5 @@ module.exports = {
   get_employee_locations,
   get_single_location,
   update_employee,
+  send_location_name,
 };

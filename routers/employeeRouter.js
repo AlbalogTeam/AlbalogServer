@@ -3,6 +3,7 @@ const router = new express.Router();
 
 import * as employeeController from '../controllers/employeeController';
 import userAuth from '../middleware/userAuth';
+import sendLocationName from '../middleware/sendLocationName';
 
 /**
  *  @employeeRoute
@@ -10,7 +11,13 @@ import userAuth from '../middleware/userAuth';
  * */
 
 //create employee
-router.post('/:locationId/signup', employeeController.create_employee);
+router.post(
+  '/:locationId/signup',
+  // sendLocationName,
+  employeeController.create_employee
+);
+//send location name
+router.get('/:locationId/signup', employeeController.send_location_name);
 
 //get employees all locations
 
