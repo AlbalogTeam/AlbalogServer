@@ -92,6 +92,7 @@ router.get(
   locationController.readOneWorkManual
 );
 
+//update workmanual
 router.patch(
   '/:locationId/workmanual/:_id/update',
   userAuth,

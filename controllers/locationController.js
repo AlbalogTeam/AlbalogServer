@@ -512,7 +512,7 @@ const updateWorkManual = async (req, res) => {
     }
 
     const { locationId, _id } = req.params;
-    const { title, content } = req.body;
+    const { title, content, category } = req.body;
 
     const location = await Location.findOne({
       _id: locationId,
@@ -530,6 +530,7 @@ const updateWorkManual = async (req, res) => {
       if (workManual._id.toString() === _id) {
         workManual.title = title;
         workManual.content = content;
+        workManual.category_id = category;
         originManual = workManual;
         break;
       }
