@@ -1,8 +1,7 @@
 import Location from '../models/location/location';
 
 const create_transition = async (req, res) => {
-
-  const {locationId, date, description} = req.body;
+  const { locationId, date, description } = req.body;
 
   try {
     const location = await Location.findById(locationId);
@@ -14,9 +13,8 @@ const create_transition = async (req, res) => {
     const transition = {
       date,
       description,
-      completed: false
+      completed: false,
     };
-
 
     location.transitions.push(transition);
 
@@ -29,15 +27,14 @@ const create_transition = async (req, res) => {
 };
 
 const readTransition = async (req, res) => {
-  const {locationId, date} = req.body;
+  const { locationId, date } = req.params;
   try {
-
     const location = await Location.findOne({
       _id: locationId,
     });
 
     if (!location) {
-      res.status(400).send({
+      res.status(400).json({
         message: '해당 매장 정보를 찾을 수 없습니다.',
       });
     }
@@ -51,15 +48,14 @@ const readTransition = async (req, res) => {
     //   }
     // });
 
-    for(let i = 0; i < transitions.length; i++) {
+    for (let i = 0; i < transitions.length; i++) {
       const transition = transitions[i];
-      if(transition.date === date) {
+      if (transition.date === date) {
         satisfyTransitions.push(transition);
       }
     }
 
-
-    res.status(201).send({
+    res.status(200).send({
       satisfyTransitions,
     });
   } catch (err) {
@@ -70,10 +66,8 @@ const readTransition = async (req, res) => {
 };
 
 const updateTransition = async (req, res) => {
-
-  const { locationId, transitionId, description} = req.body;
+  const { locationId, transitionId, description } = req.body;
   try {
-
     const location = await Location.findOne({
       _id: locationId,
       owner: req.owner._id,
@@ -117,13 +111,10 @@ const updateTransition = async (req, res) => {
 const deleteTransition = async (req, res) => {
   const { locationId, transitionId } = req.body;
   try {
-
-
     const location = await Location.findOne({
       _id: locationId,
       owner: req.owner._id,
     });
-
 
     if (!location) {
       res.status(400).send({

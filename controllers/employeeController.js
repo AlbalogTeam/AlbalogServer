@@ -2,6 +2,21 @@ import Employee from '../models/user/employee';
 import Location from '../models/location/location';
 import mongoose from 'mongoose';
 
+const send_location_name = async (req, res) => {
+  const locationId = req.params.locationId;
+
+  try {
+    const location = await Location.findById(locationId);
+
+    if (!location) {
+      return res.status(400).send({ message: '매장정보를 찾을 수 없습니다' });
+    }
+    res.send(location.name);
+  } catch (error) {
+    res.status(500).send(error.toString());
+  }
+};
+
 //매장 스태프 만들기
 const create_employee = async (req, res) => {
   const locationId = req.params.locationId;
@@ -70,7 +85,9 @@ const get_employee = async (req, res) => {
   res.send(req.staff);
 };
 
+//해당 직원의 모든 매장보기
 const get_employee_locations = async (req, res) => {
+  if (!req.staff) return res.status(400).send('권한이 없습니다');
   const locIds = req.staff.stores.map((ids) => ids.location); //get all objectIds from user.stores into arrays
 
   if (locIds.length < 1) {
@@ -93,12 +110,12 @@ const get_employee_locations = async (req, res) => {
 
 const get_single_location = async (req, res) => {
   const locationId = mongoose.Types.ObjectId(req.params.locationId);
-
+  if (!req.staff) return res.status(400).send('권한이 없습니다');
   try {
     const location = await Location.findOne({
       _id: locationId,
       'employees.employee': req.staff._id,
-    });
+    }).populate('workManuals.category_id');
     res.send(location);
   } catch (error) {
     res.status(500).send(error);
@@ -106,32 +123,7 @@ const get_single_location = async (req, res) => {
 };
 
 const update_employee = async (req, res) => {
-  // const body = req.body;
-
-  // const updates = Object.keys(body);
-  // const allowedUpdates = [
-  //   'name',
-  //   'password',
-  //   'birthdate',
-  //   'cellphone',
-  //   'gender',
-  // ];
-  // const isValidUpdates = updates.every((update) =>
-  //   allowedUpdates.includes(update)
-  // );
-  // if (!isValidUpdates) {
-  //   return res.status(400).send({
-  //     message: 'invalid update',
-  //   });
-  // }
-
-  // try {
-  //   updates.forEach((update) => (req.staff[update] = body[update]));
-  //   await req.staff.save();
-  //   res.send(req.staff);
-  // } catch (error) {
-  //   res.status(400).send(error);
-  // }
+  if (!req.staff) return res.status(400).send('권한이 없습니다');
   const { name, password, newPassword, phone, gender, birthdate } = req.body;
 
   try {
@@ -146,6 +138,7 @@ const update_employee = async (req, res) => {
     req.staff.cellphone = phone;
     req.staff.gender = gender;
     req.staff.birthdate = birthdate;
+    req.staff.password = newPassword;
 
     await req.staff.save();
     res.send(req.staff);
@@ -162,4 +155,5 @@ module.exports = {
   get_employee_locations,
   get_single_location,
   update_employee,
+  send_location_name,
 };

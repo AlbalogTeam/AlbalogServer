@@ -88,7 +88,8 @@ const update_location = async (req, res) => {
 const invite_employee = async (req, res) => {
   const { name, email } = req.body;
   const { locationId } = req.params; //해당 매장 아이디
-
+  if (!req.owner)
+    return res.status(400).send({ message: '관리자 로그인이 필요합니다' });
   try {
     const location = await Location.findOne({
       _id: locationId,
@@ -135,6 +136,7 @@ const invite_employee = async (req, res) => {
 //해당 매장 직원 리스트
 const get_all_employees = async (req, res) => {
   const { locationId } = req.params;
+  if (!req.owner) return res.status(400).send({ message: '권한이 없습니다' });
   try {
     const location = await Location.findOne({
       _id: locationId,
@@ -206,9 +208,6 @@ const update_employee_wage_status = async (req, res) => {
     res.status(500).send(error);
   }
 };
-
-//직원 스케줄 생성
-const create_employee_shift = async (req, res) => {};
 
 const createNotice = async (req, res) => {
   try {
@@ -513,7 +512,7 @@ const updateWorkManual = async (req, res) => {
     }
 
     const { locationId, _id } = req.params;
-    const { title, content } = req.body;
+    const { title, content, category } = req.body;
 
     const location = await Location.findOne({
       _id: locationId,
@@ -531,6 +530,7 @@ const updateWorkManual = async (req, res) => {
       if (workManual._id.toString() === _id) {
         workManual.title = title;
         workManual.content = content;
+        workManual.category_id = category;
         originManual = workManual;
         break;
       }

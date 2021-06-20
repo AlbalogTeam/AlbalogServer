@@ -7,14 +7,13 @@ const shiftSchema = mongoose.Schema({
   },
   start_time: {
     type: Date,
-    required: true,
   },
   end_time: {
     type: Date,
-    required: true,
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
+    required: true,
     ref: 'Employee',
   },
 });
