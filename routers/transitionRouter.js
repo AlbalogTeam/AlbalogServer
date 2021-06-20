@@ -10,6 +10,6 @@ router.get('/:locationId/:date', userAuth, transitionController.readTransition);
 
 router.patch('/desc/update', userAuth, transitionController.updateTransition);
 
-router.delete('/delete', userAuth, transitionController.deleteTransition);
+router.delete('/:locationId/delete/:transitionId', userAuth, transitionController.deleteTransition);
 
 module.exports = router;

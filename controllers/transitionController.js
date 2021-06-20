@@ -109,12 +109,14 @@ const updateTransition = async (req, res) => {
 };
 
 const deleteTransition = async (req, res) => {
-  const { locationId, transitionId } = req.body;
+  const { locationId, transitionId } = req.params;
+
   try {
     const location = await Location.findOne({
       _id: locationId,
-      owner: req.owner._id,
     });
+
+    console.log('dfas');
 
     if (!location) {
       res.status(400).send({
