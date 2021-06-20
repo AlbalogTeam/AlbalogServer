@@ -27,7 +27,7 @@ const create_transition = async (req, res) => {
 };
 
 const readTransition = async (req, res) => {
-  const { locationId, date } = req.body;
+  const { locationId, date } = req.params;
   try {
     const location = await Location.findOne({
       _id: locationId,
