@@ -144,7 +144,7 @@ const deleteTransition = async (req, res) => {
 
     await location.save();
 
-    res.status(201).send({
+    res.status(200).send({
       deletedTransition,
     });
   } catch (err) {
