@@ -65,12 +65,11 @@ const readTransition = async (req, res) => {
   }
 };
 
-const updateTransition = async (req, res) => {
+const updateDescriptionInTransition = async (req, res) => {
   const { locationId, transitionId, description } = req.body;
   try {
     const location = await Location.findOne({
       _id: locationId,
-      owner: req.owner._id,
     });
 
     if (!location) {
@@ -94,6 +93,48 @@ const updateTransition = async (req, res) => {
 
     if (!originalTransition) {
       res.status(500).send({
+        message: 'Cannot Update Transition'
+      });
+    }
+
+    res.status(201).send({
+      updatedTransition: originalTransition
+    });
+  } catch (err) {
+    res.status(500).send({
+      message: err.toString()
+    });
+  }
+};
+
+const toggleComplete = async (req, res) => {
+  const { locationId, transitionId } = req.body;
+  try {
+    const location = await Location.findOne({
+      _id: locationId,
+    });
+
+    if (!location) {
+      res.status(400).send({
+        message: '해당 매장 정보를 찾을 수 없습니다.',
+      });
+    }
+
+    const transitions = location.transitions;
+
+    let originalTransition;
+    for (let transition of transitions) {
+      if (transition._id.toString() === transitionId) {
+        originalTransition = transition;
+        transition.completed = !transition.completed;
+        break;
+      }
+    }
+
+    await location.save();
+
+    if (!originalTransition) {
+      res.status(500).send({
         message: 'Cannot Update Transition',
       });
     }
@@ -107,6 +148,9 @@ const updateTransition = async (req, res) => {
     });
   }
 };
+
+
+
 
 const deleteTransition = async (req, res) => {
   const { locationId, transitionId } = req.params;
@@ -157,6 +201,7 @@ const deleteTransition = async (req, res) => {
 module.exports = {
   create_transition,
   readTransition,
-  updateTransition,
+  updateDescriptionInTransition,
+  toggleComplete,
   deleteTransition,
 };
