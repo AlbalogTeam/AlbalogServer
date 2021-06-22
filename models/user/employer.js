@@ -109,7 +109,8 @@ employerSchema.methods.comparePasswords = async function (currentPassword) {
 
 employerSchema.statics.findByCredentials = async (email, password) => {
   const employer = await Employer.findOne({ email });
-  if (!employer) throw new Error('Invalid Information');
+  if (!employer) return false;
+  // if (!employer) throw new Error('Invalid Information');
 
   const isMatch = await bcrypt.compare(password, employer.password);
   if (!isMatch) throw new Error('Invalid Information');

@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import morgan from 'morgan';
 import cors from 'cors';
 
+import commonRouter from './routers/commonRouter';
 import employerRouter from './routers/employerRouter';
 import employeeRouter from './routers/employeeRouter';
 import locationRouter from './routers/locationRouter';
@@ -11,8 +12,6 @@ import categoryRouter from './routers/categoryRouter';
 import transitionRouter from './routers/transitionRouter';
 import timeClockRouter from './routers/timeClockRouter';
 import shiftRouter from './routers/shiftRouter';
-// import showUser from './routers/showUserRouter';
-import ping from './routers/ping';
 
 dotenv.config('./config/env');
 
@@ -23,8 +22,8 @@ app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json());
 
-//ping
-app.use('/ping', ping);
+//common
+app.use('/api/v1', commonRouter);
 
 //routes
 app.use('/api/v1/category', categoryRouter);
