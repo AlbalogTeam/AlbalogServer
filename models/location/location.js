@@ -52,11 +52,24 @@ const locationSchema = new mongoose.Schema(
             required: true,
             trim: true,
           },
-          completed: {
-            type: Boolean,
-            required: true,
-            default: false,
-          },
+          who_worked: [
+              {
+                userId: {
+                  type: mongoose.Schema.Types.ObjectId,
+                  required: true
+                },
+                completed: {
+                  type: Boolean,
+                  required: true,
+                  default: false
+                }
+            }
+          ],
+          modify_person: [
+              {
+                type: mongoose.Schema.Types.ObjectId,
+            }
+          ],
         }),
       },
     ],
