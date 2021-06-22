@@ -1,5 +1,6 @@
 import express from 'express';
 const router = new express.Router();
+import loginController from '../controllers/loginController';
 
 router.get('/ping', async (req, res) => {
   try {
@@ -13,4 +14,6 @@ router.get('/ping', async (req, res) => {
     });
   }
 });
+
+router.post('/login', loginController.login_user);
 module.exports = router;
