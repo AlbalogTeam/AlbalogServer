@@ -1,7 +1,7 @@
 import Location from '../models/location/location';
 
 const create_transition = async (req, res) => {
-  const { locationId, date, description } = req.body;
+  const { locationId, date, description, userId } = req.body;
 
   try {
     const location = await Location.findById(locationId);
@@ -13,7 +13,7 @@ const create_transition = async (req, res) => {
     const transition = {
       date,
       description,
-      completed: false,
+      who_worked: [{userId: userId, completed: false}]
     };
 
     location.transitions.push(transition);
@@ -42,12 +42,6 @@ const readTransition = async (req, res) => {
     const transitions = location.transitions;
     const satisfyTransitions = [];
 
-    // transitions.forEach(v => {
-    //   if(v.date === date) {
-    //     satisfyTransitions.push(v);
-    //   }
-    // });
-
     for (let i = 0; i < transitions.length; i++) {
       const transition = transitions[i];
       if (transition.date === date) {
@@ -66,7 +60,7 @@ const readTransition = async (req, res) => {
 };
 
 const updateDescriptionInTransition = async (req, res) => {
-  const { locationId, transitionId, description } = req.body;
+  const { locationId, transitionId, description, userId } = req.body;
   try {
     const location = await Location.findOne({
       _id: locationId,
@@ -85,6 +79,7 @@ const updateDescriptionInTransition = async (req, res) => {
       if (transition._id.toString() === transitionId) {
         originalTransition = transition;
         transition.description = description;
+        transition.modify_person.push(userId);
         break;
       }
     }
@@ -108,7 +103,7 @@ const updateDescriptionInTransition = async (req, res) => {
 };
 
 const toggleComplete = async (req, res) => {
-  const { locationId, transitionId } = req.body;
+  const { locationId, transitionId, userId } = req.body;
   try {
     const location = await Location.findOne({
       _id: locationId,
@@ -126,7 +121,12 @@ const toggleComplete = async (req, res) => {
     for (let transition of transitions) {
       if (transition._id.toString() === transitionId) {
         originalTransition = transition;
-        transition.completed = !transition.completed;
+        const employee = {
+          userId: userId,
+          completed: !transition.who_worked.completed
+        }
+        console.log(employee);
+        transition.who_worked.push(employee);
         break;
       }
     }
@@ -148,8 +148,6 @@ const toggleComplete = async (req, res) => {
     });
   }
 };
-
-
 
 
 const deleteTransition = async (req, res) => {
