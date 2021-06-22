@@ -5,10 +5,10 @@ import jwt from 'jsonwebtoken';
 import mongoose from 'mongoose';
 
 const send_location_name = async (req, res) => {
-  const tokenId = req.query.t;
+  const { inviteId } = req.params;
 
   try {
-    const isValidInviteToken = await Invite.findById(tokenId);
+    const isValidInviteToken = await Invite.findById(inviteId);
 
     if (!isValidInviteToken)
       return res.status(400).send('토큰정보가 유효하지 않습니다');
