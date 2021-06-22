@@ -1,25 +1,24 @@
-function dateRange(startDate, endDate, id, steps = 1, day) {
+function dateRange(startDate, endDate, id, steps = 1, time) {
   const dateArray = [];
   let currentDate = new Date(startDate);
 
-  'Fri', 'Sat';
-
   while (currentDate <= new Date(endDate)) {
-    dateArray.push({
-      date: new Date(currentDate),
-      owner: id,
-      time: {
-        startTime: new Date(currentDate),
-        endTime: new Date(currentDate),
-      },
+    time.map((d) => {
+      if (currentDate.getUTCDay() === d.day) {
+        dateArray.push({
+          date: new Date(currentDate),
+          start_time: new Date(currentDate),
+          end_time: new Date(currentDate),
+          owner: id,
+        });
+        currentDate.setUTCDate(currentDate.getUTCDate() + steps);
+      }
     });
+
     // Use UTC date to prevent problems with time zones and DST
-    currentDate.setUTCDate(currentDate.getUTCDate() + steps);
   }
 
   return dateArray;
 }
 
 export default dateRange;
-// const dates = dateRange('2020-09-27', '2020-10-28');
-// console.log(dates);
