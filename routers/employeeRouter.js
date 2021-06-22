@@ -12,7 +12,7 @@ import sendLocationName from '../middleware/sendLocationName';
 
 //create employee
 router.post(
-  '/:locationId/:inviteId/signup',
+  '/:locationId/signup',
   // sendLocationName,
   employeeController.create_employee
 );
