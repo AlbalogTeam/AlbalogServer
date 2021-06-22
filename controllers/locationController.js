@@ -1,10 +1,12 @@
 import Location from '../models/location/location';
 import Employee from '../models/user/employee';
 import Category from '../models/location/category';
+import Invite from '../models/inviteToken';
 import {
   sendInvitationEmail,
   sendLocationAddedEmail,
 } from '../emails/accounts';
+import jwt from 'jsonwebtoken';
 import mongoose from 'mongoose';
 
 const create_location = async (req, res) => {
@@ -123,11 +125,22 @@ const invite_employee = async (req, res) => {
         message: '해당직원을 추가하였습니다',
       });
     } else {
-      sendInvitationEmail(name, email, location._id);
-      res.send({ name, email, location });
+      const token = jwt.sign(
+        {
+          name: name,
+          email: email,
+          location: locationId,
+        },
+        process.env.JWT_SECRET
+      );
+      const invite = new Invite({ invite_token: token });
+      await invite.save();
+
+      sendInvitationEmail(name, email, location._id, invite);
+      res.send({ name, email, location, invite });
     }
   } catch (error) {
-    res.status(500).send(error);
+    res.status(500).send(error.toString());
   }
 };
 

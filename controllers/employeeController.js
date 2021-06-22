@@ -1,17 +1,35 @@
 import Employee from '../models/user/employee';
 import Location from '../models/location/location';
+import Invite from '../models/inviteToken';
+import jwt from 'jsonwebtoken';
 import mongoose from 'mongoose';
 
 const send_location_name = async (req, res) => {
-  const locationId = req.params.locationId;
+  const tokenId = req.query.t;
 
   try {
-    const location = await Location.findById(locationId);
+    const isValidInviteToken = await Invite.findById(tokenId);
+
+    if (!isValidInviteToken)
+      return res.status(400).send('토큰정보가 유효하지 않습니다');
+
+    const decoded = jwt.verify(
+      isValidInviteToken.invite_token,
+      process.env.JWT_SECRET
+    );
+
+    const location = await Location.findById(decoded.location);
 
     if (!location) {
-      return res.status(400).send({ message: '매장정보를 찾을 수 없습니다' });
+      return res.status(400).send({
+        message: '매장정보를 찾을 수 없거나 해당 유저와 관계없는 매장',
+      });
     }
-    res.send(location.name);
+    res.send({
+      location_name: location.name,
+      user_name: decoded.name,
+      user_email: decoded.email,
+    });
   } catch (error) {
     res.status(500).send(error.toString());
   }
@@ -23,7 +41,6 @@ const create_employee = async (req, res) => {
 
   try {
     const location = await Location.findById(locationId);
-
     if (!location) {
       return res.status(400).send({ message: '매장정보를 찾을 수 없습니다' });
     }
