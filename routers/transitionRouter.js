@@ -8,8 +8,10 @@ router.post('/create', userAuth, transitionController.create_transition);
 
 router.get('/:locationId/:date', userAuth, transitionController.readTransition);
 
-router.patch('/desc/update', userAuth, transitionController.updateTransition);
+router.patch('/desc/update', userAuth, transitionController.updateDescriptionInTransition);
 
-router.delete('/delete', userAuth, transitionController.deleteTransition);
+router.patch('/toggle', userAuth, transitionController.toggleComplete);
+
+router.delete('/:locationId/delete/:transitionId', userAuth, transitionController.deleteTransition);
 
 module.exports = router;
