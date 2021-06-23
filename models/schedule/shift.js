@@ -11,6 +11,9 @@ const shiftSchema = mongoose.Schema({
   end_time: {
     type: Date,
   },
+  day: {
+    type: String,
+  },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,

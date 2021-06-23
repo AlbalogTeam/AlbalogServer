@@ -17,7 +17,10 @@ router.post(
   employeeController.create_employee
 );
 //send location name
-router.get('/:locationId/signup', employeeController.send_location_name);
+router.get(
+  '/:locationId/:inviteId/signup',
+  employeeController.send_location_name
+);
 
 //get employees all locations
 
