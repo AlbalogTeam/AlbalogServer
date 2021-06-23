@@ -143,7 +143,7 @@ const toggleComplete = async (req, res) => {
           name: person.name,
           completed: !transition.who_worked[transition.who_worked.length-1].completed
         }
-        transition.completed = employee;
+        transition.completed = employee.completed;
         transition.who_worked.push(employee);
         break;
       }
