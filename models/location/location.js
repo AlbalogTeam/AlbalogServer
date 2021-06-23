@@ -52,12 +52,10 @@ const locationSchema = new mongoose.Schema(
             required: true,
             trim: true,
           },
-          last_completed: {
-            completed: {
-              type: Boolean,
-              required: true,
-              default: false
-            },
+          completed: {
+            type: Boolean,
+            required: true,
+            default: false
           },
           who_worked: [
               {

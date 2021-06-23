@@ -19,7 +19,7 @@ const create_transition = async (req, res) => {
     const transition = {
       date,
       description,
-      last_completed: {userId: userId, name: person.name, completed: false},
+      completed: false,
       who_worked: [{userId: userId, name: person.name, completed: false}]
     };
 
@@ -116,6 +116,7 @@ const updateDescriptionInTransition = async (req, res) => {
 };
 
 const toggleComplete = async (req, res) => {
+
   const { locationId, transitionId, userId } = req.body;
   let person = undefined;
   person = req.owner ? await Employer.findById(userId) : await Employee.findById(userId);
@@ -142,7 +143,7 @@ const toggleComplete = async (req, res) => {
           name: person.name,
           completed: !transition.who_worked[transition.who_worked.length-1].completed
         }
-        transition.last_completed = employee;
+        transition.completed = employee;
         transition.who_worked.push(employee);
         break;
       }
