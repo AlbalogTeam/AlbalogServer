@@ -39,7 +39,6 @@ const get_location = async (req, res) => {
       .populate('workManuals.category_id')
       .populate('employees.employee')
       .sort('notices.createdAt');
-    // .then((result) => console.log(result));
 
     // const location = await Location.aggregate([
     //   { $search: { _id: locationId } },

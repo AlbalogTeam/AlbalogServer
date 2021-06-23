@@ -5,7 +5,6 @@ function dateRange(startDate, endDate, id, steps = 1, time) {
 
   while (currentDate <= new Date(endDate)) {
     time.forEach((d) => {
-      // console.log(d.day, currentDate.getDay());
       if (d.day !== currentDate.getDay()) return;
 
       let day = days.filter((day) => days.indexOf(day) === d.day);
