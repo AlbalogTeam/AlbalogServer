@@ -1,7 +1,13 @@
 import Location from '../models/location/location';
+import Employee from '../models/user/employee';
+import Employer from '../models/user/employer';
 
 const create_transition = async (req, res) => {
-  const { locationId, date, description } = req.body;
+  const { locationId, date, description, userId } = req.body;
+
+  let person = undefined;
+  person = req.owner ? await Employer.findById(userId) : await Employee.findById(userId);
+
 
   try {
     const location = await Location.findById(locationId);
@@ -13,14 +19,14 @@ const create_transition = async (req, res) => {
     const transition = {
       date,
       description,
-      completed: false,
+      who_worked: [{userId: userId, name: person.name, completed: false}]
     };
 
     location.transitions.push(transition);
 
     await location.save();
 
-    res.status(201).send(location.transitions);
+    res.status(201).send(transition);
   } catch (error) {
     res.status(400).send(error);
   }
@@ -42,12 +48,6 @@ const readTransition = async (req, res) => {
     const transitions = location.transitions;
     const satisfyTransitions = [];
 
-    // transitions.forEach(v => {
-    //   if(v.date === date) {
-    //     satisfyTransitions.push(v);
-    //   }
-    // });
-
     for (let i = 0; i < transitions.length; i++) {
       const transition = transitions[i];
       if (transition.date === date) {
@@ -66,7 +66,10 @@ const readTransition = async (req, res) => {
 };
 
 const updateDescriptionInTransition = async (req, res) => {
-  const { locationId, transitionId, description } = req.body;
+  const { locationId, transitionId, description, userId } = req.body;
+  let person = undefined;
+  person = req.owner ? await Employer.findById(userId) : await Employee.findById(userId);
+
   try {
     const location = await Location.findOne({
       _id: locationId,
@@ -85,6 +88,10 @@ const updateDescriptionInTransition = async (req, res) => {
       if (transition._id.toString() === transitionId) {
         originalTransition = transition;
         transition.description = description;
+        transition.modify_person.push({
+          userId: userId,
+          name: person.name
+        });
         break;
       }
     }
@@ -108,7 +115,10 @@ const updateDescriptionInTransition = async (req, res) => {
 };
 
 const toggleComplete = async (req, res) => {
-  const { locationId, transitionId } = req.body;
+  const { locationId, transitionId, userId } = req.body;
+  let person = undefined;
+  person = req.owner ? await Employer.findById(userId) : await Employee.findById(userId);
+
   try {
     const location = await Location.findOne({
       _id: locationId,
@@ -126,7 +136,13 @@ const toggleComplete = async (req, res) => {
     for (let transition of transitions) {
       if (transition._id.toString() === transitionId) {
         originalTransition = transition;
-        transition.completed = !transition.completed;
+        const employee = {
+          userId: userId,
+          name: person.name,
+          completed: !transition.who_worked[transition.who_worked.length-1].completed
+        }
+        console.log(employee);
+        transition.who_worked.push(employee);
         break;
       }
     }
@@ -148,8 +164,6 @@ const toggleComplete = async (req, res) => {
     });
   }
 };
-
-
 
 
 const deleteTransition = async (req, res) => {
