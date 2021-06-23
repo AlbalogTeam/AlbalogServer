@@ -58,16 +58,27 @@ const locationSchema = new mongoose.Schema(
                   type: mongoose.Schema.Types.ObjectId,
                   required: true
                 },
+                name: {
+                  type: String,
+                  required: true
+                },
                 completed: {
                   type: Boolean,
                   required: true,
                   default: false
-                }
+                },
             }
           ],
           modify_person: [
-              {
+            {
+              userId: {
                 type: mongoose.Schema.Types.ObjectId,
+                required:true
+              },
+              name: {
+                type: String,
+                required: true
+              }
             }
           ],
         }),
