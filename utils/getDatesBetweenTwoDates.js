@@ -20,8 +20,8 @@ function dateRange(startDate, endDate, id, steps = 1, time) {
       dateArray.push({
         date: new Date(currentDate),
         day: day[0],
-        start_time,
-        end_time,
+        start: start_time,
+        end: end_time,
         owner: id,
       });
     });
