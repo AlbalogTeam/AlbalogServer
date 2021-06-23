@@ -20,6 +20,7 @@ const create_location = async (req, res) => {
 
     req.owner.stores = req.owner.stores.concat({ location });
     await req.owner.save();
+
     res.status(201).send({ location });
   } catch (error) {
     res.status(500).send(error);
@@ -36,7 +37,9 @@ const get_location = async (req, res) => {
       owner: req.owner._id,
     })
       .populate('workManuals.category_id')
-      .populate('employees.employee');
+      .populate('employees.employee')
+      .sort('notices.createdAt');
+    // .then((result) => console.log(result));
 
     // const location = await Location.aggregate([
     //   { $search: { _id: locationId } },
@@ -65,6 +68,8 @@ const update_location = async (req, res) => {
       _id: locationId,
       owner: req.owner._id,
     });
+
+    if (!location) return res.status(400).send('매장 정보가 없습니다');
 
     const updates = Object.keys(req.body);
 
@@ -98,9 +103,10 @@ const invite_employee = async (req, res) => {
       owner: req.owner._id,
     });
     if (!location)
-      return res.status(400).send({ message: '매장정보가 잘못되었습니다' });
+      return res.status(400).send({ message: '매장 정보가 없습니다' });
 
     const checkEmail = await Employee.checkIfEmailExist(email);
+
     if (checkEmail) {
       const existingEmployee = await Employee.findOne({ email });
 
@@ -265,7 +271,7 @@ const readNotice = async (req, res) => {
     });
     const notices = location.notices.sort((a, b) => -1);
 
-    res.status(201).send({
+    res.status(200).send({
       notices,
     });
   } catch (err) {
@@ -296,7 +302,7 @@ const readOneNotice = async (req, res) => {
         message: 'Cannot find One Notice',
       });
     }
-    res.status(201).send({ notice });
+    res.status(200).send({ notice });
   } catch (err) {
     res.status(500).send({
       message: err.toString(),
