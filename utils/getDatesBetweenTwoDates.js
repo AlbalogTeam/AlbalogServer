@@ -10,8 +10,8 @@ function dateRange(startDate, endDate, id, steps = 1, time) {
 
       let day = days.filter((day) => days.indexOf(day) === d.day);
 
-      const start = new Date(currentDate);
-      const end = new Date(currentDate);
+      const start_time = new Date(currentDate);
+      const end_time = new Date(currentDate);
       const st = d.start_time.split(':');
       const et = d.end_time.split(':');
       start_time.setUTCHours(st[0], st[1]);
@@ -20,8 +20,8 @@ function dateRange(startDate, endDate, id, steps = 1, time) {
       dateArray.push({
         date: new Date(currentDate),
         day: day[0],
-        start,
-        end,
+        start_time,
+        end_time,
         owner: id,
       });
     });
