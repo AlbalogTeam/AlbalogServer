@@ -19,6 +19,7 @@ const create_transition = async (req, res) => {
     const transition = {
       date,
       description,
+      last_completed: {userId: userId, name: person.name, completed: false},
       who_worked: [{userId: userId, name: person.name, completed: false}]
     };
 
@@ -141,7 +142,7 @@ const toggleComplete = async (req, res) => {
           name: person.name,
           completed: !transition.who_worked[transition.who_worked.length-1].completed
         }
-        console.log(employee);
+        transition.last_completed = employee;
         transition.who_worked.push(employee);
         break;
       }
@@ -174,7 +175,6 @@ const deleteTransition = async (req, res) => {
       _id: locationId,
     });
 
-    console.log('dfas');
 
     if (!location) {
       res.status(400).send({
