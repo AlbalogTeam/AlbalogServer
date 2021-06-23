@@ -9,6 +9,9 @@ router.post('/:locationId/create', userAuth, categoryController.createCategory);
 
 router.get('/:locationId', userAuth, categoryController.readCategory);
 
+router.patch('/update', userAuth, categoryController.updateCategory);
+
+
 // delete category
 router.delete(
   '/:locationId/delete/:categoryId',
