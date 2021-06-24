@@ -69,7 +69,7 @@ const get_location = async (req, res) => {
     });
 
     if (!location) return res.status(403).send('해당 매장의 권한이없습니다');
-    res.send(location);
+    res.send(...location);
   } catch (error) {
     res.status(500).send({ error: error.toString() });
   }
