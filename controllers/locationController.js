@@ -32,19 +32,41 @@ const get_location = async (req, res) => {
   const { locationId } = req.params;
 
   try {
-    const location = await Location.findOne({
-      _id: locationId,
-      owner: req.owner._id,
-    })
-      .populate('workManuals.category_id')
-      .populate('employees.employee')
-      .sort('notices.createdAt');
+    // const location = await Location.findOne({
+    //   _id: locationId,
+    //   owner: req.owner._id,
+    // })
+    //   .populate('workManuals.category_id')
+    //   .populate('employees.employee');
 
-    // const location = await Location.aggregate([
-    //   { $search: { _id: locationId } },
-    //   { $unwind: '$notices' },
-    //   { $sort: { 'notices.createdAt': 1 } },
-    // ]);
+    const location = await Location.aggregate([
+      {
+        $match: {
+          _id: mongoose.Types.ObjectId(locationId),
+          owner: mongoose.Types.ObjectId(req.owner._id),
+        },
+      },
+
+      { $unwind: '$notices' },
+      { $sort: { 'notices.createdAt': -1 } },
+
+      {
+        $group: {
+          _id: '$_id',
+          name: { $first: '$name' },
+          address: { $first: '$address' },
+          postal_code: { $first: '$postal_code' },
+          phone_number: { $first: '$phone_number' },
+          employees: { $first: '$employees' },
+          workManuals: { $first: '$workManuals' },
+          notices: { $push: '$notices' },
+          transitions: { $first: '$transitions' },
+        },
+      },
+    ]);
+    await Location.populate(location, {
+      path: 'employees.employee workManuals.category_id',
+    });
 
     if (!location) return res.status(403).send('해당 매장의 권한이없습니다');
     res.send(location);
