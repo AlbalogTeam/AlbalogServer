@@ -46,10 +46,8 @@ const get_location = async (req, res) => {
           owner: mongoose.Types.ObjectId(req.owner._id),
         },
       },
-
-      { $unwind: '$notices' },
+      { $unwind: { path: '$notices', preserveNullAndEmptyArrays: true } },
       { $sort: { 'notices.createdAt': -1 } },
-
       {
         $group: {
           _id: '$_id',
