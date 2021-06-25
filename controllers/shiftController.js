@@ -17,7 +17,7 @@ const create_shift = async (req, res) => {
     );
     if (!isValid) return res.status(400).send('권한이 없습니다');
 
-    const datesArr = getBetweenDates(
+    const datesArr = await getBetweenDates(
       startDate,
       endDate,
       staffId,
