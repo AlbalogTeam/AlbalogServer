@@ -14,10 +14,8 @@ async function dateRange(
 
   const shift = await Shift.find({ owner: staffId, location: locationId });
 
-  // const scheduledDates = shift.map(d => {
-  //   const checkDate = []
-  //   d.date.getDay()
-  // })
+  const scheduledDates = shift.map((d) => d.date.toDateString());
+  console.log(scheduledDates);
 
   while (currentDate <= new Date(endDate)) {
     time.forEach((d) => {
