@@ -1,7 +1,23 @@
-function dateRange(startDate, endDate, id, steps = 1, time) {
+import Shift from '../models/schedule/shift';
+
+async function dateRange(
+  startDate,
+  endDate,
+  staffId,
+  locationId,
+  steps = 1,
+  time
+) {
   const dateArray = [];
   const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   let currentDate = new Date(startDate);
+
+  const shift = await Shift.find({ owner: staffId, location: locationId });
+
+  // const scheduledDates = shift.map(d => {
+  //   const checkDate = []
+  //   d.date.getDay()
+  // })
 
   while (currentDate <= new Date(endDate)) {
     time.forEach((d) => {
@@ -21,13 +37,14 @@ function dateRange(startDate, endDate, id, steps = 1, time) {
         day: day[0],
         start: start_time,
         end: end_time,
-        owner: id,
+        owner: staffId,
+        location: locationId,
       });
     });
-
     // Use UTC date to prevent problems with time zones and DST
     currentDate.setUTCDate(currentDate.getUTCDate() + steps);
   }
+
   return dateArray;
 }
 

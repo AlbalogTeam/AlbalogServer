@@ -12,7 +12,10 @@ router.post(
   shiftController.create_shift
 );
 
-//get all shift
+//get 1 employee shift
 router.get('/employee/:employeeId', userAuth, shiftController.get_shifts);
+
+//get all shifts for current location
+router.get('/location/:locationId', userAuth, shiftController.get_all_shifts);
 
 module.exports = router;

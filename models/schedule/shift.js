@@ -19,6 +19,11 @@ const shiftSchema = mongoose.Schema({
     required: true,
     ref: 'Employee',
   },
+  location: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: 'Location',
+  },
 });
 
 const Shift = mongoose.model('Shift', shiftSchema);
