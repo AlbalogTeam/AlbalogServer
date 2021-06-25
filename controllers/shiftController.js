@@ -17,7 +17,14 @@ const create_shift = async (req, res) => {
     );
     if (!isValid) return res.status(400).send('권한이 없습니다');
 
-    const datesArr = getBetweenDates(startDate, endDate, staffId, 1, time);
+    const datesArr = getBetweenDates(
+      startDate,
+      endDate,
+      staffId,
+      locationId,
+      1,
+      time
+    );
 
     const shift = await Shift.insertMany(datesArr);
 
@@ -41,7 +48,23 @@ const get_shifts = async (req, res) => {
   }
 };
 
+//employees: get all shifts for current location
+const get_all_shifts = async (req, res) => {
+  const { locationId } = req.params;
+  if (!locationId) return res.status(400).send('매장 정보가 없습니다');
+
+  try {
+    const shifts = await Shift.find({ location: locationId }).populate('owner');
+    if (!shifts || shifts.length < 1)
+      return res.status(400).send('등록된 스케줄이 없습니다');
+    res.send(shifts);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
+
 module.exports = {
   create_shift,
   get_shifts,
+  get_all_shifts,
 };

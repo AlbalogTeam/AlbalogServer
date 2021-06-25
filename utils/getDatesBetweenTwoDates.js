@@ -1,4 +1,4 @@
-function dateRange(startDate, endDate, id, steps = 1, time) {
+function dateRange(startDate, endDate, staffId, locationId, steps = 1, time) {
   const dateArray = [];
   const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   let currentDate = new Date(startDate);
@@ -21,7 +21,8 @@ function dateRange(startDate, endDate, id, steps = 1, time) {
         day: day[0],
         start: start_time,
         end: end_time,
-        owner: id,
+        owner: staffId,
+        location: locationId,
       });
     });
 
