@@ -407,6 +407,45 @@ const deleteNotice = async (req, res) => {
   }
 };
 
+const searchNotice = async (req, res) => {
+  try {
+    const { locationId, content } = req.body;
+
+    const location = await Location.findOne({
+      _id: locationId,
+    });
+
+    if (!location) {
+      res.status(400).send({
+        message: '해당 매장 정보를 찾을 수 없습니다.',
+      });
+    }
+
+    const findByContent = location.notices.map(n => {
+      if(n.content.indexOf(content) >= 0)
+        return n;
+    });
+    const findByTitle = location.notices.map(n => {
+      if(n.title.indexOf(content) >= 0)
+        return n;
+    });
+
+    const finalNotices = [...findByContent, ...findByTitle].filter(n => (n!=null));
+    const deleteDuplicate = [...new Set(finalNotices)];
+
+    if (!finalNotices.length) {
+      res.status(500).send({
+        message: 'Cannot find Notice',
+      });
+    }
+    res.status(200).send( deleteDuplicate );
+  } catch (err) {
+    res.status(500).send({
+      message: err.toString(),
+    });
+  }
+};
+
 // workManual
 
 export const createWorkManual = async (req, res) => {
@@ -636,6 +675,7 @@ module.exports = {
   readOneNotice,
   readNotice,
   createNotice,
+  searchNotice,
   //workManual
   createWorkManual,
   readWorkManual,

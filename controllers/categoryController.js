@@ -1,5 +1,5 @@
 import Category from '../models/location/category';
-
+import Location from '../models/location/location';
 const createCategory = async (req, res) => {
   const { locationId } = req.params;
   const { name } = req.body;
@@ -11,7 +11,7 @@ const createCategory = async (req, res) => {
     const newCategory = new Category({ locationId, name });
     if (!newCategory) {
       res.status(500).send({
-        message: 'Cannot Create Category',
+        message: 'Cannot Create Category'
       });
     }
     await newCategory.save();
@@ -62,23 +62,29 @@ const updateCategory = async (req, res) => {
 };
 
 const deleteCategory = async (req, res) => {
-  const { categoryId } = req.params;
+  const { locationId, categoryId } = req.params;
 
   try {
-    const category = await Category.findByIdAndDelete({ _id: categoryId });
 
-    if (!category) {
-      res.status(500).send({
-        message: 'Cannot delete category',
+    const location = await Location.findById(locationId);
+
+    const judgeExistWorkManual = location.workManuals.filter(w => w.category_id.toString() === categoryId).length;
+
+    let category = undefined;
+
+    if(judgeExistWorkManual) {
+      throw new Error("Cannot Remove Category, Because Category have Workmanual");
+    }else
+      category = await Category.findByIdAndDelete({ _id: categoryId });
+
+      res.status(201).send({
+        success: true,
+        deletedCategory: category
       });
-    }
-
-    res.status(201).send({
-      deletedCategory: category,
-    });
   } catch (err) {
     res.status(500).send({
-      message: 'Cannot delete category',
+      success: false,
+      message: err.toString()
     });
   }
 };

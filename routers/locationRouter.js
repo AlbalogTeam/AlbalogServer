@@ -72,6 +72,12 @@ router.delete(
   locationController.deleteNotice
 );
 
+router.post(
+  '/notice/search',
+  userAuth,
+  locationController.searchNotice
+);
+
 //workManual
 router.post(
   '/:locationId/workmanual/create',
