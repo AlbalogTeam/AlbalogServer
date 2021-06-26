@@ -441,24 +441,22 @@ const searchNotice = async (req, res) => {
       });
     }
 
-    const findByContent = location.notices.map(n => {
-      if(n.content.indexOf(content) >= 0)
-        return n;
+    const findByContent = location.notices.map((n) => {
+      if (n.content.indexOf(content) >= 0) return n;
     });
-    const findByTitle = location.notices.map(n => {
-      if(n.title.indexOf(content) >= 0)
-        return n;
+    const findByTitle = location.notices.map((n) => {
+      if (n.title.indexOf(content) >= 0) return n;
     });
 
-    const finalNotices = [...findByContent, ...findByTitle].filter(n => (n!=null));
+    const finalNotices = [...findByContent, ...findByTitle].filter(
+      (n) => n != null
+    );
     const deleteDuplicate = [...new Set(finalNotices)];
 
-    if (!finalNotices.length) {
-      res.status(500).send({
-        message: 'Cannot find Notice',
-      });
+    if (finalNotices.length < 1) {
+      res.status(500).send([]);
     }
-    res.status(200).send( deleteDuplicate );
+    res.status(200).send(deleteDuplicate);
   } catch (err) {
     res.status(500).send({
       message: err.toString(),
