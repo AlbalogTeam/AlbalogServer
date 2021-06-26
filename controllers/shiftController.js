@@ -1,5 +1,5 @@
 import Location from '../models/location/location';
-import Employee from '../models/user/employee';
+import mongoose from 'mongoose';
 import Shift from '../models/schedule/shift';
 import getBetweenDates from '../utils/getDatesBetweenTwoDates';
 
@@ -54,10 +54,28 @@ const get_all_shifts = async (req, res) => {
   if (!locationId) return res.status(400).send('매장 정보가 없습니다');
 
   try {
-    const shifts = await Shift.find({ location: locationId }).populate('owner');
+    const shifts = await Shift.find({ location: locationId }).populate(
+      'owner',
+      'name'
+    );
+    const shiftObj = {
+      title: '',
+      start: '',
+      end: '',
+    };
+    const newShifts = shifts.map((d) => {
+      shiftObj.title = d.owner.name;
+      shiftObj.start = d.start;
+      shiftObj.end = d.end;
+      return shiftObj;
+    });
+
+    // console.log(newShifts);
+
     if (!shifts || shifts.length < 1)
       return res.status(400).send('등록된 스케줄이 없습니다');
-    res.send(shifts);
+
+    res.send(newShifts);
   } catch (error) {
     res.status(500).send(error.message);
   }
