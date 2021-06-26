@@ -454,7 +454,7 @@ const searchNotice = async (req, res) => {
     const deleteDuplicate = [...new Set(finalNotices)];
 
     if (finalNotices.length < 1) {
-      res.status(500).send([]);
+      res.status(200).send([]);
     }
     res.status(200).send(deleteDuplicate);
   } catch (err) {
