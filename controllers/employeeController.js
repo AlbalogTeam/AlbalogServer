@@ -157,8 +157,8 @@ const update_employee = async (req, res) => {
     req.staff.birthdate = birthdate;
     req.staff.password = newPassword;
 
-    await req.staff.save();
-    res.send(req.staff);
+    const staff = await req.staff.save();
+    res.send(staff);
   } catch (error) {
     res.status(400).send(error.toString());
   }
