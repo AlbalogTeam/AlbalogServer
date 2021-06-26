@@ -58,15 +58,13 @@ const get_all_shifts = async (req, res) => {
       'owner',
       'name'
     );
-    const shiftObj = {
-      title: '',
-      start: '',
-      end: '',
-    };
+
     const newShifts = shifts.map((d) => {
-      shiftObj.title = d.owner.name;
-      shiftObj.start = d.start;
-      shiftObj.end = d.end;
+      const shiftObj = {
+        title: d.owner.name,
+        start: d.start,
+        end: d.end,
+      };
       return shiftObj;
     });
 
