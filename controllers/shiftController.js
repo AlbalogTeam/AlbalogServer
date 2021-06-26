@@ -70,10 +70,7 @@ const get_all_shifts = async (req, res) => {
       return shiftObj;
     });
 
-    // console.log(newShifts);
-
-    if (!shifts || shifts.length < 1)
-      return res.status(400).json('등록된 스케줄이 없습니다');
+    if (!shifts || shifts.length < 1) return res.status(400).send([]);
 
     res.send(newShifts);
   } catch (error) {
