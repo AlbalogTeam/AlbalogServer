@@ -62,8 +62,8 @@ const get_all_shifts = async (req, res) => {
     const newShifts = shifts.map((d) => {
       const shiftObj = {
         title: d.owner.name,
-        start: d.start,
-        end: d.end,
+        start: new Date(new Date(d.start).getTime() - 540 * 60 * 1000),
+        end: new Date(new Date(d.end).getTime() - 540 * 60 * 1000),
       };
       return shiftObj;
     });
