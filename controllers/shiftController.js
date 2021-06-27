@@ -1,5 +1,5 @@
 import Location from '../models/location/location';
-import Employee from '../models/user/employee';
+import mongoose from 'mongoose';
 import Shift from '../models/schedule/shift';
 import getBetweenDates from '../utils/getDatesBetweenTwoDates';
 
@@ -29,6 +29,7 @@ const create_shift = async (req, res) => {
     const shift = await Shift.insertMany(datesArr);
 
     res.status(201).send(shift);
+
     // res.status(201).send(datesArr);
   } catch (error) {
     res.status(500).send(error.toString());
@@ -51,13 +52,28 @@ const get_shifts = async (req, res) => {
 //employees: get all shifts for current location
 const get_all_shifts = async (req, res) => {
   const { locationId } = req.params;
-  if (!locationId) return res.status(400).send('매장 정보가 없습니다');
+  if (!locationId) return res.status(400).json('매장 정보가 없습니다');
 
   try {
-    const shifts = await Shift.find({ location: locationId }).populate('owner');
-    if (!shifts || shifts.length < 1)
-      return res.status(400).send('등록된 스케줄이 없습니다');
-    res.send(shifts);
+    const shifts = await Shift.find({ location: locationId }).populate(
+      'owner',
+      'name'
+    );
+
+    const newShifts = shifts.map((d) => {
+      const shiftObj = {
+        title: d.owner.name,
+        // start: new Date(new Date(d.start).getTime() - 540 * 60 * 1000),
+        // end: new Date(new Date(d.end).getTime() - 540 * 60 * 1000),
+        start: d.start,
+        end: d.end,
+      };
+      return shiftObj;
+    });
+
+    if (!shifts || shifts.length < 1) return res.status(400).send([]);
+
+    res.send(newShifts);
   } catch (error) {
     res.status(500).send(error.message);
   }
