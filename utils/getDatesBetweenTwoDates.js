@@ -27,14 +27,20 @@ async function dateRange(
       //utc 0 db
       //server utc 0
 
-      const start_time = moment.utc(currentDate).offset(0, true).toDate();
-      const end_time = moment.utc(currentDate).offset(0, true).toDate();
+      const start_time = moment.utc(currentDate).toDate();
+      const end_time = moment.utc(currentDate).toDate();
+
       // const start_time = new Date(currentDate);
       // const end_time = new Date(currentDate);
       const st = d.start_time.split(':');
       const et = d.end_time.split(':');
-      start_time.setUTCHours(st[0], st[1]);
-      end_time.setUTCHours(et[0], et[1]);
+      // start_time.setUTCHours(st[0], st[1]);
+      // end_time.setUTCHours(et[0], et[1]);
+      start_time = moment
+        .utc(start_time)
+        .add(st[0], 'hours')
+        .add(st[1], 'minutes');
+      end_time = moment.utc(end_time).add(et[0], 'hours').add(et[1], 'minutes');
 
       dateArray.push({
         date: moment.utc(currentDate).toDate(),
@@ -46,7 +52,8 @@ async function dateRange(
       });
     });
     // Use UTC date to prevent problems with time zones and DST
-    currentDate.setUTCDate(currentDate.getUTCDate() + steps);
+    // currentDate.setUTCDate(currentDate.getUTCDate() + steps);
+    currentDate = moment.utc(currentDate).add(steps, 'days');
   }
 
   return dateArray;
