@@ -27,8 +27,8 @@ async function dateRange(
       //utc 0 db
       //server utc 0
 
-      const start_time = moment.utc(currentDate).offset(0, true).format();
-      const end_time = moment.utc(currentDate).offset(0, true).format();
+      const start_time = moment.utc(currentDate).offset(0, true).toDate();
+      const end_time = moment.utc(currentDate).offset(0, true).toDate();
       // const start_time = new Date(currentDate);
       // const end_time = new Date(currentDate);
       const st = d.start_time.split(':');
