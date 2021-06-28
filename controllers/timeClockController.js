@@ -1,5 +1,6 @@
 import Location from '../models/location/location';
 import Employee from '../models/user/employee';
+import mongoose from 'mongoose';
 
 //
 const startWork = async (req, res) => {
@@ -15,6 +16,7 @@ const startWork = async (req, res) => {
       res.status(500).send({
         message: 'Cannot Create TimeClock',
       });
+      return;
     }
 
     employee.timeClocks.push(timeClock);
@@ -35,7 +37,6 @@ const endWork = async (req, res) => {
     const employee = await Location.checkIfUserBelongsToLocation(locationId, req.staff._id);
 
     const timeClocks = employee.timeClocks;
-
 
     let updatedTimeClock;
     for(let timeClock of timeClocks) {
@@ -68,7 +69,7 @@ const endWork = async (req, res) => {
 };
 
 const readTimeClockForStaff = async (req, res) => {
-  const { locationId } = req.body;
+  const { locationId } = req.params;
   try {
     const location = await Location.findOne({
       _id: locationId,
@@ -76,9 +77,7 @@ const readTimeClockForStaff = async (req, res) => {
     });
 
     if (!location) {
-      res.status(400).send({
-        message: '해당 매장 정보를 찾을 수 없습니다.',
-      });
+      throw new Error("해당 매장 정보를 찾을수 없습니다.");
     }
 
     const staff = await Employee.findOne({
@@ -88,20 +87,17 @@ const readTimeClockForStaff = async (req, res) => {
     const timeClocks = staff.timeClocks;
 
     if (!timeClocks.length) {
-      res.status(500).send({
-        message: '아직 근무 하지 않으셨습니다.',
-      });
+      throw new Error("아직 근무하시지 않으셨습니다.");
     }
 
     res.status(201).send({
       timeClocks,
     });
   } catch (error) {
-    res.status(400).send(error);
+    res.status(400).send(error.toString());
   }
 };
 
-// 영훈님
 const readTimeClockForOwner = async (req, res) => {
   if (!req.owner) {
     res.status(500).send({
@@ -109,7 +105,7 @@ const readTimeClockForOwner = async (req, res) => {
     });
   }
 
-  const { locationId } = req.body;
+  const { locationId } = req.params;
 
   try {
     const location = await Location.findOne({
@@ -127,9 +123,9 @@ const readTimeClockForOwner = async (req, res) => {
     const allTimeClocks = [];
 
     for (let i = 0; i < employees.length; i++) {
-      const employee = await Employee.findById({ _id: employees[i]._id });
+      const employee = await Employee.findById( employees[i].employee );
       allTimeClocks.push({
-        id: employees[i]._id,
+        id: employees[i].employee,
         timeClocks: employee.timeClocks,
       });
     }
@@ -144,18 +140,19 @@ const readTimeClockForOwner = async (req, res) => {
       allTimeClocks,
     });
   } catch (error) {
-    res.status(400).send(error);
+    res.status(400).send(error.toString());
   }
 };
 
 const updateStartTime = async (req, res) => {
+
   try {
     if (!req.owner) {
       throw new Error('you are not owner');
     }
 
-    const { timeClockId } = req.params;
-    const { startTime, staffId } = req.body;
+    const {locationId} = req.params;
+    const { timeClockId, startTime, staffId } = req.body;
 
     const location = await Location.findOne({
       _id: locationId,
@@ -168,20 +165,19 @@ const updateStartTime = async (req, res) => {
       });
     }
 
-    const staff = Employee.findById({ _id: staffId });
+    const staff = await Employee.findById(staffId);
 
     const timeClocks = staff.timeClocks;
 
     let originTimeClock;
     for (let timeClock of timeClocks) {
-      if (timeClock._id.toString() === clockId) {
+      if (timeClock._id.toString() === timeClockId) {
         originTimeClock = timeClock;
         timeClock.start_time = startTime;
         break;
       }
     }
 
-    await timeClocks.save();
     await staff.save();
 
     if (!originTimeClock) {
@@ -206,7 +202,8 @@ const updateEndTime = async (req, res) => {
       throw new Error('you are not owner');
     }
 
-    const { clockId, endTime, staffId } = req.body;
+    const {locationId} = req.params;
+    const { timeClockId, endTime, staffId } = req.body;
 
     const location = await Location.findOne({
       _id: locationId,
@@ -219,20 +216,19 @@ const updateEndTime = async (req, res) => {
       });
     }
 
-    const staff = Employee.findById({ _id: staffId });
+    const staff = await Employee.findById(staffId);
 
     const timeClocks = staff.timeClocks;
 
     let originTimeClock;
     for (let timeClock of timeClocks) {
-      if (timeClock._id.toString() === clockId) {
+      if (timeClock._id.toString() === timeClockId) {
         originTimeClock = timeClock;
         timeClock.end_time = endTime;
         break;
       }
     }
 
-    await timeClocks.save();
     await staff.save();
 
     if (!originTimeClock) {
@@ -258,7 +254,8 @@ const deleteTimeClock = async (req, res) => {
     }
 
 
-    const { clockId, staffId } = req.body;
+    const { locationId } = req.params;
+    const { timeClockId, staffId } = req.body;
 
     const location = await Location.findOne({
       _id: locationId,
@@ -266,40 +263,37 @@ const deleteTimeClock = async (req, res) => {
     });
 
     if (!location) {
-      res.status(400).send({
-        message: '해당 매장 정보를 찾을 수 없습니다.',
-      });
+      throw new Error("해당 매장 정보를 찾을 수 없습니다.");
     }
 
-    const staff = Employee.findById({ _id: staffId });
+    const staff = await Employee.findById(staffId);
 
     const timeClocks = staff.timeClocks;
 
     let deletedTimeClock;
     for (let idx in timeClocks) {
-      if (timeClocks[idx]._id.toString() === clockId) {
+      const id = timeClocks[idx]._id;
+      if (id.equals(timeClockId)) {
         deletedTimeClock = timeClocks[idx];
         timeClocks.remove(idx);
         break;
       }
     }
 
-    await timeClocks.save();
-    await staff.save();
-
     if (!deletedTimeClock) {
       res.status(500).send({
         message: 'Cannot Delete TimeClock',
       });
+      return;
     }
+
+    await staff.save();
 
     res.status(201).send({
       deletedTimeClock: deletedTimeClock,
     });
   } catch (err) {
-    res.status(500).send({
-      message: err.toString(),
-    });
+    res.status(500).send(err.toString());
   }
 };
 
