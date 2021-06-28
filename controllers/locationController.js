@@ -23,7 +23,7 @@ const create_location = async (req, res) => {
 
     res.status(201).send({ location });
   } catch (error) {
-    res.status(500).send(error);
+    res.status(500).send(error.toString());
   }
 };
 
@@ -260,7 +260,9 @@ const createNotice = async (req, res) => {
     });
 
     const { title, content } = req.body;
-    const notice = { title, content };
+    const idx = !location.notices[location.notices.length-1] ? 0 : location.notices[location.notices.length-1].idx + 1;
+
+    const notice = { idx, title, content };
 
     if (!notice) {
       res.status(500).send({
