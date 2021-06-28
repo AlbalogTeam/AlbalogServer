@@ -126,16 +126,16 @@ const get_employee_locations = async (req, res) => {
 };
 
 const get_single_location = async (req, res) => {
-  const locationId = mongoose.Types.ObjectId(req.params.locationId);
+  const locationId = req.params.locationId;
   if (!req.staff) return res.status(400).send('권한이 없습니다');
   try {
     const location = await Location.findOne({
-      _id: locationId,
+      _id: mongoose.Types.ObjectId(locationId),
       'employees.employee': req.staff._id,
     }).populate('workManuals.category_id');
     res.send(location);
   } catch (error) {
-    res.status(500).send(error);
+    res.status(500).send(error.message);
   }
 };
 
@@ -157,8 +157,8 @@ const update_employee = async (req, res) => {
     req.staff.birthdate = birthdate;
     req.staff.password = newPassword;
 
-    await req.staff.save();
-    res.send(req.staff);
+    const staff = await req.staff.save();
+    res.send(staff);
   } catch (error) {
     res.status(400).send(error.toString());
   }

@@ -5,10 +5,10 @@ const shiftSchema = mongoose.Schema({
     type: Date,
     required: true,
   },
-  start_time: {
+  start: {
     type: Date,
   },
-  end_time: {
+  end: {
     type: Date,
   },
   day: {
@@ -18,6 +18,11 @@ const shiftSchema = mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     required: true,
     ref: 'Employee',
+  },
+  location: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: 'Location',
   },
 });
 
