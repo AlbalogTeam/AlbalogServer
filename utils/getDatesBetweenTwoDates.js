@@ -12,13 +12,10 @@ async function dateRange(
   const dateArray = [];
   const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   let currentDate = moment.utc(startDate).toDate();
-  const dd = moment.utc().format('yyyy-MM-DD  ');
-  console.log(dd);
 
   // const shift = await Shift.find({ owner: staffId, location: locationId });
 
   // // const scheduledDates = shift.map((d) => d.date.toDateString());
-  // // console.log(scheduledDates);
 
   while (currentDate <= moment.utc(endDate).toDate()) {
     time.forEach((d) => {
