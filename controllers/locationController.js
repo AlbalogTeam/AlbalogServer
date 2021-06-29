@@ -32,22 +32,42 @@ const get_location = async (req, res) => {
   const { locationId } = req.params;
 
   try {
-    const location = await Location.findOne({
-      _id: locationId,
-      owner: req.owner._id,
-    })
-      .populate('workManuals.category_id')
-      .populate('employees.employee')
-      .sort('notices.createdAt');
+    // const location = await Location.findOne({
+    //   _id: locationId,
+    //   owner: req.owner._id,
+    // })
+    //   .populate('workManuals.category_id')
+    //   .populate('employees.employee');
 
-    // const location = await Location.aggregate([
-    //   { $search: { _id: locationId } },
-    //   { $unwind: '$notices' },
-    //   { $sort: { 'notices.createdAt': 1 } },
-    // ]);
+    const location = await Location.aggregate([
+      {
+        $match: {
+          _id: mongoose.Types.ObjectId(locationId),
+          owner: mongoose.Types.ObjectId(req.owner._id),
+        },
+      },
+      { $unwind: { path: '$notices', preserveNullAndEmptyArrays: true } },
+      { $sort: { 'notices.createdAt': -1 } },
+      {
+        $group: {
+          _id: '$_id',
+          name: { $first: '$name' },
+          address: { $first: '$address' },
+          postal_code: { $first: '$postal_code' },
+          phone_number: { $first: '$phone_number' },
+          employees: { $first: '$employees' },
+          workManuals: { $first: '$workManuals' },
+          notices: { $push: '$notices' },
+          transitions: { $first: '$transitions' },
+        },
+      },
+    ]);
+    await Location.populate(location, {
+      path: 'employees.employee workManuals.category_id',
+    });
 
     if (!location) return res.status(403).send('해당 매장의 권한이없습니다');
-    res.send(location);
+    res.send(...location);
   } catch (error) {
     res.status(500).send({ error: error.toString() });
   }
@@ -423,24 +443,22 @@ const searchNotice = async (req, res) => {
       });
     }
 
-    const findByContent = location.notices.map(n => {
-      if(n.content.indexOf(content) >= 0)
-        return n;
+    const findByContent = location.notices.map((n) => {
+      if (n.content.indexOf(content) >= 0) return n;
     });
-    const findByTitle = location.notices.map(n => {
-      if(n.title.indexOf(content) >= 0)
-        return n;
+    const findByTitle = location.notices.map((n) => {
+      if (n.title.indexOf(content) >= 0) return n;
     });
 
-    const finalNotices = [...findByContent, ...findByTitle].filter(n => (n!=null));
+    const finalNotices = [...findByContent, ...findByTitle].filter(
+      (n) => n != null
+    );
     const deleteDuplicate = [...new Set(finalNotices)];
 
-    if (!finalNotices.length) {
-      res.status(500).send({
-        message: 'Cannot find Notice',
-      });
+    if (finalNotices.length < 1) {
+      res.status(200).send([]);
     }
-    res.status(200).send( deleteDuplicate );
+    res.status(200).send(deleteDuplicate);
   } catch (err) {
     res.status(500).send({
       message: err.toString(),
