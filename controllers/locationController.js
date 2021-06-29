@@ -472,7 +472,9 @@ export const createWorkManual = async (req, res) => {
   const { locationId } = req.params;
   const { title, content, category } = req.body;
 
-  if (!category)
+  const existCategory = await Category.findOne({_id: category, locationId});
+
+  if (!existCategory)
     return res.status(400).send('카테고리 id 혹은 정보가가 잘못되었습니다');
 
   const categoryId = mongoose.Types.ObjectId(category);
