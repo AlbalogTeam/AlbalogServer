@@ -14,7 +14,7 @@ router.get(
   timeClockController.readTimeClockForStaff
 );
 
-router.get(
+router.post(
   '/:locationId/owner',
   userAuth,
   timeClockController.readTimeClockForOwner
