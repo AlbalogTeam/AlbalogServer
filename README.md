@@ -196,6 +196,13 @@
 
 <details>
  <summary>4주차</summary>
+ 
+ ### Fix
+ - 관리자, 직원 deleted된 workManual 정보를 제공하지 않게함
+ - workManual, Category, WorkManual에 deleted field 추가
+ - TimeClock 일급, 월급 정보 제공
+ - TimeClock for Owner 해당하는 년, 월 기준으로 TimeClock 정보 제공
+ - 
 
 - 급여관리
 - 아이디, 비밀번호 찾기 BackEnd
