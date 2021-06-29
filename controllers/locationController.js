@@ -66,9 +66,7 @@ const get_location = async (req, res) => {
       path: 'employees.employee workManuals.category_id',
     });
 
-    const workManuals = location[0].workManuals;
-
-    location[0].workManuals = workManuals.filter(n => !n.deleted);
+    location[0].workManuals = location[0].workManuals.filter(n => !n.deleted);
 
     if (!location) return res.status(403).send('해당 매장의 권한이없습니다');
     res.send(...location);

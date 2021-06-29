@@ -133,6 +133,7 @@ const get_single_location = async (req, res) => {
       _id: mongoose.Types.ObjectId(locationId),
       'employees.employee': req.staff._id,
     }).populate('workManuals.category_id');
+    location.workManuals = location.workManuals.filter(n => !n.deleted);
     res.send(location);
   } catch (error) {
     res.status(500).send(error.message);
