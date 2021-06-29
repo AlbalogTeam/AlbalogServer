@@ -134,6 +134,10 @@ const locationSchema = new mongoose.Schema(
               type: mongoose.SchemaTypes.ObjectId,
               ref: 'Category',
             },
+            deleted: {
+              type: Boolean,
+              default: false
+            }
           },
           { timestamps: true }
         ),

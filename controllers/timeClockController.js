@@ -1,8 +1,7 @@
 import Location from '../models/location/location';
 import Employee from '../models/user/employee';
-import mongoose from 'mongoose';
+import moment from 'moment';
 
-//
 const startWork = async (req, res) => {
   const { locationId, start_time, wage } = req.body;
 
@@ -20,11 +19,11 @@ const startWork = async (req, res) => {
     }
 
     employee.timeClocks.push(timeClock);
-    await employee.save();
+    const result = await employee.save();
 
-    res.status(201).send({
-      timeClock,
-    });
+    res.status(201).send(
+      result.timeClocks[result.timeClocks.length-1]
+    );
   } catch (error) {
     res.status(400).send(error.toString());
   }
@@ -42,6 +41,15 @@ const endWork = async (req, res) => {
     for(let timeClock of timeClocks) {
       if(timeClock._id.toString() === timeClockId) {
         updatedTimeClock = timeClock;
+        const start = timeClock.start_time;
+        const end = moment(end_time).format();
+
+        if(moment(start).isAfter(end)) {
+          throw new Error("잘못된 퇴근 정보입니다.");
+        }
+
+        timeClock.total = moment.duration(moment(end_time).diff(start)).asMinutes()*145;
+
         !timeClock.end_time
             ? (timeClock.end_time = end_time)
             : res.status(500).send({ message: '이미 퇴근 처리가 완료되었습니다.' });
@@ -56,13 +64,11 @@ const endWork = async (req, res) => {
       });
     }
 
-
-
     await employee.save();
 
-    res.status(201).send({
-      updatedTimeClock,
-    });
+    res.status(201).send(
+      updatedTimeClock
+    );
   } catch (error) {
     res.status(400).send(error.toString());
   }
@@ -106,6 +112,9 @@ const readTimeClockForOwner = async (req, res) => {
   }
 
   const { locationId } = req.params;
+  const { year, month } = req.body;
+
+  console.log(year,month);
 
   try {
     const location = await Location.findOne({
@@ -124,9 +133,19 @@ const readTimeClockForOwner = async (req, res) => {
 
     for (let i = 0; i < employees.length; i++) {
       const employee = await Employee.findById( employees[i].employee );
+      const timeClocks = employee.timeClocks;
+
+      const finalClocks = timeClocks.filter(v =>
+        (moment(v.start_time, 'YYYY/MM/DD').format('M').toString() === month
+          && moment(v.start_time, 'YYYY/MM/DD').format('YYYY').toString() === year));
+      let sum = 0;
+      finalClocks.map(v => {
+        sum+=v.total;
+      })
       allTimeClocks.push({
-        id: employees[i].employee,
-        timeClocks: employee.timeClocks,
+        name: employee.name,
+        timeClocks: finalClocks,
+        monthWage: sum
       });
     }
 
@@ -136,9 +155,9 @@ const readTimeClockForOwner = async (req, res) => {
       });
     }
 
-    res.status(201).send({
+    res.status(201).send(
       allTimeClocks,
-    });
+    );
   } catch (error) {
     res.status(400).send(error.toString());
   }
