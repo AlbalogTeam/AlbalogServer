@@ -28,7 +28,7 @@ const readCategory = async (req, res) => {
   const { locationId } = req.params;
 
   try {
-    const categories = await Category.find({ locationId });
+    const categories = await Category.find({ locationId, deleted: false });
 
     res.status(200).send(categories);
   } catch (err) {
