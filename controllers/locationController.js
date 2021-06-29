@@ -66,6 +66,10 @@ const get_location = async (req, res) => {
       path: 'employees.employee workManuals.category_id',
     });
 
+    const workManuals = location[0].workManuals;
+
+    location[0].workManuals = workManuals.filter(n => !n.deleted);
+
     if (!location) return res.status(403).send('해당 매장의 권한이없습니다');
     res.send(...location);
   } catch (error) {
@@ -538,7 +542,7 @@ export const readWorkManual = async (req, res) => {
 
     const manualObject = {
       location: location.name,
-      workManuals: location.workManuals,
+      workManuals: location.workManuals.filter(v => v.deleted === false)
     };
 
     res.status(200).send(manualObject);
@@ -551,35 +555,32 @@ export const readWorkManual = async (req, res) => {
 
 const readOneWorkManual = async (req, res) => {
   try {
-    const { locationId, _id } = req.params;
 
     const location = await Location.findOne({
-      _id: locationId,
-      owner: req.owner._id,
+      _id: req.params.locationId,
+      owner: req.owner._id
     });
+
+    console.log(location);
 
     if (!location) {
       res.status(400).send({
         message: '해당 매장 정보를 찾을 수 없습니다.',
       });
+      return;
     }
 
-    const workManual = location.workManuals.filter(
-      (w) => w._id.toString() === _id
-    );
-
+    const workManual = location.workManuals.filter(w => (w._id.toString() === req.params._id) && (w.deleted === false));
     if (!workManual) {
       res.status(500).send({
-        message: 'Cannot find One Manual',
+        message: 'Cannot find One Manual'
       });
     }
     res.status(201).send({
       workManual,
     });
   } catch (err) {
-    res.status(500).send({
-      message: err,
-    });
+    res.status(500).send(err.toString());
   }
 };
 
@@ -606,7 +607,7 @@ const updateWorkManual = async (req, res) => {
     const workManuals = location.workManuals;
     let originManual;
     for (let workManual of workManuals) {
-      if (workManual._id.toString() === _id) {
+      if (workManual._id.toString() === _id && !workManual.deleted) {
         workManual.title = title;
         workManual.content = content;
         workManual.category_id = category;
@@ -658,15 +659,15 @@ const deleteWorkManual = async (req, res) => {
     for (let idx in workManuals) {
       const workManual = workManuals[idx];
       if (workManual._id.toString() === _id) {
+        workManual.deleted = true;
         deletedWorkManual = workManual;
-        workManual.remove(idx);
         break;
       }
     }
 
     if (!deletedWorkManual) {
       res.status(500).send({
-        message: 'Cannot Delete Manual',
+        message: 'Cannot Delete Manual'
       });
     }
 
