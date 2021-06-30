@@ -453,7 +453,7 @@ const searchNotice = async (req, res) => {
     });
 
     const finalNotices = [...findByContent, ...findByTitle].filter(
-      (n) => n != null
+      n => n != null
     );
     const deleteDuplicate = [...new Set(finalNotices)];
 
@@ -559,7 +559,6 @@ const readOneWorkManual = async (req, res) => {
       owner: req.owner._id
     });
 
-    console.log(location);
 
     if (!location) {
       res.status(400).send({
