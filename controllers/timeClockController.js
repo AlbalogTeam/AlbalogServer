@@ -75,7 +75,10 @@ const endWork = async (req, res) => {
 };
 
 const readTimeClockForStaff = async (req, res) => {
+
   const { locationId } = req.params;
+  const { year, month } = req.body;
+
   try {
     const location = await Location.findOne({
       _id: locationId,
@@ -113,7 +116,6 @@ const readTimeClockForOwner = async (req, res) => {
 
   const { locationId } = req.params;
   const { year, month } = req.body;
-
 
   try {
     const location = await Location.findOne({
