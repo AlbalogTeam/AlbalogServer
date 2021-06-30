@@ -77,7 +77,6 @@ const endWork = async (req, res) => {
 const readTimeClockForStaff = async (req, res) => {
 
   const { locationId } = req.params;
-  const { year, month } = req.body;
 
   try {
     const location = await Location.findOne({
@@ -95,23 +94,48 @@ const readTimeClockForStaff = async (req, res) => {
 
     const timeClocks = staff.timeClocks;
 
-    const finalClocks = timeClocks.filter(v =>
-      (moment(v.start_time, 'YYYY/MM/DD').format('M').toString() === month
-        && moment(v.start_time, 'YYYY/MM/DD').format('YYYY').toString() === year));
-    let sum = 0;
-    console.log(finalClocks);
-    finalClocks.map(v => {
-      sum+=v.total;
+
+    const result = [];
+    const finalClocks = timeClocks.map(v => {
+      const yearAndMonth = moment(v.start_time).format("YYYYMM");
+      const newClock = {
+        start_time: moment(v.start_time).format("MMDD"),
+        workTime: `${moment(v.start_time).format("hhmm")}-${moment(v.end_time).format("hhmm")}`,
+        total: v.total
+      }
+      if(!result[yearAndMonth])
+        result[yearAndMonth] = [];
+
+        result[yearAndMonth].push(newClock);
+
+
     })
+
+    const formatedResult = result.map((v, i) => {
+      let sum = 0;
+      for(let timeClock of v) {
+        sum+=timeClock.total;
+      }
+
+      const formatedData = {
+        yearAndMonth:i,
+        timeClock: v,
+        monthWage: sum
+      }
+      return formatedData;
+    });
+
+
+
+
 
     if (!timeClocks.length) {
       throw new Error("아직 근무하시지 않으셨습니다.");
     }
 
-    res.status(201).send({
-      finalClocks,
-      monthWage: sum
-    });
+    res.status(201).send(
+      formatedResult.filter(v => v !== null)
+    );
   } catch (error) {
     res.status(400).send(error.toString());
   }
