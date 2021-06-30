@@ -3,13 +3,13 @@ import Employee from '../models/user/employee';
 import moment from 'moment';
 
 const startWork = async (req, res) => {
-  const { locationId, start_time, wage } = req.body;
+  const {locationId, start_time, wage} = req.body;
 
   try {
 
     const employee = await Location.checkIfUserBelongsToLocation(locationId, req.staff._id);
 
-    const timeClock = { start_time, wage };
+    const timeClock = {start_time, wage};
 
     if (!timeClock) {
       res.status(500).send({
@@ -22,7 +22,7 @@ const startWork = async (req, res) => {
     const result = await employee.save();
 
     res.status(201).send(
-      result.timeClocks[result.timeClocks.length-1]
+      result.timeClocks[result.timeClocks.length - 1]
     );
   } catch (error) {
     res.status(400).send(error.toString());
@@ -30,7 +30,7 @@ const startWork = async (req, res) => {
 };
 
 const endWork = async (req, res) => {
-  const { locationId, timeClockId, end_time } = req.body;
+  const {locationId, timeClockId, end_time} = req.body;
 
   try {
     const employee = await Location.checkIfUserBelongsToLocation(locationId, req.staff._id);
@@ -38,21 +38,21 @@ const endWork = async (req, res) => {
     const timeClocks = employee.timeClocks;
 
     let updatedTimeClock;
-    for(let timeClock of timeClocks) {
-      if(timeClock._id.toString() === timeClockId) {
+    for (let timeClock of timeClocks) {
+      if (timeClock._id.toString() === timeClockId) {
         updatedTimeClock = timeClock;
         const start = timeClock.start_time;
         const end = moment(end_time).format();
 
-        if(moment(start).isAfter(end)) {
+        if (moment(start).isAfter(end)) {
           throw new Error("잘못된 퇴근 정보입니다.");
         }
 
-        timeClock.total = moment.duration(moment(end_time).diff(start)).asMinutes()*145;
+        timeClock.total = moment.duration(moment(end_time).diff(start)).asMinutes() * 145;
 
         !timeClock.end_time
-            ? (timeClock.end_time = end_time)
-            : res.status(500).send({ message: '이미 퇴근 처리가 완료되었습니다.' });
+          ? (timeClock.end_time = end_time)
+          : res.status(500).send({message: '이미 퇴근 처리가 완료되었습니다.'});
 
         break;
       }
@@ -76,7 +76,7 @@ const endWork = async (req, res) => {
 
 const readTimeClockForStaff = async (req, res) => {
 
-  const { locationId } = req.params;
+  const {locationId} = req.params;
 
   try {
     const location = await Location.findOne({
@@ -94,7 +94,6 @@ const readTimeClockForStaff = async (req, res) => {
 
     const timeClocks = staff.timeClocks;
 
-
     const result = [];
     const finalClocks = timeClocks.map(v => {
       const yearAndMonth = moment(v.start_time).format("YYYYMM");
@@ -103,31 +102,27 @@ const readTimeClockForStaff = async (req, res) => {
         workTime: `${moment(v.start_time).format("hhmm")}-${moment(v.end_time).format("hhmm")}`,
         total: v.total
       }
-      if(!result[yearAndMonth])
+
+      if (!result[yearAndMonth])
         result[yearAndMonth] = [];
 
-        result[yearAndMonth].push(newClock);
-
+      result[yearAndMonth].push(newClock);
 
     })
 
     const formatedResult = result.map((v, i) => {
       let sum = 0;
-      for(let timeClock of v) {
-        sum+=timeClock.total;
+      for (let timeClock of v) {
+        sum += timeClock.total;
       }
 
       const formatedData = {
-        yearAndMonth:i,
+        yearAndMonth: i,
         timeClock: v,
         monthWage: sum
       }
       return formatedData;
     });
-
-
-
-
 
     if (!timeClocks.length) {
       throw new Error("아직 근무하시지 않으셨습니다.");
@@ -148,8 +143,8 @@ const readTimeClockForOwner = async (req, res) => {
     });
   }
 
-  const { locationId } = req.params;
-  const { year, month } = req.body;
+  const {locationId} = req.params;
+  const {year, month} = req.body;
 
   try {
     const location = await Location.findOne({
@@ -167,7 +162,7 @@ const readTimeClockForOwner = async (req, res) => {
     const allTimeClocks = [];
 
     for (let i = 0; i < employees.length; i++) {
-      const employee = await Employee.findById( employees[i].employee );
+      const employee = await Employee.findById(employees[i].employee);
       const timeClocks = employee.timeClocks;
 
       const finalClocks = timeClocks.filter(v =>
@@ -175,7 +170,7 @@ const readTimeClockForOwner = async (req, res) => {
           && moment(v.start_time, 'YYYY/MM/DD').format('YYYY').toString() === year));
       let sum = 0;
       finalClocks.map(v => {
-        sum+=v.total;
+        sum += v.total;
       })
       allTimeClocks.push({
         name: employee.name,
@@ -206,7 +201,7 @@ const updateStartTime = async (req, res) => {
     }
 
     const {locationId} = req.params;
-    const { timeClockId, startTime, staffId } = req.body;
+    const {timeClockId, startTime, staffId} = req.body;
 
     const location = await Location.findOne({
       _id: locationId,
@@ -257,7 +252,7 @@ const updateEndTime = async (req, res) => {
     }
 
     const {locationId} = req.params;
-    const { timeClockId, endTime, staffId } = req.body;
+    const {timeClockId, endTime, staffId} = req.body;
 
     const location = await Location.findOne({
       _id: locationId,
@@ -308,8 +303,8 @@ const deleteTimeClock = async (req, res) => {
     }
 
 
-    const { locationId } = req.params;
-    const { timeClockId, staffId } = req.body;
+    const {locationId} = req.params;
+    const {timeClockId, staffId} = req.body;
 
     const location = await Location.findOne({
       _id: locationId,
