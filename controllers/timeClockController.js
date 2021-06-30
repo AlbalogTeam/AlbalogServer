@@ -95,12 +95,22 @@ const readTimeClockForStaff = async (req, res) => {
 
     const timeClocks = staff.timeClocks;
 
+    const finalClocks = timeClocks.filter(v =>
+      (moment(v.start_time, 'YYYY/MM/DD').format('M').toString() === month
+        && moment(v.start_time, 'YYYY/MM/DD').format('YYYY').toString() === year));
+    let sum = 0;
+    console.log(finalClocks);
+    finalClocks.map(v => {
+      sum+=v.total;
+    })
+
     if (!timeClocks.length) {
       throw new Error("아직 근무하시지 않으셨습니다.");
     }
 
     res.status(201).send({
-      timeClocks,
+      finalClocks,
+      monthWage: sum
     });
   } catch (error) {
     res.status(400).send(error.toString());
