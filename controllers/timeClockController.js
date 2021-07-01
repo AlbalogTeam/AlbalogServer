@@ -192,9 +192,6 @@ const readTimeClockForOwner = async (req, res) => {
       finalClocks.map(v => {
         timeSum += v.totalWorkTime;
         sum += v.total;
-        v.start_time = moment(v.startTime, 'YYYY/MM/DD');
-        v.end_time = moment(v.endTime, 'YYYY/MM/DD');
-        return v;
       });
 
       allTimeClocks.push({
@@ -212,7 +209,7 @@ const readTimeClockForOwner = async (req, res) => {
     }
 
     res.status(201).send(
-      allTimeClocks,
+      allTimeClocks
     );
   } catch (error) {
     res.status(400).send(error.toString());
