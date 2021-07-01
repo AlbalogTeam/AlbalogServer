@@ -9,6 +9,22 @@ const startWork = async (req, res) => {
 
     const employee = await Location.checkIfUserBelongsToLocation(locationId, req.staff._id);
 
+    const timeClocks = employee.timeClocks;
+
+    console.log(timeClocks);
+    const judge = timeClocks.filter(t => {
+      console.log(moment(t.start_time, 'YYYY-MM-DD').toString() , moment(start_time,'YYYY-MM-DD').toString())
+      return moment(t.start_time, 'YYYY-MM-DD').isSame(moment(start_time,'YYYY-MM-DD'));
+    })
+    console.log(judge);
+    if(judge.length){
+      res.status(500).send({
+        message: '오늘은 이미 출근하셨습니다.'
+      });
+      return;
+    }
+
+
     const timeClock = {start_time, wage};
 
     if (!timeClock) {
@@ -48,7 +64,8 @@ const endWork = async (req, res) => {
           throw new Error("잘못된 퇴근 정보입니다.");
         }
 
-        timeClock.total = moment.duration(moment(end_time).diff(start)).asMinutes() * 145;
+        timeClock.totalWorkTime = moment.duration(moment(end_time).diff(start)).asMinutes();
+        timeClock.total = parseInt(timeClock.totalWorkTime * (timeClock.wage/60));
 
         !timeClock.end_time
           ? (timeClock.end_time = end_time)
@@ -137,6 +154,7 @@ const readTimeClockForStaff = async (req, res) => {
 };
 
 const readTimeClockForOwner = async (req, res) => {
+
   if (!req.owner) {
     res.status(500).send({
       message: 'You are not Owner',
@@ -164,17 +182,25 @@ const readTimeClockForOwner = async (req, res) => {
     for (let i = 0; i < employees.length; i++) {
       const employee = await Employee.findById(employees[i].employee);
       const timeClocks = employee.timeClocks;
-
+      if(!timeClocks.length) continue;
       const finalClocks = timeClocks.filter(v =>
         (moment(v.start_time, 'YYYY/MM/DD').format('M').toString() === month
           && moment(v.start_time, 'YYYY/MM/DD').format('YYYY').toString() === year));
+
       let sum = 0;
+      let timeSum = 0;
       finalClocks.map(v => {
+        timeSum += v.totalWorkTime;
         sum += v.total;
-      })
+        v.start_time = moment(v.startTime, 'YYYY/MM/DD');
+        v.end_time = moment(v.endTime, 'YYYY/MM/DD');
+        return v;
+      });
+
       allTimeClocks.push({
         name: employee.name,
         timeClocks: finalClocks,
+        monthTime: timeSum,
         monthWage: sum
       });
     }
