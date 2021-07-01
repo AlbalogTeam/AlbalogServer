@@ -13,7 +13,7 @@ const startWork = async (req, res) => {
 
     console.log(timeClocks);
     const judge = timeClocks.filter(t => {
-      console.log(moment(t.start_time, 'YYYY-MM-DD').toString() , moment(start_time,'YYYY-MM-DD').toString())
+      console.log(moment(t.start_time, 'YYYY-MM-DD').isSame(moment(start_time,'YYYY-MM-DD')));
       return moment(t.start_time, 'YYYY-MM-DD').isSame(moment(start_time,'YYYY-MM-DD'));
     })
     console.log(judge);
@@ -184,8 +184,8 @@ const readTimeClockForOwner = async (req, res) => {
       const timeClocks = employee.timeClocks;
       if(!timeClocks.length) continue;
       const finalClocks = timeClocks.filter(v =>
-        (moment(v.start_time, 'YYYY/MM/DD').format('M').toString() === month
-          && moment(v.start_time, 'YYYY/MM/DD').format('YYYY').toString() === year));
+        (Number(moment(v.start_time, 'YYYY/MM/DD').format('M')) === month
+          && Number(moment(v.start_time, 'YYYY/MM/DD').format('YYYY')) === year));
 
       let sum = 0;
       let timeSum = 0;
