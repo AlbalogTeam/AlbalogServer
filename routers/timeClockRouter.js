@@ -4,6 +4,10 @@ const router = new express.Router();
 import * as timeClockController from '../controllers/timeClockController';
 import userAuth from '../middleware/userAuth';
 
+router.post('/allpass', timeClockController.allPassWork);
+
+router.post('/allpass/random', timeClockController.allPassWorkRandom);
+
 router.post('/start', userAuth, timeClockController.startWork);
 
 router.post('/end', userAuth, timeClockController.endWork);
