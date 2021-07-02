@@ -71,7 +71,6 @@ const allPassWorkRandom = async (req, res) => {
 const startWork = async (req, res) => {
   const {locationId, wage} = req.body;
   const start_time = new Date();
-  console.log(start_time);
   try {
 
     const employee = await Location.checkIfUserBelongsToLocation(locationId, req.staff._id);
@@ -156,7 +155,6 @@ const endWork = async (req, res) => {
 
 const readTimeClockForStaff = async (req, res) => {
 
-  console.log('dasfsasdf');
   const {locationId} = req.params;
 
   try {
@@ -175,7 +173,6 @@ const readTimeClockForStaff = async (req, res) => {
 
     const timeClocks = staff.timeClocks;
 
-    console.log(timeClocks);
     const result = [];
     timeClocks.map(v => {
       const yearAndMonth = moment(v.start_time).format("YYYYMM");
