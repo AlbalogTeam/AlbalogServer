@@ -1,6 +1,72 @@
 import Location from '../models/location/location';
 import Employee from '../models/user/employee';
 import moment from 'moment';
+import momentRandom from 'moment-random';
+
+const allPassWork = async (req, res) => {
+
+  const {locationId, wage, workerId} = req.body;
+
+  const start_time = moment().format('YYYY-MM-DD HH:mm');
+  const end_time = momentRandom(moment(start_time).endOf('day'), start_time).format('YYYY-MM-DD HH:mm');
+
+  try {
+
+    const employee = await Location.checkIfUserBelongsToLocation(locationId, workerId);
+
+    const totalWorkTime = parseInt(moment.duration(moment(end_time).diff(start_time)).asMinutes());
+
+    const timeClock = {
+      start_time,
+      end_time,
+      wage,
+      total: totalWorkTime*parseInt(wage/60),
+      totalWorkTime
+    };
+
+    employee.timeClocks.push(timeClock);
+    const result = await employee.save();
+
+    res.status(201).send(
+      result.timeClocks[result.timeClocks.length - 1]
+    );
+  } catch (error) {
+    res.status(400).send(error.toString());
+  }
+};
+
+const allPassWorkRandom = async (req, res) => {
+
+  const {locationId, wage, workerId, year, month} = req.body;
+  const  fullYear = year.concat(month);
+
+  const start_time = moment(momentRandom(moment(fullYear).endOf('month'), moment(fullYear).startOf('month'))).format('YYYY-MM-DD HH:mm');
+  const end_time = momentRandom(moment(start_time).endOf('day'), start_time).format('YYYY-MM-DD HH:mm');
+
+  try {
+
+    const employee = await Location.checkIfUserBelongsToLocation(locationId, workerId);
+
+    const totalWorkTime = parseInt(moment.duration(moment(end_time).diff(start_time)).asMinutes());
+
+    const timeClock = {
+      start_time,
+      end_time,
+      wage,
+      total: totalWorkTime*parseInt(wage/60),
+      totalWorkTime
+    };
+
+    employee.timeClocks.push(timeClock);
+    const result = await employee.save();
+
+    res.status(201).send(
+      result.timeClocks[result.timeClocks.length - 1]
+    );
+  } catch (error) {
+    res.status(400).send(error.toString());
+  }
+};
 
 const startWork = async (req, res) => {
   const {locationId, wage} = req.body;
@@ -371,6 +437,8 @@ const deleteTimeClock = async (req, res) => {
 };
 
 module.exports = {
+  allPassWork,
+  allPassWorkRandom,
   startWork,
   endWork,
   readTimeClockForStaff,
