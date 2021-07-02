@@ -93,6 +93,7 @@ const endWork = async (req, res) => {
 
 const readTimeClockForStaff = async (req, res) => {
 
+  console.log('dasfsasdf');
   const {locationId} = req.params;
 
   try {
@@ -111,14 +112,17 @@ const readTimeClockForStaff = async (req, res) => {
 
     const timeClocks = staff.timeClocks;
 
+    console.log(timeClocks);
     const result = [];
-    const finalClocks = timeClocks.map(v => {
+    timeClocks.map(v => {
       const yearAndMonth = moment(v.start_time).format("YYYYMM");
       const newClock = {
         start_time: moment(v.start_time).format("MMDD"),
         workTime: `${moment(v.start_time).format("hhmm")}-${moment(v.end_time).format("hhmm")}`,
+        workInToday: moment.duration(moment(v.end_time).diff(v.start_time)).asMinutes(),
         total: v.total
       }
+
 
       if (!result[yearAndMonth])
         result[yearAndMonth] = [];
