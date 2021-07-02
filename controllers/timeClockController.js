@@ -3,20 +3,16 @@ import Employee from '../models/user/employee';
 import moment from 'moment';
 
 const startWork = async (req, res) => {
-  const {locationId, start_time, wage} = req.body;
-
+  const {locationId, wage} = req.body;
+  const start_time = new Date();
+  console.log(start_time);
   try {
 
     const employee = await Location.checkIfUserBelongsToLocation(locationId, req.staff._id);
 
     const timeClocks = employee.timeClocks;
 
-    console.log(timeClocks);
-    const judge = timeClocks.filter(t => {
-      console.log(moment(t.start_time, 'YYYY-MM-DD').isSame(moment(start_time,'YYYY-MM-DD')));
-      return moment(t.start_time, 'YYYY-MM-DD').isSame(moment(start_time,'YYYY-MM-DD'));
-    })
-    console.log(judge);
+    const judge = timeClocks.filter(t => moment(t.start_time).format('YYYY-MM-DD') === moment(start_time).format('YYYY-MM-DD'));
     if(judge.length){
       res.status(500).send({
         message: '오늘은 이미 출근하셨습니다.'
@@ -46,7 +42,8 @@ const startWork = async (req, res) => {
 };
 
 const endWork = async (req, res) => {
-  const {locationId, timeClockId, end_time} = req.body;
+  const {locationId, timeClockId} = req.body;
+  const end_time = new Date();
 
   try {
     const employee = await Location.checkIfUserBelongsToLocation(locationId, req.staff._id);
@@ -64,7 +61,7 @@ const endWork = async (req, res) => {
           throw new Error("잘못된 퇴근 정보입니다.");
         }
 
-        timeClock.totalWorkTime = moment.duration(moment(end_time).diff(start)).asMinutes();
+        timeClock.totalWorkTime = parseInt(moment.duration(moment(end_time).diff(start)).asMinutes());
         timeClock.total = parseInt(timeClock.totalWorkTime * (timeClock.wage/60));
 
         !timeClock.end_time
@@ -119,7 +116,7 @@ const readTimeClockForStaff = async (req, res) => {
       const newClock = {
         start_time: moment(v.start_time).format("MMDD"),
         workTime: `${moment(v.start_time).format("hhmm")}-${moment(v.end_time).format("hhmm")}`,
-        workInToday: moment.duration(moment(v.end_time).diff(v.start_time)).asMinutes(),
+        workInToday: parseInt(moment.duration(moment(v.end_time).diff(v.start_time)).asMinutes()),
         total: v.total
       }
 
