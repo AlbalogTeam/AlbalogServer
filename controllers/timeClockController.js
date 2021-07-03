@@ -10,6 +10,8 @@ const allPassWork = async (req, res) => {
   const start_time = moment().format('YYYY-MM-DD HH:mm');
   const end_time = momentRandom(moment(start_time).endOf('day'), start_time).format('YYYY-MM-DD HH:mm');
 
+
+
   try {
 
     const employee = await Location.checkIfUserBelongsToLocation(locationId, workerId);
@@ -175,7 +177,7 @@ const readTimeClockForStaff = async (req, res) => {
 
     const result = [];
     timeClocks.map(v => {
-      const yearAndMonth = moment(v.start_time).format("YYYYMM");
+      const yearAndMonth = moment(v.start_time).format("YYYY-MM");
       const newClock = {
         start_time: moment(v.start_time).format("MMDD"),
         workTime: `${moment(v.start_time).format("hhmm")}-${moment(v.end_time).format("hhmm")}`,
