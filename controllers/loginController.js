@@ -65,11 +65,64 @@ const find_password = async (req, res) => {
       sendResetPasswordEmail(staff.name, email, invite._id);
       res.send(staff.name, email, invite._id);
     } else if (owner && staff) {
-      res.status(400).send('같은 이메일이 직원과 관리자 둘다있음');
+      res.status(400).send('같은 이메일이 직원과 관리자에 둘다있음');
     }
   } catch (error) {
     res.status(500).send(error.message);
   }
 };
-const change_password = async (req, res) => {};
-module.exports = { login_user, find_password, change_password };
+const send_user_info = async (req, res) => {
+  const { tokenId } = req.params;
+  try {
+    const isValidInviteToken = await Invite.findById(tokenId);
+
+    if (!isValidInviteToken)
+      return res.status(400).send('토큰정보가 유효하지 않습니다');
+    else return res.send('토큰 유효함! 비번 변경 가능');
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
+
+const reset_password = async (req, res) => {
+  const { tokenId, newPassword } = req.body;
+  try {
+    const isValidInviteToken = await Invite.findById(tokenId);
+
+    if (!isValidInviteToken)
+      return res.status(400).send('토큰정보가 유효하지 않습니다');
+
+    const decoded = jwt.verify(
+      isValidInviteToken.invite_token,
+      process.env.JWT_SECRET
+    );
+
+    const owner = await Employer.findOne({
+      name: decoded.name,
+      email: decoded.email,
+    });
+    const staff = await Employee.findOne({
+      name: decoded.name,
+      email: decoded.email,
+    });
+
+    if (!owner && !staff)
+      return res.status(400).send('사용자를 찾을 수 없습니다');
+
+    if (owner && !staff) {
+      owner.password = newPassword;
+      await owner.save();
+
+      return res.send({ message: '비밀번호가 변경되었습니다', owner });
+    } else if (!owner && staff) {
+      staff.password = newPassword;
+      await staff.save();
+
+      return res.send({ message: '비밀번호가 변경되었습니다', staff });
+    } else return res.send('같은 이메일이 직원과 관리자에 둘다있음');
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
+
+module.exports = { login_user, find_password, send_user_info, reset_password };

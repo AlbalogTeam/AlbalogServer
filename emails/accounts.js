@@ -20,12 +20,12 @@ const sendLocationAddedEmail = (name, email, location) => {
   });
 };
 
-const sendResetPasswordEmail = (name, email) => {
+const sendResetPasswordEmail = (name, email, tokenId) => {
   sgMail.send({
     to: email,
     from: 'dongwan.don.kim@gmail.com',
     subject: '알바로그: 비밀번호 변경',
-    html: `안녕하세요, ${name}님. <br> <a href="http://localhost:3000/reset_password" to=_blank>링크</a>를 눌러 비밀번호를 변경하세요`,
+    html: `안녕하세요, ${name}님. <br> <a href="http://localhost:3000/reset_password/${tokenId}" to=_blank>링크</a>를 눌러 비밀번호를 변경하세요`,
   });
 };
 
