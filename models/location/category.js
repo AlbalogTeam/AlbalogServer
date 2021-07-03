@@ -11,6 +11,10 @@ const categorySchema = mongoose.Schema({
     required: true,
     trim: true,
   },
+  deleted: {
+    type: Boolean,
+    default: false
+  }
 });
 
 const Category = mongoose.model('Category', categorySchema);

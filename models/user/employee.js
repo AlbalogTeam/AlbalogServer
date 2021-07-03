@@ -71,6 +71,9 @@ const employeeSchema = new mongoose.Schema(
           total: {
             type: Number,
           },
+          totalWorkTime: {
+            type: Number
+          }
         }),
       },
     ],
