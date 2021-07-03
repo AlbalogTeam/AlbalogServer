@@ -187,7 +187,7 @@ const readTimeClockForStaff = async (req, res) => {
     timeClocks.map((v) => {
       const yearAndMonth = moment(v.start_time).format('YYYYMM');
       const newClock = {
-        start_time: moment(v.start_time).format('MMDD'),
+        start_time: moment(v.start_time).format('YYYY-MM-DD'),
         workTime: `${moment(v.start_time).format('hhmm')}-${moment(
           v.end_time
         ).format('hhmm')}`,
@@ -223,7 +223,7 @@ const readTimeClockForStaff = async (req, res) => {
       throw new Error('아직 근무하시지 않으셨습니다.');
     }
 
-    res.status(201).send(formatedResult.filter((v) => v !== null));
+    res.status(200).send(formatedResult.filter((v) => v !== null));
   } catch (error) {
     res.status(400).send(error.toString());
   }
@@ -278,7 +278,6 @@ const readTimeClockForOwner = async (req, res) => {
         monthWage: sum,
       });
     }
-    allTimeClocks.sort();
 
     if (!allTimeClocks.length) {
       res.status(500).send({
