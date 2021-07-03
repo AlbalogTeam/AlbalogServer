@@ -28,9 +28,9 @@ const create_shift = async (req, res) => {
 
     const shift = await Shift.insertMany(datesArr);
 
-    res.status(201).send(shift);
+    // res.status(201).send(shift);
 
-    // res.status(201).send(datesArr);
+    res.status(201).send(datesArr);
   } catch (error) {
     res.status(500).send(error.toString());
   }
