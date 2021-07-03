@@ -15,5 +15,7 @@ router.get('/ping', async (req, res) => {
   }
 });
 
+router.post('/reset', loginController.find_password);
+
 router.post('/login', loginController.login_user);
 module.exports = router;
