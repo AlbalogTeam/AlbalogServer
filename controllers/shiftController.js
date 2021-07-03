@@ -28,9 +28,9 @@ const create_shift = async (req, res) => {
 
     const shift = await Shift.insertMany(datesArr);
 
-    res.status(201).send(shift);
+    // res.status(201).send(shift);
 
-    // res.status(201).send(datesArr);
+    res.status(201).send(datesArr);
   } catch (error) {
     res.status(500).send(error.toString());
   }
@@ -63,8 +63,6 @@ const get_all_shifts = async (req, res) => {
     const newShifts = shifts.map((d) => {
       const shiftObj = {
         title: d.owner.name,
-        // start: new Date(new Date(d.start).getTime() - 540 * 60 * 1000),
-        // end: new Date(new Date(d.end).getTime() - 540 * 60 * 1000),
         start: d.start,
         end: d.end,
       };

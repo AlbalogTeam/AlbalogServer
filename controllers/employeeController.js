@@ -145,20 +145,28 @@ const update_employee = async (req, res) => {
   const { name, password, newPassword, phone, gender, birthdate } = req.body;
 
   try {
-    const isMatch = await req.staff.comparePasswords(password);
-    if (!isMatch)
-      return res.status(400).send({ message: '현재 비밀번호가 다릅니다' });
-
-    if (newPassword === '' || !newPassword || newPassword.length < 1)
-      req.staff.password = password;
-
     req.staff.name = name;
     req.staff.cellphone = phone;
     req.staff.gender = gender;
     req.staff.birthdate = birthdate;
-    req.staff.password = newPassword;
+
+    if (newPassword && newPassword.length > 0) {
+      if (
+        !password ||
+        password.length < 1 ||
+        password === undefined ||
+        password === null
+      )
+        return res.status(400).send('비밀번호를 입력하세요');
+      const isMatch = await req.staff.comparePasswords(password);
+      if (!isMatch)
+        return res.status(400).send({ message: '현재 비밀번호가 다릅니다' });
+
+      req.staff.password = newPassword;
+    }
 
     const staff = await req.staff.save();
+
     res.send(staff);
   } catch (error) {
     res.status(400).send(error.toString());

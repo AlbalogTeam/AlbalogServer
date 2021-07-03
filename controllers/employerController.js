@@ -1,6 +1,18 @@
 import Employer from '../models/user/employer';
 import Location from '../models/location/location';
 
+//email validation
+const check_email = async (req, res) => {
+  try {
+    const checkEmail = await Employer.checkIfEmailExist(req.body.email);
+    if (checkEmail)
+      return res.status(400).send({ message: 'Email is already taken' });
+    res.status(200).send({ message: 'Email is valid' });
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
+
 //create
 const create_employer = async (req, res) => {
   const employer = new Employer(req.body);
@@ -117,6 +129,7 @@ const get_all_locations = async (req, res) => {
 };
 
 module.exports = {
+  check_email,
   create_employer,
   login_employer,
   get_profile_employer,
