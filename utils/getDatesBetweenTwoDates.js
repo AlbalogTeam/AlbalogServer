@@ -12,7 +12,6 @@ async function dateRange(
   const dateArray = [];
   const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   let currentDate = moment.utc(startDate).toDate();
-  const dd = moment.utc().format('yyyy-MM-DD  ');
 
   while (currentDate <= moment.utc(endDate).toDate()) {
     time.forEach((d) => {

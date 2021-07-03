@@ -1,5 +1,4 @@
 import Location from '../models/location/location';
-import mongoose from 'mongoose';
 import Shift from '../models/schedule/shift';
 import getBetweenDates from '../utils/getDatesBetweenTwoDates';
 
@@ -28,9 +27,9 @@ const create_shift = async (req, res) => {
 
     const shift = await Shift.insertMany(datesArr);
 
-    // res.status(201).send(shift);
+    res.status(201).send(shift);
 
-    res.status(201).send(datesArr);
+    // res.status(201).send(datesArr);
   } catch (error) {
     res.status(500).send(error.toString());
   }

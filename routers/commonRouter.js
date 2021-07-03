@@ -15,5 +15,13 @@ router.get('/ping', async (req, res) => {
   }
 });
 
+router.post('/reset', loginController.find_password);
+
+//send user info
+router.get('/reset_password/:tokenId', loginController.send_user_info);
+
+//new password
+router.patch('/reset_password', loginController.reset_password);
+
 router.post('/login', loginController.login_user);
 module.exports = router;
