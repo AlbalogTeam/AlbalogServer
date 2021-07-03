@@ -2,6 +2,7 @@ import Location from '../models/location/location';
 import Employee from '../models/user/employee';
 import moment from 'moment';
 import momentRandom from 'moment-random';
+import {extendMoment} from "moment-range";
 
 const allPassWork = async (req, res) => {
 
@@ -9,8 +10,6 @@ const allPassWork = async (req, res) => {
 
   const start_time = moment().format('YYYY-MM-DD HH:mm');
   const end_time = momentRandom(moment(start_time).endOf('day'), start_time).format('YYYY-MM-DD HH:mm');
-
-
 
   try {
 
@@ -73,20 +72,10 @@ const allPassWorkRandom = async (req, res) => {
 const startWork = async (req, res) => {
   const {locationId, wage} = req.body;
   const start_time = new Date();
+
   try {
 
     const employee = await Location.checkIfUserBelongsToLocation(locationId, req.staff._id);
-
-    const timeClocks = employee.timeClocks;
-
-    const judge = timeClocks.filter(t => moment(t.start_time).format('YYYY-MM-DD') === moment(start_time).format('YYYY-MM-DD'));
-    if(judge.length){
-      res.status(500).send({
-        message: '오늘은 이미 출근하셨습니다.'
-      });
-      return;
-    }
-
 
     const timeClock = {start_time, wage};
 
@@ -177,7 +166,7 @@ const readTimeClockForStaff = async (req, res) => {
 
     const result = [];
     timeClocks.map(v => {
-      const yearAndMonth = moment(v.start_time).format("YYYY-MM");
+      const yearAndMonth = moment(v.start_time).format('YYYYMM');
       const newClock = {
         start_time: moment(v.start_time).format("MMDD"),
         workTime: `${moment(v.start_time).format("hhmm")}-${moment(v.end_time).format("hhmm")}`,
@@ -191,7 +180,7 @@ const readTimeClockForStaff = async (req, res) => {
 
       result[yearAndMonth].push(newClock);
 
-    })
+    });
 
     const formatedResult = result.map((v, i) => {
       let sum = 0;
@@ -204,8 +193,11 @@ const readTimeClockForStaff = async (req, res) => {
         timeClock: v,
         monthWage: sum
       }
+      console.log(formatedData);
       return formatedData;
     });
+
+    console.log(formatedResult);
 
     if (!timeClocks.length) {
       throw new Error("아직 근무하시지 않으셨습니다.");
