@@ -92,10 +92,10 @@ const get_daily_scheldule = async (req, res) => {
     const employees = shifts.map((d) => d.owner._id);
 
     //timeclock
-    const timeClock = await Employee.find({ _id: { $in: employees } }).select(
-      'timeClocks',
-      'name'
-    );
+    const timeClock = await Employee.find({ _id: { $in: employees } }).select({
+      timeClocks: 1,
+      name: 1,
+    });
 
     res.send({ shifts, timeClock, working: [], off: [], etc: [] });
   } catch (error) {
