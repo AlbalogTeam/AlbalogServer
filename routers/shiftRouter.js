@@ -20,7 +20,7 @@ router.get('/location/:locationId', userAuth, shiftController.get_all_shifts);
 
 //get daily shifts
 router.get(
-  '/location/:locationId/daily',
+  '/location/:locationId/daily/:date',
   userAuth,
   shiftController.get_daily_scheldule
 );

@@ -213,14 +213,12 @@ const readTimeClockForStaff = async (req, res) => {
         timeClock: v,
         monthWage: sum,
       };
-      console.log(formatedData);
+
       return formatedData;
     });
 
-    console.log(formatedResult);
-
     if (!timeClocks.length) {
-      throw new Error('아직 근무하시지 않으셨습니다.');
+      throw new Error('근무시작 전 입니다.');
     }
 
     res.status(200).send(formatedResult.filter((v) => v !== null));

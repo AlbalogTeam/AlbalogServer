@@ -1,6 +1,7 @@
 import Location from '../models/location/location';
 import Shift from '../models/schedule/shift';
 import Employee from '../models/user/employee';
+import moment from 'moment';
 import getBetweenDates from '../utils/getDatesBetweenTwoDates';
 
 //직원 스케줄 생성
@@ -78,8 +79,7 @@ const get_all_shifts = async (req, res) => {
 };
 
 const get_daily_scheldule = async (req, res) => {
-  const { date } = req.body;
-  const { locationId } = req.params;
+  const { locationId, date } = req.params;
   try {
     //daily schedule
     const shifts = await Shift.find({ location: locationId, date })
@@ -87,17 +87,43 @@ const get_daily_scheldule = async (req, res) => {
         start: '1',
       })
       .populate('owner', 'name');
-    if (shifts.length < 1) res.status(400).send('스케줄이 없습니다');
+    if (shifts.length < 1) return res.status(400).send('스케줄이 없습니다');
 
     const employees = shifts.map((d) => d.owner._id);
 
     //timeclock
-    const timeClock = await Employee.find({ _id: { $in: employees } }).select({
-      timeClocks: 1,
-      name: 1,
-    });
+    const temp = await Employee.aggregate([
+      {
+        $match: {
+          _id: { $in: employees },
+          'timeClocks.start_time': new Date('2021-07-08'),
+        },
+      },
+      {
+        $sort: { 'timeClocks.start_time': 1 },
+      },
+      {
+        $unwind: { path: '$timeClocks', preserveNullAndEmptyArrays: true },
+      },
+      {
+        $group: {
+          _id: '$_id',
+          name: { $first: '$name' },
+          timeClock: {
+            $push: '$timeClocks',
+          },
+        },
+      },
+    ]);
+    //moment.utc(date).toDate(),
 
-    res.send({ shifts, timeClock, working: [], off: [], etc: [] });
+    res.send({
+      shifts,
+      timeClock: temp,
+      working: [],
+      off: [],
+      etc: [],
+    });
   } catch (error) {
     res.status(500).send(error.message);
   }
