@@ -32,13 +32,6 @@ const get_location = async (req, res) => {
   const { locationId } = req.params;
 
   try {
-    // const location = await Location.findOne({
-    //   _id: locationId,
-    //   owner: req.owner._id,
-    // })
-    //   .populate('workManuals.category_id')
-    //   .populate('employees.employee');
-
     const location = await Location.aggregate([
       {
         $match: {
@@ -66,7 +59,7 @@ const get_location = async (req, res) => {
       path: 'employees.employee workManuals.category_id',
     });
 
-    location[0].workManuals = location[0].workManuals.filter(n => !n.deleted);
+    location[0].workManuals = location[0].workManuals.filter((n) => !n.deleted);
 
     if (!location) return res.status(403).send('해당 매장의 권한이없습니다');
     res.send(...location);
@@ -262,7 +255,9 @@ const createNotice = async (req, res) => {
     });
 
     const { title, content } = req.body;
-    const idx = !location.notices[location.notices.length-1] ? 0 : location.notices[location.notices.length-1].idx + 1;
+    const idx = !location.notices[location.notices.length - 1]
+      ? 0
+      : location.notices[location.notices.length - 1].idx + 1;
 
     const notice = { idx, title, content };
 
@@ -453,7 +448,7 @@ const searchNotice = async (req, res) => {
     });
 
     const finalNotices = [...findByContent, ...findByTitle].filter(
-      n => n != null
+      (n) => n != null
     );
     const deleteDuplicate = [...new Set(finalNotices)];
 
@@ -474,7 +469,7 @@ export const createWorkManual = async (req, res) => {
   const { locationId } = req.params;
   const { title, content, category } = req.body;
 
-  const existCategory = await Category.findOne({_id: category, locationId});
+  const existCategory = await Category.findOne({ _id: category, locationId });
 
   if (!existCategory)
     return res.status(400).send('카테고리 id 혹은 정보가가 잘못되었습니다');
@@ -540,7 +535,7 @@ export const readWorkManual = async (req, res) => {
 
     const manualObject = {
       location: location.name,
-      workManuals: location.workManuals.filter(v => v.deleted === false)
+      workManuals: location.workManuals.filter((v) => v.deleted === false),
     };
 
     res.status(200).send(manualObject);
@@ -553,12 +548,10 @@ export const readWorkManual = async (req, res) => {
 
 const readOneWorkManual = async (req, res) => {
   try {
-
     const location = await Location.findOne({
       _id: req.params.locationId,
-      owner: req.owner._id
+      owner: req.owner._id,
     });
-
 
     if (!location) {
       res.status(400).send({
@@ -567,10 +560,12 @@ const readOneWorkManual = async (req, res) => {
       return;
     }
 
-    const workManual = location.workManuals.filter(w => (w._id.toString() === req.params._id) && (w.deleted === false));
+    const workManual = location.workManuals.filter(
+      (w) => w._id.toString() === req.params._id && w.deleted === false
+    );
     if (!workManual) {
       res.status(500).send({
-        message: 'Cannot find One Manual'
+        message: 'Cannot find One Manual',
       });
     }
     res.status(201).send({
@@ -664,7 +659,7 @@ const deleteWorkManual = async (req, res) => {
 
     if (!deletedWorkManual) {
       res.status(500).send({
-        message: 'Cannot Delete Manual'
+        message: 'Cannot Delete Manual',
       });
     }
 
