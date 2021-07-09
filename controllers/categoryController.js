@@ -17,9 +17,9 @@ const createCategory = async (req, res) => {
 
     const categories = await Category.find({ locationId, deleted: false });
 
-    res.status(201).send(
-      categories
-    );
+    res.status(201).send({
+        categories
+      });
   } else {
     res.status(500).send({
       message: 'Already Exist Category',
@@ -42,10 +42,12 @@ const readCategory = async (req, res) => {
 };
 
 const updateCategory = async (req, res) => {
-  const { categoryId, name } = req.body;
+  const { categoryId, name, locationId } = req.body;
 
   try {
     const category = await Category.findByIdAndUpdate({ _id: categoryId }, {name: name});
+
+    console.log(categoryId, name, category);
 
     if (!category) {
       res.status(500).send({
@@ -57,11 +59,14 @@ const updateCategory = async (req, res) => {
     const categories = await Category.find({ locationId, deleted: false });
 
 
-    res.status(201).send(categories);
-  } catch (err) {
-    res.status(500).send({
-      message: 'Cannot Update category',
+    res.status(201).send({
+      UpdatedCategory: category,
+      categories
     });
+  } catch (err) {
+    res.status(500).send(
+      err.message
+    );
   }
 };
 
@@ -89,7 +94,10 @@ const deleteCategory = async (req, res) => {
     const categories = await Category.find({ locationId, deleted: false });
 
 
-    res.status(201).send(categories);
+    res.status(201).send({
+      deletedCategory: category,
+      categories
+    });
   } catch (err) {
     res.status(500).send({
       success: false,

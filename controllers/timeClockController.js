@@ -2,7 +2,6 @@ import Location from '../models/location/location';
 import Employee from '../models/user/employee';
 import moment from 'moment';
 import momentRandom from 'moment-random';
-import { extendMoment } from 'moment-range';
 
 const allPassWork = async (req, res) => {
   const { locationId, wage, workerId } = req.body;
