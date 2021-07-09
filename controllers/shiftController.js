@@ -1,6 +1,7 @@
 import Location from '../models/location/location';
-import mongoose from 'mongoose';
 import Shift from '../models/schedule/shift';
+import Employee from '../models/user/employee';
+import moment from 'moment';
 import getBetweenDates from '../utils/getDatesBetweenTwoDates';
 
 //직원 스케줄 생성
@@ -63,8 +64,6 @@ const get_all_shifts = async (req, res) => {
     const newShifts = shifts.map((d) => {
       const shiftObj = {
         title: d.owner.name,
-        // start: new Date(new Date(d.start).getTime() - 540 * 60 * 1000),
-        // end: new Date(new Date(d.end).getTime() - 540 * 60 * 1000),
         start: d.start,
         end: d.end,
       };
@@ -79,8 +78,73 @@ const get_all_shifts = async (req, res) => {
   }
 };
 
+const get_daily_scheldule = async (req, res) => {
+  const { locationId, date } = req.params;
+  try {
+    //daily schedule
+    const shifts = await Shift.find({ location: locationId, date })
+      .sort({
+        start: '1',
+      })
+      .populate('owner', 'name');
+    if (shifts.length < 1) return res.status(400).send('스케줄이 없습니다');
+
+    const employees = shifts.map((d) => d.owner._id);
+
+    //timeclock
+    const temp = await Employee.aggregate([
+      {
+        $unwind: { path: '$timeClocks', preserveNullAndEmptyArrays: true },
+      },
+
+      {
+        $match: {
+          _id: { $in: employees },
+        },
+      },
+
+      {
+        $group: {
+          _id: '$_id',
+          name: { $first: '$name' },
+          timeClock: {
+            $push: {
+              start_time: '$timeClocks.start_time',
+              end_time: '$timeClocks.end_time',
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          name: 1,
+          timeClock: 1,
+        },
+      },
+    ]);
+
+    let a;
+    let c = [];
+    for (let v of temp) {
+      a = v.timeClock.filter((d) =>
+        moment.utc(d.start_time).isSame(moment.utc(date).toDate(), 'day')
+      );
+      // if (a.length > 0)
+      c.push({ name: v.name, time: a });
+    }
+
+    res.send({
+      shifts,
+      working: c,
+    });
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
+
 module.exports = {
   create_shift,
   get_shifts,
   get_all_shifts,
+  get_daily_scheldule,
 };
