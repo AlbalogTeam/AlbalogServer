@@ -18,4 +18,11 @@ router.get('/employee/:employeeId', userAuth, shiftController.get_shifts);
 //get all shifts for current location
 router.get('/location/:locationId', userAuth, shiftController.get_all_shifts);
 
+//get daily shifts
+router.get(
+  '/location/:locationId/daily/:date',
+  userAuth,
+  shiftController.get_daily_scheldule
+);
+
 module.exports = router;

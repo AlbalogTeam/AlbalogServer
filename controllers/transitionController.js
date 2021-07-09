@@ -6,8 +6,9 @@ const create_transition = async (req, res) => {
   const { locationId, date, description, userId } = req.body;
 
   let person = undefined;
-  person = req.owner ? await Employer.findById(userId) : await Employee.findById(userId);
-
+  person = req.owner
+    ? await Employer.findById(userId)
+    : await Employee.findById(userId);
 
   try {
     const location = await Location.findById(locationId);
@@ -20,7 +21,7 @@ const create_transition = async (req, res) => {
       date,
       description,
       completed: false,
-      who_worked: [{userId: userId, name: person.name, completed: false}]
+      who_worked: [{ userId: userId, name: person.name, completed: false }],
     };
 
     location.transitions.push(transition);
@@ -69,7 +70,9 @@ const readTransition = async (req, res) => {
 const updateDescriptionInTransition = async (req, res) => {
   const { locationId, transitionId, description, userId } = req.body;
   let person = undefined;
-  person = req.owner ? await Employer.findById(userId) : await Employee.findById(userId);
+  person = req.owner
+    ? await Employer.findById(userId)
+    : await Employee.findById(userId);
 
   try {
     const location = await Location.findOne({
@@ -91,7 +94,7 @@ const updateDescriptionInTransition = async (req, res) => {
         transition.description = description;
         transition.modify_person.push({
           userId: userId,
-          name: person.name
+          name: person.name,
         });
         break;
       }
@@ -101,25 +104,26 @@ const updateDescriptionInTransition = async (req, res) => {
 
     if (!originalTransition) {
       res.status(500).send({
-        message: 'Cannot Update Transition'
+        message: 'Cannot Update Transition',
       });
     }
 
     res.status(201).send({
-      updatedTransition: location.transitions
+      updatedTransition: location.transitions,
     });
   } catch (err) {
     res.status(500).send({
-      message: err.toString()
+      message: err.toString(),
     });
   }
 };
 
 const toggleComplete = async (req, res) => {
-
   const { locationId, transitionId, userId } = req.body;
   let person = undefined;
-  person = req.owner ? await Employer.findById(userId) : await Employee.findById(userId);
+  person = req.owner
+    ? await Employer.findById(userId)
+    : await Employee.findById(userId);
 
   try {
     const location = await Location.findOne({
@@ -141,8 +145,9 @@ const toggleComplete = async (req, res) => {
         const employee = {
           userId: userId,
           name: person.name,
-          completed: !transition.who_worked[transition.who_worked.length-1].completed
-        }
+          completed:
+            !transition.who_worked[transition.who_worked.length - 1].completed,
+        };
         transition.completed = employee.completed;
         transition.who_worked.push(employee);
         break;
@@ -167,7 +172,6 @@ const toggleComplete = async (req, res) => {
   }
 };
 
-
 const deleteTransition = async (req, res) => {
   const { locationId, transitionId } = req.params;
 
@@ -175,7 +179,6 @@ const deleteTransition = async (req, res) => {
     const location = await Location.findOne({
       _id: locationId,
     });
-
 
     if (!location) {
       res.status(400).send({
@@ -204,7 +207,7 @@ const deleteTransition = async (req, res) => {
     await location.save();
 
     res.status(200).send({
-      deletedTransition:location.transitions
+      deletedTransition: location.transitions,
     });
   } catch (err) {
     res.status(500).send({
