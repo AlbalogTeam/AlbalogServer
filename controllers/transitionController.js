@@ -100,6 +100,10 @@ const updateDescriptionInTransition = async (req, res) => {
       }
     }
 
+    const date = originalTransition.date;
+
+
+
     await location.save();
 
     if (!originalTransition) {
@@ -109,7 +113,7 @@ const updateDescriptionInTransition = async (req, res) => {
     }
 
     res.status(201).send({
-      updatedTransition: location.transitions,
+      updatedTransition: location.transitions.filter(t => t.date === date)
     });
   } catch (err) {
     res.status(500).send({
@@ -198,6 +202,8 @@ const deleteTransition = async (req, res) => {
       }
     }
 
+    const date = deletedTransition.date;
+
     if (!deletedTransition) {
       res.status(500).send({
         message: 'Cannot Delete Notice',
@@ -207,7 +213,7 @@ const deleteTransition = async (req, res) => {
     await location.save();
 
     res.status(200).send({
-      deletedTransition: location.transitions,
+      deletedTransition:location.transitions.filter(t => t.date === date)
     });
   } catch (err) {
     res.status(500).send({
