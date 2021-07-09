@@ -94,35 +94,48 @@ const get_daily_scheldule = async (req, res) => {
     //timeclock
     const temp = await Employee.aggregate([
       {
-        $match: {
-          _id: { $in: employees },
-          'timeClocks.start_time': new Date('2021-07-08'),
-        },
-      },
-      {
-        $sort: { 'timeClocks.start_time': 1 },
-      },
-      {
         $unwind: { path: '$timeClocks', preserveNullAndEmptyArrays: true },
       },
+
+      {
+        $match: {
+          _id: { $in: employees },
+        },
+      },
+
       {
         $group: {
           _id: '$_id',
           name: { $first: '$name' },
           timeClock: {
-            $push: '$timeClocks',
+            $push: {
+              start_time: '$timeClocks.start_time',
+              end_time: '$timeClocks.end_time',
+            },
           },
         },
       },
+      {
+        $project: {
+          name: 1,
+          timeClock: 1,
+        },
+      },
     ]);
-    //moment.utc(date).toDate(),
+
+    let a;
+    let c = [];
+    for (let v of temp) {
+      a = v.timeClock.filter((d) =>
+        moment.utc(d.start_time).isSame(moment.utc(date).toDate(), 'day')
+      );
+      // if (a.length > 0)
+      c.push({ name: v.name, time: a });
+    }
 
     res.send({
       shifts,
-      timeClock: temp,
-      working: [],
-      off: [],
-      etc: [],
+      working: c,
     });
   } catch (error) {
     res.status(500).send(error.message);
