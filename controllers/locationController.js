@@ -272,7 +272,7 @@ const createNotice = async (req, res) => {
     await location.save();
 
     res.status(201).send({
-      message: 'Create notice Successfully',
+      notices: location.notices
     });
   } catch (err) {
     res.status(500).send({
@@ -368,7 +368,7 @@ const updateNotice = async (req, res) => {
     }
 
     res.status(201).send({
-      updatedNotice: originNotice,
+      updatedNotice: location.notices
     });
   } catch (err) {
     res.status(500).send({
@@ -410,7 +410,7 @@ const deleteNotice = async (req, res) => {
 
     if (!deletedNotice) {
       res.status(500).send({
-        message: 'Cannot Delete Notice',
+        deletedNotice: location.notices
       });
     }
 
@@ -511,7 +511,7 @@ export const createWorkManual = async (req, res) => {
     await location.save();
 
     res.status(201).send({
-      message: 'Create Manual Successfully',
+      workManuals: location.workManuals
     });
   } catch (err) {
     res.status(500).send({
@@ -617,7 +617,7 @@ const updateWorkManual = async (req, res) => {
     }
 
     res.status(201).send({
-      updatedWorkManual: originManual,
+      updatedWorkManual: location.workManuals,
     });
   } catch (err) {
     res.status(500).send({
@@ -666,7 +666,7 @@ const deleteWorkManual = async (req, res) => {
     await location.save();
 
     res.status(201).send({
-      deletedWorkManual: deletedWorkManual,
+      deletedWorkManual: location.workManuals
     });
   } catch (err) {
     res.status(500).send({

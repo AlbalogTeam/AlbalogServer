@@ -28,7 +28,7 @@ const create_transition = async (req, res) => {
 
     await location.save();
 
-    res.status(201).send(transition);
+    res.status(201).send(location.transitions);
   } catch (error) {
     res.status(400).send(error);
   }
@@ -109,7 +109,7 @@ const updateDescriptionInTransition = async (req, res) => {
     }
 
     res.status(201).send({
-      updatedTransition: originalTransition,
+      updatedTransition: location.transitions,
     });
   } catch (err) {
     res.status(500).send({
@@ -207,7 +207,7 @@ const deleteTransition = async (req, res) => {
     await location.save();
 
     res.status(200).send({
-      deletedTransition,
+      deletedTransition: location.transitions,
     });
   } catch (err) {
     res.status(500).send({
