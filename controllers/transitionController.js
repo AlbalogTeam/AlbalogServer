@@ -28,7 +28,9 @@ const create_transition = async (req, res) => {
 
     await location.save();
 
-    res.status(201).send(location.transitions);
+    res.status(201).send({
+      transitions:location.transitions.filter(t => t.date === date)
+    });
   } catch (error) {
     res.status(400).send(error);
   }
@@ -88,6 +90,7 @@ const updateDescriptionInTransition = async (req, res) => {
     const transitions = location.transitions;
 
     let originalTransition;
+    let updatedTransition;
     for (let transition of transitions) {
       if (transition._id.toString() === transitionId) {
         originalTransition = transition;
@@ -96,13 +99,13 @@ const updateDescriptionInTransition = async (req, res) => {
           userId: userId,
           name: person.name,
         });
+        updatedTransition = transition;
         break;
       }
     }
 
+
     const date = originalTransition.date;
-
-
 
     await location.save();
 
@@ -113,7 +116,8 @@ const updateDescriptionInTransition = async (req, res) => {
     }
 
     res.status(201).send({
-      updatedTransition: location.transitions.filter(t => t.date === date)
+      updatedTransition,
+      transitions: location.transitions.filter(t => t.date === date)
     });
   } catch (err) {
     res.status(500).send({
@@ -143,6 +147,7 @@ const toggleComplete = async (req, res) => {
     const transitions = location.transitions;
 
     let originalTransition;
+    let updatedTransition;
     for (let transition of transitions) {
       if (transition._id.toString() === transitionId) {
         originalTransition = transition;
@@ -154,11 +159,16 @@ const toggleComplete = async (req, res) => {
         };
         transition.completed = employee.completed;
         transition.who_worked.push(employee);
+        updatedTransition = transition;
         break;
       }
     }
 
+    console.log(updatedTransition);
+
     await location.save();
+
+    const date = updatedTransition.date;
 
     if (!originalTransition) {
       res.status(500).send({
@@ -166,8 +176,9 @@ const toggleComplete = async (req, res) => {
       });
     }
 
-    res.status(201).send({
-      updatedTransition: originalTransition,
+    res.status(200).send({
+      updatedTransition: updatedTransition,
+      transitions: location.transitions.filter(t => t.date === date)
     });
   } catch (err) {
     res.status(500).send({
@@ -213,7 +224,8 @@ const deleteTransition = async (req, res) => {
     await location.save();
 
     res.status(200).send({
-      deletedTransition:location.transitions.filter(t => t.date === date)
+      deletedTransition,
+      transitions: location.transitions.filter(t => t.date === date)
     });
   } catch (err) {
     res.status(500).send({
