@@ -14,9 +14,12 @@ const createCategory = async (req, res) => {
       });
     }
     await newCategory.save();
-    res.status(201).send({
-      newCategory,
-    });
+
+    const categories = await Category.find({ locationId, deleted: false });
+
+    res.status(201).send(
+      categories
+    );
   } else {
     res.status(500).send({
       message: 'Already Exist Category',
@@ -50,9 +53,11 @@ const updateCategory = async (req, res) => {
       });
     }
 
-    res.status(201).send({
-      UpdatedCategory: category,
-    });
+
+    const categories = await Category.find({ locationId, deleted: false });
+
+
+    res.status(201).send(categories);
   } catch (err) {
     res.status(500).send({
       message: 'Cannot Update category',
@@ -81,10 +86,10 @@ const deleteCategory = async (req, res) => {
 
     await location.save();
 
-    res.status(201).send({
-        success: true,
-        deletedCategory: category
-      });
+    const categories = await Category.find({ locationId, deleted: false });
+
+
+    res.status(201).send(categories);
   } catch (err) {
     res.status(500).send({
       success: false,
