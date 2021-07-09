@@ -3,6 +3,7 @@ const router = new express.Router();
 import employerController from '../controllers/employerController';
 import userAuth from '../middleware/userAuth';
 
+router.post('/check', employerController.check_email);
 router.post('/signup', employerController.create_employer);
 router.post('/login', employerController.login_employer);
 router.get('/me', userAuth, employerController.get_profile_employer);

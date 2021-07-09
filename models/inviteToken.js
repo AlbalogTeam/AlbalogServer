@@ -8,7 +8,7 @@ const inviteSchema = new mongoose.Schema({
   expireAt: {
     type: Date,
     default: Date.now,
-    index: { expires: '1440m' },
+    index: { expires: '60m' },
   },
 });
 
