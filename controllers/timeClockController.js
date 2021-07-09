@@ -162,7 +162,9 @@ const readTimeClockForStaff = async (req, res) => {
       _id: req.staff._id,
     });
 
-    const timeClocks = staff.timeClocks;
+    let timeClocks = staff.timeClocks;
+
+    timeClocks = timeClocks.sort((a,b) => moment(a.start_time).isAfter(moment(b.start_time)) ? 1 : -1);
 
     const result = [];
     timeClocks.map(v => {
@@ -193,11 +195,10 @@ const readTimeClockForStaff = async (req, res) => {
         timeClock: v,
         monthWage: sum
       }
-      console.log(formatedData);
       return formatedData;
     });
 
-    console.log(formatedResult);
+
 
     if (!timeClocks.length) {
       throw new Error("아직 근무하시지 않으셨습니다.");
