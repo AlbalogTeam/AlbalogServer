@@ -161,7 +161,7 @@ const get_daily_scheldule = async (req, res) => {
       let a = v.timeClock.filter((d) =>
         moment.utc(d.start_time).isSame(moment.utc(date).toDate(), 'day')
       );
-      console.log(a);
+
       //출근전
       if (!a.length) before.push({ name: v.name, time: a });
       //일하는중
