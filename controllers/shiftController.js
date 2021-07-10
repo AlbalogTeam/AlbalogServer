@@ -154,18 +154,29 @@ const get_daily_scheldule = async (req, res) => {
     ]);
     // console.log(temp);
 
-    let c = [];
+    let working = [];
+    let off = [];
+    let before = [];
     for (let v of temp) {
       let a = v.timeClock.filter((d) =>
         moment.utc(d.start_time).isSame(moment.utc(date).toDate(), 'day')
       );
-      // if (a.length > 0)
-      c.push({ name: v.name, time: a });
+      console.log(a);
+      //출근전
+      if (!a.length) before.push({ name: v.name, time: a });
+      //일하는중
+      else if (a[0].start_time && !a[0].end_time)
+        working.push({ name: v.name, time: a });
+      //퇴근
+      else if (a[0].start_time && a[0].end_time)
+        off.push({ name: v.name, time: a });
     }
 
     res.send({
       shifts,
-      working: c,
+      before,
+      working,
+      off,
     });
   } catch (error) {
     res.status(500).send(error.message);
