@@ -194,7 +194,7 @@ const readTimeClockForStaff = async (req, res) => {
 
     let timeClocks = staff.timeClocks;
 
-    timeClocks = timeClocks.sort((a,b) => moment(a.start_time).isAfter(moment(b.start_time)) ? 1 : -1);
+    timeClocks = timeClocks.sort((a,b) => moment(a.start_time).isAfter(moment(b.start_time)) ? 1 : -1).filter(t => t.end_time );
 
     const result = [];
     timeClocks.map((v) => {
@@ -270,7 +270,7 @@ const readTimeClockForOwner = async (req, res) => {
     for (let i = 0; i < employees.length; i++) {
       const employee = await Employee.findById(employees[i].employee);
       let timeClocks = employee.timeClocks;
-      timeClocks = timeClocks.sort((a,b) => moment(a.start_time).isAfter(moment(b.start_time)) ? 1 : -1);
+      timeClocks = timeClocks.sort((a,b) => moment(a.start_time).isAfter(moment(b.start_time)) ? 1 : -1).filter(t => t.end_time);
       if (!timeClocks.length) continue;
       const finalClocks = timeClocks.filter(
         (v) =>
