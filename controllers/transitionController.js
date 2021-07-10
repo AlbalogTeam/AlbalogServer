@@ -164,7 +164,6 @@ const toggleComplete = async (req, res) => {
       }
     }
 
-    console.log(updatedTransition);
 
     await location.save();
 
