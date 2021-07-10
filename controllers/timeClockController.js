@@ -91,6 +91,18 @@ const startWork = async (req, res) => {
       req.staff._id
     );
 
+
+
+    const judge = employee.timeClocks.filter(t => moment(t.start_time).isSame(moment(start_time),'day') && !t.end_time).length > 0;
+
+    if(judge) {
+      res.status(500).send({
+        message: "퇴근하지 않은 출근정보가 있습니다."
+      });
+      return;
+    }
+
+
     const timeClock = { start_time, wage };
 
     if (!timeClock) {
