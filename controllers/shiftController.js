@@ -165,7 +165,7 @@ const get_daily_scheldule = async (req, res) => {
 
     res.send({
       shifts,
-      working: temp,
+      working: c,
     });
   } catch (error) {
     res.status(500).send(error.message);
