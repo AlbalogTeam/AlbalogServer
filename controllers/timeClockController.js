@@ -263,11 +263,14 @@ const readTimeClockForOwner = async (req, res) => {
     }
 
     const employees = location.employees;
+
+
     const allTimeClocks = [];
 
     for (let i = 0; i < employees.length; i++) {
       const employee = await Employee.findById(employees[i].employee);
-      const timeClocks = employee.timeClocks;
+      let timeClocks = employee.timeClocks;
+      timeClocks = timeClocks.sort((a,b) => moment(a.start_time).isAfter(moment(b.start_time)) ? 1 : -1);
       if (!timeClocks.length) continue;
       const finalClocks = timeClocks.filter(
         (v) =>
