@@ -25,6 +25,11 @@ router.get(
   shiftController.get_daily_scheldule
 );
 
-router.delete('/location/:locationId/delete');
+//delete
+router.delete(
+  '/location/:locationId/delete',
+  userAuth,
+  shiftController.delete_schedule
+);
 
 module.exports = router;
