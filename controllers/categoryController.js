@@ -47,7 +47,6 @@ const updateCategory = async (req, res) => {
   try {
     const category = await Category.findByIdAndUpdate({ _id: categoryId }, {name: name});
 
-    console.log(categoryId, name, category);
 
     if (!category) {
       res.status(500).send({
