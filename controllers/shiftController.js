@@ -78,8 +78,29 @@ const get_all_shifts = async (req, res) => {
   }
 };
 
+const delete_schedule = async (req, res) => {
+  const { shiftId, staffId } = req.body;
+  const { locationId } = req.params;
+
+  try {
+    const shift = await Shift.findOneAndRemove({
+      _id: shiftId,
+      owner: staffId,
+      location: locationId,
+    });
+    if (!shift)
+      return res
+        .status(400)
+        .send({ success: false, message: '해당 스케줄을 삭제 할 수 없습니다' });
+    res.send(shift);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
+
 const get_daily_scheldule = async (req, res) => {
   const { locationId, date } = req.params;
+  // const inputDate = new Date(date);
   try {
     //daily schedule
     const shifts = await Shift.find({ location: locationId, date })
@@ -102,7 +123,22 @@ const get_daily_scheldule = async (req, res) => {
           _id: { $in: employees },
         },
       },
-
+      // {
+      //   $match: {
+      //     $expr: {
+      //       $eq: [
+      //         {
+      //           $dateFromParts: {
+      //             year: { $year: '$timeClocks.start_time' },
+      //             month: { $month: '$timeClocks.start_time' },
+      //             day: { $dayOfMonth: '$timeClocks.start_time' },
+      //           },
+      //         },
+      //         inputDate,
+      //       ],
+      //     },
+      //   },
+      // },
       {
         $group: {
           _id: '$_id',
@@ -115,18 +151,12 @@ const get_daily_scheldule = async (req, res) => {
           },
         },
       },
-      {
-        $project: {
-          name: 1,
-          timeClock: 1,
-        },
-      },
     ]);
+    // console.log(temp);
 
-    let a;
     let c = [];
     for (let v of temp) {
-      a = v.timeClock.filter((d) =>
+      let a = v.timeClock.filter((d) =>
         moment.utc(d.start_time).isSame(moment.utc(date).toDate(), 'day')
       );
       // if (a.length > 0)
@@ -135,7 +165,7 @@ const get_daily_scheldule = async (req, res) => {
 
     res.send({
       shifts,
-      working: c,
+      working: temp,
     });
   } catch (error) {
     res.status(500).send(error.message);
@@ -147,4 +177,5 @@ module.exports = {
   get_shifts,
   get_all_shifts,
   get_daily_scheldule,
+  delete_schedule,
 };
