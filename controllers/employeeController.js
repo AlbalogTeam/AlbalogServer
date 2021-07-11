@@ -35,9 +35,9 @@ const sendLocationName = async (req, res) => {
   }
 };
 
-// 매장 스태프 만들기
-const createEmployee = async (req, res) => {
-  const { locationId } = req.params;
+//매장 스태프 만들기
+const create_employee = async (req, res) => {
+  const locationId = req.params.locationId;
 
   try {
     const location = await Location.findById(locationId);
@@ -56,7 +56,7 @@ const createEmployee = async (req, res) => {
 
     const token = await employee.generateAuthToken();
 
-    // add an employee who belongs to the current location
+    //add an employee who belongs to the current location
     location.employees = location.employees.concat({ employee: newEmployee });
     await location.save();
 
@@ -66,14 +66,31 @@ const createEmployee = async (req, res) => {
   }
 };
 
-const getEmployeeProfile = async (req, res) => {
+const logout_employee = async (req, res) => {
+  try {
+    req.staff.tokens = req.staff.tokens.filter((token) => {
+      return token.token !== req.token;
+    });
+
+    await req.staff.save();
+    res.send({
+      message: 'logged out',
+    });
+  } catch (error) {
+    res.status(500).send({
+      error,
+    });
+  }
+};
+
+const get_employee = async (req, res) => {
   res.send(req.staff);
 };
 
 // 해당 직원의 모든 매장보기
-const getEmployeeAllLocation = async (req, res) => {
+const get_employee_locations = async (req, res) => {
   if (!req.staff) return res.status(400).send('권한이 없습니다');
-  const locIds = req.staff.stores.map((ids) => ids.location); // get all objectIds from user.stores into arrays
+  const locIds = req.staff.stores.map((ids) => ids.location); //get all objectIds from user.stores into arrays
 
   if (locIds.length < 1) {
     return res.status(400).send({
@@ -142,9 +159,10 @@ const updateEmployee = async (req, res) => {
 };
 
 module.exports = {
-  createEmployee,
-  getEmployeeProfile,
-  getEmployeeAllLocation,
+  create_employee,
+  logout_employee,
+  get_employee,
+  get_employee_locations,
   getEmployeeSingleLocation,
   updateEmployee,
   sendLocationName,

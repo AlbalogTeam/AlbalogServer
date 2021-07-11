@@ -2,10 +2,10 @@ import Employer from '../models/user/employer';
 import Location from '../models/location/location';
 
 // email validation
-const checkEmail = async (req, res) => {
+const check_email = async (req, res) => {
   try {
-    const checkValidEmail = await Employer.checkIfEmailExist(req.body.email);
-    if (checkValidEmail)
+    const checkEmail = await Employer.checkIfEmailExist(req.body.email);
+    if (checkEmail)
       return res.status(400).send({ message: 'Email is already taken' });
     res.status(200).send({ message: 'Email is valid' });
   } catch (error) {
@@ -17,9 +17,9 @@ const checkEmail = async (req, res) => {
 const createEmployer = async (req, res) => {
   const employer = new Employer(req.body);
   try {
-    const checkValidEmail = await Employer.checkIfEmailExist(employer.email);
+    const checkEmail = await Employer.checkIfEmailExist(employer.email);
 
-    if (checkValidEmail) {
+    if (checkEmail) {
       return res.status(400).send({ message: 'Email is already taken' }); // check if user's email already exist
     }
     await employer.save();
@@ -30,14 +30,31 @@ const createEmployer = async (req, res) => {
   }
 };
 
+// login
+const login_employer = async (req, res) => {
+  try {
+    const employer = await Employer.findByCredentials(
+      req.body.email,
+      req.body.password
+    );
+    const token = await employer.generateAuthToken();
+
+    res.send({ employer, token });
+  } catch (error) {
+    res
+      .status(400)
+      .send({ message: 'Unable to login', error: error.toString() });
+  }
+};
+
 // get profile
-const getEmployerProfile = async (req, res) => {
+const get_profile_employer = async (req, res) => {
   if (!req.owner) return res.status(400).send('권한이 없습니다');
   res.send(req.owner);
 };
 
 // update profile
-const updateEmployerProfile = async (req, res) => {
+const update_employer_profile = async (req, res) => {
   const { name, password, newPassword } = req.body;
 
   if (!req.owner) return res.status(400).send('권한이 없습니다');
@@ -57,6 +74,22 @@ const updateEmployerProfile = async (req, res) => {
     res.send(req.owner);
   } catch (error) {
     res.status(400).send(error.toString());
+  }
+};
+
+// logout
+const logoutEmployer = async (req, res) => {
+  try {
+    req.owner.tokens = req.owner.tokens.filter(
+      (token) => token.token !== req.token
+    );
+
+    await req.owner.save();
+    res.send({
+      message: 'Logged out',
+    });
+  } catch (error) {
+    res.status(500).send();
   }
 };
 
@@ -95,10 +128,12 @@ const getAllLocations = async (req, res) => {
 };
 
 module.exports = {
-  checkEmail,
+  check_email,
   createEmployer,
-  getEmployerProfile,
-  updateEmployerProfile,
+  login_employer,
+  get_profile_employer,
+  update_employer_profile,
   getAllLocations,
+  logoutEmployer,
   killAllSession,
 };
