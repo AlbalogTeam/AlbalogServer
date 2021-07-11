@@ -1,6 +1,7 @@
 import express from 'express';
-const router = new express.Router();
 import loginController from '../controllers/loginController';
+
+const router = new express.Router();
 
 router.get('/ping', async (req, res) => {
   try {
@@ -9,19 +10,19 @@ router.get('/ping', async (req, res) => {
     });
   } catch (error) {
     res.status(500).send({
-      error: error,
+      error: error.message,
       message: 'something went wrong',
     });
   }
 });
 
-router.post('/reset', loginController.find_password);
+router.post('/reset', loginController.findPassword);
 
-//send user info
-router.get('/reset_password/:tokenId', loginController.send_user_info);
+// send user info
+router.get('/reset_password/:tokenId', loginController.sendUserInfo);
 
-//new password
-router.patch('/reset_password', loginController.reset_password);
+// new password
+router.patch('/reset_password', loginController.resetPassword);
 
-router.post('/login', loginController.login_user);
+router.post('/login', loginController.loginUser);
 module.exports = router;

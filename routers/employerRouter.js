@@ -1,22 +1,18 @@
 import express from 'express';
-const router = new express.Router();
 import employerController from '../controllers/employerController';
 import userAuth from '../middleware/userAuth';
 
-router.post('/check', employerController.check_email);
-router.post('/signup', employerController.create_employer);
-router.post('/login', employerController.login_employer);
-router.get('/me', userAuth, employerController.get_profile_employer);
+const router = new express.Router();
 
-router.get('/me/locations', userAuth, employerController.get_all_locations);
+router.post('/check', employerController.checkEmail);
+router.post('/signup', employerController.createEmployer);
 
-router.patch(
-  '/me/update',
-  userAuth,
-  employerController.update_employer_profile
-);
+router.get('/me', userAuth, employerController.getEmployerProfile);
 
-router.post('/logout', userAuth, employerController.logout_employer);
-router.post('/logoutAll', userAuth, employerController.kill_all_sessions);
+router.get('/me/locations', userAuth, employerController.getAllLocations);
+
+router.patch('/me/update', userAuth, employerController.updateEmployerProfile);
+
+router.post('/logoutAll', userAuth, employerController.killAllSession);
 
 module.exports = router;

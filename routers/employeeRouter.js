@@ -10,36 +10,34 @@ import sendLocationName from '../middleware/sendLocationName';
  *  /api/v1/employee
  * */
 
-//create employee
-router.post('/:locationId/signup', employeeController.create_employee);
+// create employee
+router.post('/:locationId/signup', employeeController.createEmployee);
 
-//send location name
+// send location name
 router.get(
   '/:locationId/:inviteId/signup',
-  employeeController.send_location_name
+  employeeController.sendLocationName
 );
 
-//get employees all locations
+// get employees all locations
 
-router.get('/locations', userAuth, employeeController.get_employee_locations);
+router.get('/locations', userAuth, employeeController.getEmployeeAllLocation);
 
-//get employee's single location
-router.get('/:locationId', userAuth, employeeController.get_single_location);
+// get employee's single location
+router.get(
+  '/:locationId',
+  userAuth,
+  employeeController.getEmployeeSingleLocation
+);
 
-//get employee
-router.get('/:employeeId', userAuth, employeeController.get_employee);
+// get employee
+router.get('/:employeeId', userAuth, employeeController.getEmployeeProfile);
 
-//update employee
+// update employee
 router.patch(
   '/:employeeId/update',
   userAuth,
-  employeeController.update_employee
+  employeeController.updateEmployee
 );
-
-//employee login
-router.post('/login', employeeController.login_employee);
-
-//employee logout
-router.post('/logout', userAuth, employeeController.logout_employee);
 
 module.exports = router;

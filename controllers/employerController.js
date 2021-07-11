@@ -1,11 +1,11 @@
 import Employer from '../models/user/employer';
 import Location from '../models/location/location';
 
-//email validation
-const check_email = async (req, res) => {
+// email validation
+const checkEmail = async (req, res) => {
   try {
-    const checkEmail = await Employer.checkIfEmailExist(req.body.email);
-    if (checkEmail)
+    const checkValidEmail = await Employer.checkIfEmailExist(req.body.email);
+    if (checkValidEmail)
       return res.status(400).send({ message: 'Email is already taken' });
     res.status(200).send({ message: 'Email is valid' });
   } catch (error) {
@@ -13,49 +13,31 @@ const check_email = async (req, res) => {
   }
 };
 
-//create
-const create_employer = async (req, res) => {
+// create
+const createEmployer = async (req, res) => {
   const employer = new Employer(req.body);
   try {
-    const checkEmail = await Employer.checkIfEmailExist(employer.email);
+    const checkValidEmail = await Employer.checkIfEmailExist(employer.email);
 
-    if (checkEmail) {
-      return res.status(400).send({ message: 'Email is already taken' }); //check if user's email already exist
-    } else {
-      await employer.save();
-      const token = await employer.generateAuthToken();
-      res.status(201).send({ employer, token });
+    if (checkValidEmail) {
+      return res.status(400).send({ message: 'Email is already taken' }); // check if user's email already exist
     }
+    await employer.save();
+    const token = await employer.generateAuthToken();
+    res.status(201).send({ employer, token });
   } catch (error) {
     res.status(400).send(error);
   }
 };
 
-//login
-const login_employer = async (req, res) => {
-  try {
-    const employer = await Employer.findByCredentials(
-      req.body.email,
-      req.body.password
-    );
-    const token = await employer.generateAuthToken();
-
-    res.send({ employer, token });
-  } catch (error) {
-    res
-      .status(400)
-      .send({ message: 'Unable to login', error: error.toString() });
-  }
-};
-
-//get profile
-const get_profile_employer = async (req, res) => {
+// get profile
+const getEmployerProfile = async (req, res) => {
   if (!req.owner) return res.status(400).send('권한이 없습니다');
   res.send(req.owner);
 };
 
-//update profile
-const update_employer_profile = async (req, res) => {
+// update profile
+const updateEmployerProfile = async (req, res) => {
   const { name, password, newPassword } = req.body;
 
   if (!req.owner) return res.status(400).send('권한이 없습니다');
@@ -78,24 +60,8 @@ const update_employer_profile = async (req, res) => {
   }
 };
 
-//logout
-const logout_employer = async (req, res) => {
-  try {
-    req.owner.tokens = req.owner.tokens.filter((token) => {
-      return token.token !== req.token;
-    });
-
-    await req.owner.save();
-    res.send({
-      message: 'Logged out',
-    });
-  } catch (error) {
-    res.status(500).send();
-  }
-};
-
-//kill all session
-const kill_all_sessions = async (req, res) => {
+// kill all session
+const killAllSession = async (req, res) => {
   try {
     req.owner.tokens = [];
     await req.owner.save();
@@ -106,9 +72,9 @@ const kill_all_sessions = async (req, res) => {
   }
 };
 
-const get_all_locations = async (req, res) => {
+const getAllLocations = async (req, res) => {
   if (!req.owner) return res.status(400).send('권한이 없습니다');
-  const locIds = req.owner.stores.map((ids) => ids.location); //get all objectIds from user.stores into arrays
+  const locIds = req.owner.stores.map((ids) => ids.location); // get all objectIds from user.stores into arrays
 
   if (locIds.length < 1) {
     return res.status(400).send({
@@ -129,12 +95,10 @@ const get_all_locations = async (req, res) => {
 };
 
 module.exports = {
-  check_email,
-  create_employer,
-  login_employer,
-  get_profile_employer,
-  update_employer_profile,
-  get_all_locations,
-  logout_employer,
-  kill_all_sessions,
+  checkEmail,
+  createEmployer,
+  getEmployerProfile,
+  updateEmployerProfile,
+  getAllLocations,
+  killAllSession,
 };
