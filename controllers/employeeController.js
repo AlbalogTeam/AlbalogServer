@@ -56,7 +56,7 @@ const create_employee = async (req, res) => {
 
     const token = await employee.generateAuthToken();
 
-    //add an employee who belongs to the current location
+    // add an employee who belongs to the current location
     location.employees = location.employees.concat({ employee: newEmployee });
     await location.save();
 

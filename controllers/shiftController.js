@@ -114,7 +114,6 @@ const getDailySchedule = async (req, res) => {
 
     // const employees = shifts.map((d) => d.owner._id);
 
-    // timeclock
     const temp = await Shift.aggregate([
       {
         $match: {
@@ -219,9 +218,14 @@ const getDailySchedule = async (req, res) => {
     const off = [];
     const before = [];
     temp.forEach((v) => {
-      const a = v.timeClock.filter((d) =>
+      const newArray = v.timeClock.filter(
+        (value) => Object.keys(value).length !== 0
+      );
+
+      const a = newArray.filter((d) =>
         moment.utc(d.start_time).isSame(moment.utc(date).toDate(), 'day')
       );
+      // console.log(v.timeClock);
       // 출근전
       if (!a.length) before.push({ name: v.name, time: v.schedule });
       // 일하는중
@@ -231,6 +235,7 @@ const getDailySchedule = async (req, res) => {
       else if (a[0].start_time && a[0].end_time)
         off.push({ name: v.name, time: a });
     });
+    // console.log(temp);
 
     res.send({
       before,
