@@ -1,7 +1,7 @@
-import Location from '../models/location/location';
-import Employee from '../models/user/employee';
 import moment from 'moment';
 import momentRandom from 'moment-random';
+import Location from '../models/location/location';
+import Employee from '../models/user/employee';
 
 const allPassWork = async (req, res) => {
   const { locationId, wage, workerId } = req.body;
@@ -91,17 +91,18 @@ const startWork = async (req, res) => {
       req.staff._id
     );
 
+    const judge =
+      employee.timeClocks.filter(
+        (t) =>
+          moment(t.start_time).isSame(moment(start_time), 'day') && !t.end_time
+      ).length > 0;
 
-
-    const judge = employee.timeClocks.filter(t => moment(t.start_time).isSame(moment(start_time),'day') && !t.end_time).length > 0;
-
-    if(judge) {
+    if (judge) {
       res.status(500).send({
-        message: "퇴근하지 않은 출근정보가 있습니다."
+        message: '퇴근하지 않은 출근정보가 있습니다.',
       });
       return;
     }
-
 
     const timeClock = { start_time, wage };
 
@@ -194,7 +195,11 @@ const readTimeClockForStaff = async (req, res) => {
 
     let timeClocks = staff.timeClocks;
 
-    timeClocks = timeClocks.sort((a,b) => moment(a.start_time).isAfter(moment(b.start_time)) ? 1 : -1).filter(t => t.end_time );
+    timeClocks = timeClocks
+      .sort((a, b) =>
+        moment(a.start_time).isAfter(moment(b.start_time)) ? 1 : -1
+      )
+      .filter((t) => t.end_time);
 
     const result = [];
     timeClocks.map((v) => {
@@ -264,13 +269,16 @@ const readTimeClockForOwner = async (req, res) => {
 
     const employees = location.employees;
 
-
     const allTimeClocks = [];
 
     for (let i = 0; i < employees.length; i++) {
       const employee = await Employee.findById(employees[i].employee);
       let timeClocks = employee.timeClocks;
-      timeClocks = timeClocks.sort((a,b) => moment(a.start_time).isAfter(moment(b.start_time)) ? 1 : -1).filter(t => t.end_time);
+      timeClocks = timeClocks
+        .sort((a, b) =>
+          moment(a.start_time).isAfter(moment(b.start_time)) ? 1 : -1
+        )
+        .filter((t) => t.end_time);
       if (!timeClocks.length) continue;
       const finalClocks = timeClocks.filter(
         (v) =>

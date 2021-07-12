@@ -27,7 +27,7 @@ const create_location = async (req, res) => {
   }
 };
 
-//매장 정보 읽기
+// 매장 정보 읽기
 const get_location = async (req, res) => {
   const { locationId } = req.params;
 
@@ -68,7 +68,7 @@ const get_location = async (req, res) => {
   }
 };
 
-//매장 정보 수정(이름 주소 우편번호 전화번호)
+// 매장 정보 수정(이름 주소 우편번호 전화번호)
 const update_location = async (req, res) => {
   if (!req.owner)
     return res
@@ -105,7 +105,7 @@ const update_location = async (req, res) => {
   }
 };
 
-//매장 스태프 초대
+// 매장 스태프 초대
 const invite_employee = async (req, res) => {
   const { name, email } = req.body;
   const { locationId } = req.params; //해당 매장 아이디
@@ -164,9 +164,9 @@ const invite_employee = async (req, res) => {
   }
 };
 
-//매장 스태프 삭제
+// 매장 스태프 삭제
 
-//해당 매장 직원 리스트
+// 해당 매장 직원 리스트
 const get_all_employees = async (req, res) => {
   const { locationId } = req.params;
   if (!req.owner) return res.status(400).send({ message: '권한이 없습니다' });
@@ -190,7 +190,7 @@ const get_all_employees = async (req, res) => {
   }
 };
 
-//매장 직원 개인정보
+// 매장 직원 개인정보
 const get_employee_info = async (req, res) => {
   const { locationId, employeeId } = req.params;
   try {
@@ -272,7 +272,7 @@ const createNotice = async (req, res) => {
     await location.save();
 
     res.status(201).send({
-      notices: location.notices
+      notices: location.notices,
     });
   } catch (err) {
     res.status(500).send({
@@ -368,7 +368,7 @@ const updateNotice = async (req, res) => {
     }
 
     res.status(201).send({
-      updatedNotice: location.notices
+      updatedNotice: location.notices,
     });
   } catch (err) {
     res.status(500).send({
@@ -410,7 +410,7 @@ const deleteNotice = async (req, res) => {
 
     if (!deletedNotice) {
       res.status(500).send({
-        deletedNotice: location.notices
+        deletedNotice: location.notices,
       });
     }
 
@@ -511,7 +511,7 @@ export const createWorkManual = async (req, res) => {
     await location.save();
 
     res.status(201).send({
-      workManuals: location.workManuals
+      workManuals: location.workManuals,
     });
   } catch (err) {
     res.status(500).send({
@@ -666,7 +666,7 @@ const deleteWorkManual = async (req, res) => {
     await location.save();
 
     res.status(201).send({
-      deletedWorkManual: location.workManuals
+      deletedWorkManual: location.workManuals,
     });
   } catch (err) {
     res.status(500).send({

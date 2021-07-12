@@ -1,7 +1,7 @@
 import Employer from '../models/user/employer';
 import Location from '../models/location/location';
 
-//email validation
+// email validation
 const check_email = async (req, res) => {
   try {
     const checkEmail = await Employer.checkIfEmailExist(req.body.email);
@@ -13,25 +13,24 @@ const check_email = async (req, res) => {
   }
 };
 
-//create
-const create_employer = async (req, res) => {
+// create
+const createEmployer = async (req, res) => {
   const employer = new Employer(req.body);
   try {
     const checkEmail = await Employer.checkIfEmailExist(employer.email);
 
     if (checkEmail) {
-      return res.status(400).send({ message: 'Email is already taken' }); //check if user's email already exist
-    } else {
-      await employer.save();
-      const token = await employer.generateAuthToken();
-      res.status(201).send({ employer, token });
+      return res.status(400).send({ message: 'Email is already taken' }); // check if user's email already exist
     }
+    await employer.save();
+    const token = await employer.generateAuthToken();
+    res.status(201).send({ employer, token });
   } catch (error) {
     res.status(400).send(error);
   }
 };
 
-//login
+// login
 const login_employer = async (req, res) => {
   try {
     const employer = await Employer.findByCredentials(
@@ -48,13 +47,13 @@ const login_employer = async (req, res) => {
   }
 };
 
-//get profile
+// get profile
 const get_profile_employer = async (req, res) => {
   if (!req.owner) return res.status(400).send('권한이 없습니다');
   res.send(req.owner);
 };
 
-//update profile
+// update profile
 const update_employer_profile = async (req, res) => {
   const { name, password, newPassword } = req.body;
 
@@ -78,12 +77,12 @@ const update_employer_profile = async (req, res) => {
   }
 };
 
-//logout
-const logout_employer = async (req, res) => {
+// logout
+const logoutEmployer = async (req, res) => {
   try {
-    req.owner.tokens = req.owner.tokens.filter((token) => {
-      return token.token !== req.token;
-    });
+    req.owner.tokens = req.owner.tokens.filter(
+      (token) => token.token !== req.token
+    );
 
     await req.owner.save();
     res.send({
@@ -94,8 +93,8 @@ const logout_employer = async (req, res) => {
   }
 };
 
-//kill all session
-const kill_all_sessions = async (req, res) => {
+// kill all session
+const killAllSession = async (req, res) => {
   try {
     req.owner.tokens = [];
     await req.owner.save();
@@ -106,9 +105,9 @@ const kill_all_sessions = async (req, res) => {
   }
 };
 
-const get_all_locations = async (req, res) => {
+const getAllLocations = async (req, res) => {
   if (!req.owner) return res.status(400).send('권한이 없습니다');
-  const locIds = req.owner.stores.map((ids) => ids.location); //get all objectIds from user.stores into arrays
+  const locIds = req.owner.stores.map((ids) => ids.location); // get all objectIds from user.stores into arrays
 
   if (locIds.length < 1) {
     return res.status(400).send({
@@ -130,11 +129,11 @@ const get_all_locations = async (req, res) => {
 
 module.exports = {
   check_email,
-  create_employer,
+  createEmployer,
   login_employer,
   get_profile_employer,
   update_employer_profile,
-  get_all_locations,
-  logout_employer,
-  kill_all_sessions,
+  getAllLocations,
+  logoutEmployer,
+  killAllSession,
 };

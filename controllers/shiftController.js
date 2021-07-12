@@ -1,13 +1,15 @@
+import moment from 'moment';
+import mongoose from 'mongoose';
 import Location from '../models/location/location';
 import Shift from '../models/schedule/shift';
 import Employee from '../models/user/employee';
-import moment from 'moment';
 import getBetweenDates from '../utils/getDatesBetweenTwoDates';
 
-//직원 스케줄 생성
-const create_shift = async (req, res) => {
+// 직원 스케줄 생성
+const createShift = async (req, res) => {
   const { locationId } = req.params;
   const { staffId, startDate, endDate, time } = req.body;
+
   if (!req.owner) return res.status(400).send('관리자 권한이 없습니다');
 
   try {
@@ -37,8 +39,8 @@ const create_shift = async (req, res) => {
   }
 };
 
-//emloyee: get all shifts
-const get_shifts = async (req, res) => {
+// emloyee: get all shifts
+const getShifts = async (req, res) => {
   const { employeeId } = req.params;
   if (!employeeId || employeeId.length < 1)
     return res.status(400).send('직원 ID가 정확하지 않습니다');
@@ -50,8 +52,8 @@ const get_shifts = async (req, res) => {
   }
 };
 
-//employees: get all shifts for current location
-const get_all_shifts = async (req, res) => {
+// employees: get all shifts for current location
+const getAllShifts = async (req, res) => {
   const { locationId } = req.params;
   if (!locationId) return res.status(400).json('매장 정보가 없습니다');
 
@@ -78,7 +80,7 @@ const get_all_shifts = async (req, res) => {
   }
 };
 
-const delete_schedule = async (req, res) => {
+const deleteSchedule = async (req, res) => {
   const { shiftId, staffId } = req.body;
   const { locationId } = req.params;
 
@@ -98,82 +100,139 @@ const delete_schedule = async (req, res) => {
   }
 };
 
-const get_daily_scheldule = async (req, res) => {
+const getDailySchedule = async (req, res) => {
   const { locationId, date } = req.params;
-  // const inputDate = new Date(date);
+  const inputDate = moment.utc(date).toDate();
   try {
-    //daily schedule
-    const shifts = await Shift.find({ location: locationId, date })
-      .sort({
-        start: '1',
-      })
-      .populate('owner', 'name');
-    if (shifts.length < 1) return res.status(400).send('스케줄이 없습니다');
+    // daily schedule
+    // const shifts = await Shift.find({ location: locationId, date })
+    //   .sort({
+    //     start: '1',
+    //   })
+    //   .populate('owner');
+    // if (shifts.length < 1) return res.status(400).send('스케줄이 없습니다');
 
-    const employees = shifts.map((d) => d.owner._id);
+    // const employees = shifts.map((d) => d.owner._id);
 
-    //timeclock
-    const temp = await Employee.aggregate([
-      {
-        $unwind: { path: '$timeClocks', preserveNullAndEmptyArrays: true },
-      },
-
+    // timeclock
+    const temp = await Shift.aggregate([
       {
         $match: {
-          _id: { $in: employees },
+          location: mongoose.Types.ObjectId(locationId),
+          date: inputDate,
         },
       },
-      // {
-      //   $match: {
-      //     $expr: {
-      //       $eq: [
-      //         {
-      //           $dateFromParts: {
-      //             year: { $year: '$timeClocks.start_time' },
-      //             month: { $month: '$timeClocks.start_time' },
-      //             day: { $dayOfMonth: '$timeClocks.start_time' },
-      //           },
-      //         },
-      //         inputDate,
-      //       ],
-      //     },
-      //   },
-      // },
+      {
+        $lookup: {
+          from: 'employees',
+          localField: 'owner',
+          foreignField: '_id',
+          as: 'ownerObj',
+        },
+      },
+      {
+        $unwind: '$ownerObj',
+      },
+      {
+        $unwind: {
+          path: '$ownerObj.timeClocks',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $match: {
+          $expr: {
+            $eq: [
+              {
+                $dateFromParts: {
+                  year: { $year: '$start' },
+                  month: { $month: '$start' },
+                  day: { $dayOfMonth: '$start' },
+                },
+              },
+              inputDate,
+            ],
+          },
+        },
+      },
       {
         $group: {
           _id: '$_id',
-          name: { $first: '$name' },
+          name: { $first: '$ownerObj.name' },
+          schedule: {
+            $first: {
+              start: '$start',
+              end: '$end',
+            },
+          },
           timeClock: {
             $push: {
-              start_time: '$timeClocks.start_time',
-              end_time: '$timeClocks.end_time',
+              start_time: '$ownerObj.timeClocks.start_time',
+              end_time: '$ownerObj.timeClocks.end_time',
             },
           },
         },
       },
     ]);
-    // console.log(temp);
 
-    let working = [];
-    let off = [];
-    let before = [];
-    for (let v of temp) {
-      let a = v.timeClock.filter((d) =>
+    // const temp = await Employee.aggregate([
+    //   {
+    //     $unwind: { path: '$timeClocks', preserveNullAndEmptyArrays: true },
+    //   },
+
+    //   {
+    //     $match: {
+    //       _id: { $in: employees },
+    //     },
+    //   },
+    //   // {
+    //   //   $match: {
+    //   //     $expr: {
+    //   //       $eq: [
+    //   //         {
+    //   //           $dateFromParts: {
+    //   //             year: { $year: '$timeClocks.start_time' },
+    //   //             month: { $month: '$timeClocks.start_time' },
+    //   //             day: { $dayOfMonth: '$timeClocks.start_time' },
+    //   //           },
+    //   //         },
+    //   //         inputDate,
+    //   //       ],
+    //   //     },
+    //   //   },
+    //   // },
+    //   {
+    //     $group: {
+    //       _id: '$_id',
+    //       name: { $first: '$name' },
+    //       timeClock: {
+    //         $push: {
+    //           start_time: '$timeClocks.start_time',
+    //           end_time: '$timeClocks.end_time',
+    //         },
+    //       },
+    //     },
+    //   },
+    // ]);
+
+    const working = [];
+    const off = [];
+    const before = [];
+    temp.forEach((v) => {
+      const a = v.timeClock.filter((d) =>
         moment.utc(d.start_time).isSame(moment.utc(date).toDate(), 'day')
       );
-
-      //출근전
-      if (!a.length) before.push({ name: v.name, time: a });
-      //일하는중
+      // 출근전
+      if (!a.length) before.push({ name: v.name, time: v.schedule });
+      // 일하는중
       else if (a[0].start_time && !a[0].end_time)
-        working.push({ name: v.name, time: a });
-      //퇴근
+        working.push({ name: v.name, time: v.schedule });
+      // 퇴근
       else if (a[0].start_time && a[0].end_time)
         off.push({ name: v.name, time: a });
-    }
+    });
 
     res.send({
-      shifts,
       before,
       working,
       off,
@@ -184,9 +243,9 @@ const get_daily_scheldule = async (req, res) => {
 };
 
 module.exports = {
-  create_shift,
-  get_shifts,
-  get_all_shifts,
-  get_daily_scheldule,
-  delete_schedule,
+  createShift,
+  getShifts,
+  getAllShifts,
+  getDailySchedule,
+  deleteSchedule,
 };

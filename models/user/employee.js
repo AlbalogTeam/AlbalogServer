@@ -3,6 +3,7 @@ import validator from 'validator';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import dotenv from 'dotenv';
+
 dotenv.config({ path: '../config/' });
 
 const employeeSchema = new mongoose.Schema(
@@ -72,8 +73,8 @@ const employeeSchema = new mongoose.Schema(
             type: Number,
           },
           totalWorkTime: {
-            type: Number
-          }
+            type: Number,
+          },
         }),
       },
     ],

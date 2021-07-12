@@ -1,11 +1,12 @@
+import jwt from 'jsonwebtoken';
 import Employer from '../models/user/employer';
 import Employee from '../models/user/employee';
 import { sendResetPasswordEmail } from '../emails/accounts';
-import jwt from 'jsonwebtoken';
+
 import Invite from '../models/inviteToken';
 
-//login
-const login_user = async (req, res) => {
+// login
+const loginUser = async (req, res) => {
   try {
     let user = await Employer.findByCredentials(
       req.body.email,
@@ -27,8 +28,8 @@ const login_user = async (req, res) => {
   }
 };
 
-//find password
-const find_password = async (req, res) => {
+// find password
+const findPassword = async (req, res) => {
   const { email, name } = req.body;
 
   try {
@@ -71,20 +72,20 @@ const find_password = async (req, res) => {
     res.status(500).send(error.message);
   }
 };
-const send_user_info = async (req, res) => {
+const sendUserInfo = async (req, res) => {
   const { tokenId } = req.params;
   try {
     const isValidInviteToken = await Invite.findById(tokenId);
 
     if (!isValidInviteToken)
       return res.status(400).send('토큰정보가 유효하지 않습니다');
-    else return res.send('토큰 유효함! 비번 변경 가능');
+    res.send('토큰 유효함! 비번 변경 가능');
   } catch (error) {
     res.status(500).send(error.message);
   }
 };
 
-const reset_password = async (req, res) => {
+const resetPassword = async (req, res) => {
   const { tokenId, newPassword } = req.body;
   try {
     const isValidInviteToken = await Invite.findById(tokenId);
@@ -125,4 +126,4 @@ const reset_password = async (req, res) => {
   }
 };
 
-module.exports = { login_user, find_password, send_user_info, reset_password };
+module.exports = { loginUser, findPassword, sendUserInfo, resetPassword };
