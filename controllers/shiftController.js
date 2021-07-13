@@ -98,6 +98,35 @@ const deleteSchedule = async (req, res) => {
   }
 };
 
+const deleteAllSchedule = async (req, res) => {
+  const { staffId } = req.body;
+  const { locationId } = req.params;
+  const today = moment().utcOffset(0, true).toDate();
+
+  if (!staffId || !locationId)
+    return res
+      .status(400)
+      .send({ success: false, message: '매장정보와 직원정보가 필요합니다' });
+
+  try {
+    const shifts = await Shift.deleteMany({
+      owner: staffId,
+      location: locationId,
+    })
+      .where('date')
+      .gte(today);
+    if (shifts.deletedCount === 0)
+      return res.status(400).send({
+        success: false,
+        message: '삭제 할 일정이 없습니다',
+        count: shifts.deletedCount,
+      });
+    return res.send({ success: true, count: shifts.deletedCount });
+  } catch (error) {
+    return res.status(500).send(error.message);
+  }
+};
+
 const getDailySchedule = async (req, res) => {
   const { locationId, date } = req.params;
   const inputDate = moment.utc(date).toDate();
@@ -198,4 +227,5 @@ module.exports = {
   getAllShifts,
   getDailySchedule,
   deleteSchedule,
+  deleteAllSchedule,
 };

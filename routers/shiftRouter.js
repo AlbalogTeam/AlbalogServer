@@ -1,6 +1,6 @@
-import express from 'express';
-import userAuth from '../middleware/userAuth';
-import shiftController from '../controllers/shiftController';
+const express = require('express');
+const userAuth = require('../middleware/userAuth');
+const shiftController = require('../controllers/shiftController');
 
 const router = new express.Router();
 
@@ -29,6 +29,13 @@ router.delete(
   '/location/:locationId/delete',
   userAuth,
   shiftController.deleteSchedule
+);
+
+// delete all shifts
+router.delete(
+  '/location/:locationId/deleteAll',
+  userAuth,
+  shiftController.deleteAllSchedule
 );
 
 module.exports = router;
