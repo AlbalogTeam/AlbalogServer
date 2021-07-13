@@ -146,7 +146,7 @@ const locationSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-const Location = mongoose.model('Location', locationSchema);
+
 // 스태프가 해당매장의 스태프인지 확인
 locationSchema.statics.checkIfUserBelongsToLocation = async (
   locationId,
@@ -175,5 +175,6 @@ locationSchema.statics.isValidCreateShift = async (
   if (!isValid) return false;
   return true;
 };
+const Location = mongoose.model('Location', locationSchema);
 
 module.exports = Location;
