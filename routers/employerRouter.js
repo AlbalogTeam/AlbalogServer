@@ -1,6 +1,6 @@
-import express from 'express';
-import employerController from '../controllers/employerController';
-import userAuth from '../middleware/userAuth';
+const express = require('express');
+const employerController = require('../controllers/employerController');
+const userAuth = require('../middleware/userAuth');
 
 const router = new express.Router();
 

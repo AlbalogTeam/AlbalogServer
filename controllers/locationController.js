@@ -1,13 +1,13 @@
-import Location from '../models/location/location';
-import Employee from '../models/user/employee';
-import Category from '../models/location/category';
-import Invite from '../models/inviteToken';
-import {
+const jwt = require('jsonwebtoken');
+const mongoose = require('mongoose');
+const Location = require('../models/location/location');
+const Employee = require('../models/user/employee');
+const Category = require('../models/location/category');
+const Invite = require('../models/inviteToken');
+const {
   sendInvitationEmail,
   sendLocationAddedEmail,
-} from '../emails/accounts';
-import jwt from 'jsonwebtoken';
-import mongoose from 'mongoose';
+} = require('../emails/accounts');
 
 const create_location = async (req, res) => {
   if (!req.owner)
@@ -465,7 +465,7 @@ const searchNotice = async (req, res) => {
 
 // workManual
 
-export const createWorkManual = async (req, res) => {
+const createWorkManual = async (req, res) => {
   const { locationId } = req.params;
   const { title, content, category } = req.body;
 
@@ -520,7 +520,7 @@ export const createWorkManual = async (req, res) => {
   }
 };
 
-export const readWorkManual = async (req, res) => {
+const readWorkManual = async (req, res) => {
   const { locationId } = req.params;
 
   try {
@@ -676,7 +676,7 @@ const deleteWorkManual = async (req, res) => {
 };
 
 module.exports = {
-  //location
+  // location
   create_location,
   get_location,
   update_location,
@@ -684,14 +684,14 @@ module.exports = {
   update_employee_wage_status,
   get_all_employees,
   get_employee_info,
-  //notice
+  // notice
   deleteNotice,
   updateNotice,
   readOneNotice,
   readNotice,
   createNotice,
   searchNotice,
-  //workManual
+  // workManual
   createWorkManual,
   readWorkManual,
   readOneWorkManual,

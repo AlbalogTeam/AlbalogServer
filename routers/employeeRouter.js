@@ -1,16 +1,11 @@
-import express from 'express';
-import * as employeeController from '../controllers/employeeController';
-import userAuth from '../middleware/userAuth';
+const express = require('express');
+const employeeController = require('../controllers/employeeController');
+const userAuth = require('../middleware/userAuth');
 
 const router = new express.Router();
 
-/**
- *  @employeeRoute
- *  /api/v1/employee
- * */
-
 // create employee
-router.post('/:locationId/signup', employeeController.create_employee);
+router.post('/:locationId/signup', employeeController.createEmployee);
 
 // send location name
 router.get(
@@ -20,7 +15,7 @@ router.get(
 
 // get employees all locations
 
-router.get('/locations', userAuth, employeeController.get_employee_locations);
+router.get('/locations', userAuth, employeeController.getEmployeeAllLocations);
 
 // get employee's single location
 router.get(
@@ -30,7 +25,7 @@ router.get(
 );
 
 // get employee
-router.get('/:employeeId', userAuth, employeeController.get_employee);
+router.get('/:employeeId', userAuth, employeeController.getEmployeeProfile);
 
 // update employee
 router.patch(
@@ -40,6 +35,6 @@ router.patch(
 );
 
 // employee logout
-router.post('/logout', userAuth, employeeController.logout_employee);
+router.post('/logout', userAuth, employeeController.logoutEmployee);
 
 module.exports = router;

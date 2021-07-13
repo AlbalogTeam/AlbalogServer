@@ -1,8 +1,8 @@
-import mongoose from 'mongoose';
-import validator from 'validator';
-import jwt from 'jsonwebtoken';
-import bcrypt from 'bcryptjs';
-import dotenv from 'dotenv';
+const mongoose = require('mongoose');
+const validator = require('validator');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+const dotenv = require('dotenv');
 
 dotenv.config({ path: '../config/' });
 
@@ -93,7 +93,7 @@ const employeeSchema = new mongoose.Schema(
       },
     ],
     status: {
-      //현재 재직상태
+      // 현재 재직상태
       type: String,
       enum: ['재직자', '퇴직자'],
       default: '재직자',
@@ -111,6 +111,7 @@ const employeeSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+const Employee = mongoose.model('Employee', employeeSchema);
 
 employeeSchema.methods.toJSON = function () {
   const employee = this;
@@ -174,7 +175,5 @@ employeeSchema.pre('save', async function (next) {
   }
   next();
 });
-
-const Employee = mongoose.model('Employee', employeeSchema);
 
 module.exports = Employee;
