@@ -111,7 +111,6 @@ const employeeSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
-const Employee = mongoose.model('Employee', employeeSchema);
 
 employeeSchema.methods.toJSON = function () {
   const employee = this;
@@ -175,5 +174,6 @@ employeeSchema.pre('save', async function (next) {
   }
   next();
 });
+const Employee = mongoose.model('Employee', employeeSchema);
 
 module.exports = Employee;
