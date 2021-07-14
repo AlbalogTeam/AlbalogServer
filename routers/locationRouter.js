@@ -18,7 +18,13 @@ router.patch(
   userAuth,
   locationController.update_location
 );
-
+// send location name
+router.get('/:locationId/:inviteId/join', locationController.sendLocationName);
+// add employee
+router.get(
+  '/:locationId/:inviteId/join',
+  locationController.alreadyExistsEmployee
+);
 // invite employee
 router.post(
   '/:locationId/invite',

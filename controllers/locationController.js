@@ -7,6 +7,7 @@ const Invite = require('../models/inviteToken');
 const {
   sendInvitationEmail,
   sendLocationAddedEmail,
+  sendAskLocationAddEmail,
 } = require('../emails/accounts');
 
 const create_location = async (req, res) => {
@@ -107,6 +108,96 @@ const update_location = async (req, res) => {
   }
 };
 
+const sendLocationName = async (req, res) => {
+  const { inviteId } = req.params;
+
+  try {
+    const isValidInviteToken = await Invite.findById(inviteId);
+
+    if (!isValidInviteToken)
+      return res.status(400).send('토큰정보가 유효하지 않습니다');
+
+    jwt.verify(
+      isValidInviteToken.invite_token,
+      process.env.JWT_SECRET,
+      async (err, decoded) => {
+        if (err)
+          return res
+            .status(400)
+            .send({ success: false, message: '만료된 토큰입니다' });
+
+        const location = await Location.findById(decoded.location);
+
+        if (!location) {
+          return res.status(400).send({
+            message: '매장정보를 찾을 수 없거나 해당 유저와 관계없는 매장',
+          });
+        }
+        return res.send({
+          location_name: location.name,
+          user_name: decoded.name,
+          user_email: decoded.email,
+        });
+      }
+    );
+  } catch (error) {
+    return res.status(500).send(error.toString());
+  }
+};
+
+const alreadyExistsEmployee = async (req, res) => {
+  const { inviteId } = req.params;
+
+  try {
+    const invite = await Invite.findById(inviteId);
+    if (!invite) return res.status(400).send('토큰정보가 유효하지 않습니다');
+
+    jwt.verify(
+      invite.invite_token,
+      process.env.JWT_SECRET,
+      async (err, decoded) => {
+        if (err)
+          return res
+            .status(400)
+            .send({ success: false, message: '만료된 토큰입니다' });
+
+        const location = await Location.findById(decoded.location);
+
+        if (!location) {
+          return res.status(400).send({
+            success: false,
+            message: '매장정보를 찾을 수 없거나 해당 유저와 관계없는 매장',
+          });
+        }
+        const existingEmployee = await Employee.findOne({
+          email: decoded.email,
+        });
+        location.employees = location.employees.concat({
+          employee: existingEmployee._id,
+        });
+        await location.save();
+
+        existingEmployee.stores = existingEmployee.stores.concat({ location });
+        await existingEmployee.save();
+
+        // sendLocationAddedEmail
+        sendLocationAddedEmail(
+          existingEmployee.name,
+          existingEmployee.email,
+          location
+        );
+
+        return res.send({
+          success: true,
+          message: '해당직원을 추가하였습니다',
+        });
+      }
+    );
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
+
 // 매장 스태프 초대
 const invite_employee = async (req, res) => {
   const { name, email } = req.body;
@@ -121,31 +212,37 @@ const invite_employee = async (req, res) => {
       return res.status(400).send({ message: '매장 정보가 없습니다' });
 
     const checkEmail = await Employee.checkIfEmailExist(email);
-
     if (checkEmail) {
-      const existingEmployee = await Employee.findOne({ email });
+      const token = jwt.sign(
+        {
+          name: name,
+          email: email,
+          location: locationId,
+        },
+        process.env.JWT_SECRET,
+        {
+          expiresIn: '1h',
+        }
+      );
 
-      const employeeIdsArr = location.employees.map((id) => id.employee);
+      const invite = new Invite({ invite_token: token });
+      await invite.save();
 
-      // check if employee already belongs to the location
-      if (employeeIdsArr.includes(existingEmployee._id))
-        return res.send('이미 해당 매장의 직원으로 등록되어있습니다');
-
-      location.employees = location.employees.concat({
-        employee: existingEmployee._id,
-      });
-      await location.save();
-
-      existingEmployee.stores = existingEmployee.stores.concat({ location });
-      await existingEmployee.save();
-
-      // sendLocationAddedEmail
-      sendLocationAddedEmail(name, email, location);
-
+      sendAskLocationAddEmail(name, email, location, invite);
       return res.send({
-        message: '해당직원을 추가하였습니다',
+        success: true,
+        message: '이미 계정있음. 계정 이메일로 등록 링크 보냄',
       });
     }
+
+    const existingEmployee = await Employee.findOne({ email });
+
+    const employeeIdsArr = location.employees.map((id) => id.employee);
+
+    // check if employee already belongs to the location
+    if (employeeIdsArr.includes(existingEmployee._id))
+      return res.status(400).send('이미 해당 매장의 직원으로 등록되어있습니다');
+
     const token = jwt.sign(
       {
         name: name,
@@ -154,7 +251,7 @@ const invite_employee = async (req, res) => {
       },
       process.env.JWT_SECRET,
       {
-        expiresIn: 20,
+        expiresIn: '1h',
       }
     );
 
@@ -213,8 +310,8 @@ const get_employee_info = async (req, res) => {
   }
 };
 
-//스태프 hourly_wage, status 설정
-//enum: ['재직자', '퇴직자'],
+// 스태프 hourly_wage, status 설정
+// enum: ['재직자', '퇴직자'],
 const update_employee_wage_status = async (req, res) => {
   const { hourly_wage, status } = req.body;
 
@@ -684,6 +781,8 @@ module.exports = {
   create_location,
   get_location,
   update_location,
+  sendLocationName,
+  alreadyExistsEmployee,
   invite_employee,
   update_employee_wage_status,
   get_all_employees,

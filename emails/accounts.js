@@ -28,9 +28,18 @@ const sendResetPasswordEmail = (name, email, tokenId) => {
     html: `안녕하세요, ${name}님. <br> <a href="http://localhost:3000/reset_password/${tokenId}" to=_blank>링크</a>를 눌러 비밀번호를 변경하세요`,
   });
 };
+const sendAskLocationAddEmail = (name, email, location, invite) => {
+  sgMail.send({
+    to: email,
+    from: 'dongwan.don.kim@gmail.com',
+    subject: '알바로그: 직원초대',
+    html: `안녕하세요, ${name}님. ${location.name} 매장에 등록을 원하시면 <a href="http://localhost:3000/parttime/${location._id}/${invite._id}/join" to=_blank>링크</a>를 눌러 확인하세요.`,
+  });
+};
 
 module.exports = {
   sendInvitationEmail,
   sendLocationAddedEmail,
   sendResetPasswordEmail,
+  sendAskLocationAddEmail,
 };
