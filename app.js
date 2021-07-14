@@ -1,17 +1,16 @@
-import express from 'express';
-import './db/mongoose';
-import dotenv from 'dotenv';
-import morgan from 'morgan';
-import cors from 'cors';
-
-import commonRouter from './routers/commonRouter';
-import employerRouter from './routers/employerRouter';
-import employeeRouter from './routers/employeeRouter';
-import locationRouter from './routers/locationRouter';
-import categoryRouter from './routers/categoryRouter';
-import transitionRouter from './routers/transitionRouter';
-import timeClockRouter from './routers/timeClockRouter';
-import shiftRouter from './routers/shiftRouter';
+const express = require('express');
+require('./db/mongoose');
+const dotenv = require('dotenv');
+const morgan = require('morgan');
+const cors = require('cors');
+const commonRouter = require('./routers/commonRouter');
+const employerRouter = require('./routers/employerRouter');
+const employeeRouter = require('./routers/employeeRouter');
+const locationRouter = require('./routers/locationRouter');
+const categoryRouter = require('./routers/categoryRouter');
+const transitionRouter = require('./routers/transitionRouter');
+const timeClockRouter = require('./routers/timeClockRouter');
+const shiftRouter = require('./routers/shiftRouter');
 
 dotenv.config('./config/env');
 
@@ -22,10 +21,10 @@ app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json());
 
-//common
+// common
 app.use('/api/v1', commonRouter);
 
-//routes
+// routes
 app.use('/api/v1/category', categoryRouter);
 app.use('/api/v1/location', locationRouter);
 app.use('/api/v1/owner', employerRouter);
