@@ -25,6 +25,11 @@ router.get(
 );
 
 // delete
+// router.delete(
+//   '/:shiftId/location/:locationId/delete',
+//   userAuth,
+//   shiftController.deleteSchedule
+// );
 router.delete(
   '/:shiftId/location/:locationId/employee/:employeeId/delete',
   userAuth,

@@ -7,7 +7,7 @@ const locationController = require('../controllers/locationController');
 const userAuth = require('../middleware/userAuth');
 
 // create location
-router.post('/', userAuth, locationController.create_location);
+router.post('/', userAuth, locationController.createLocation);
 
 // get single location
 router.get('/:locationId', userAuth, locationController.get_location);
@@ -36,14 +36,14 @@ router.post(
 router.get(
   '/:locationId/employees',
   userAuth,
-  locationController.get_all_employees
+  locationController.getAllEmployees
 );
 
 // get employee info
 router.get(
   '/:locationId/employees/:employeeId',
   userAuth,
-  locationController.get_employee_info
+  locationController.getEmployeeInfo
 );
 
 router.patch(

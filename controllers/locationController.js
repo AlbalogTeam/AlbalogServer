@@ -10,7 +10,7 @@ const {
   sendAskLocationAddEmail,
 } = require('../emails/accounts');
 
-const create_location = async (req, res) => {
+const createLocation = async (req, res) => {
   if (!req.owner)
     return res.status(401).send({ message: '매장 생성 권한이없습니다' });
 
@@ -268,7 +268,7 @@ const invite_employee = async (req, res) => {
 // 매장 스태프 삭제
 
 // 해당 매장 직원 리스트
-const get_all_employees = async (req, res) => {
+const getAllEmployees = async (req, res) => {
   const { locationId } = req.params;
   if (!req.owner) return res.status(400).send({ message: '권한이 없습니다' });
   try {
@@ -292,7 +292,7 @@ const get_all_employees = async (req, res) => {
 };
 
 // 매장 직원 개인정보
-const get_employee_info = async (req, res) => {
+const getEmployeeInfo = async (req, res) => {
   const { locationId, employeeId } = req.params;
   try {
     const isEmployee = await Location.checkIfUserBelongsToLocation(
@@ -778,15 +778,15 @@ const deleteWorkManual = async (req, res) => {
 
 module.exports = {
   // location
-  create_location,
+  createLocation,
   get_location,
   update_location,
   sendLocationName,
   alreadyExistsEmployee,
   invite_employee,
   update_employee_wage_status,
-  get_all_employees,
-  get_employee_info,
+  getAllEmployees,
+  getEmployeeInfo,
   // notice
   deleteNotice,
   updateNotice,

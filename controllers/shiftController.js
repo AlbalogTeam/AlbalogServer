@@ -55,14 +55,12 @@ const getAllShifts = async (req, res) => {
   if (!locationId) return res.status(400).json('매장 정보가 없습니다');
 
   try {
-    const shifts = await Shift.find({ location: locationId }).populate(
-      'owner',
-      'name'
-    );
+    const shifts = await Shift.find({ location: locationId }).populate('owner');
 
     const newShifts = shifts.map((d) => {
       const shiftObj = {
         _id: d._id,
+        staffId: d.owner._id,
         title: d.owner.name,
         start: d.start,
         end: d.end,
