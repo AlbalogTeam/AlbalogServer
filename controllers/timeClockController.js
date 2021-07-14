@@ -1,15 +1,15 @@
-import moment from 'moment';
-import momentRandom from 'moment-random';
-import Location from '../models/location/location';
-import Employee from '../models/user/employee';
+const moment = require('moment');
+const momentRandom = require('moment-random');
+const Location = require('../models/location/location');
+const Employee = require('../models/user/employee');
 
 const allPassWork = async (req, res) => {
   const { locationId, wage, workerId } = req.body;
 
-  const start_time = moment().format('YYYY-MM-DD HH:mm');
-  const end_time = momentRandom(
-    moment(start_time).endOf('day'),
-    start_time
+  const startTime = moment().format('YYYY-MM-DD HH:mm');
+  const endTime = momentRandom(
+    moment(startTime).endOf('day'),
+    startTime
   ).format('YYYY-MM-DD HH:mm');
 
   try {
@@ -19,12 +19,12 @@ const allPassWork = async (req, res) => {
     );
 
     const totalWorkTime = parseInt(
-      moment.duration(moment(end_time).diff(start_time)).asMinutes()
+      moment.duration(moment(endTime).diff(startTime)).asMinutes()
     );
 
     const timeClock = {
-      start_time,
-      end_time,
+      start_time: startTime,
+      end_time: endTime,
       wage,
       total: totalWorkTime * parseInt(wage / 60),
       totalWorkTime,
@@ -40,18 +40,18 @@ const allPassWork = async (req, res) => {
 };
 
 const allPassWorkRandom = async (req, res) => {
-  const { locationId, wage, workerId, year, month } = req.body;
+  const { locationId, wage, workerId, year, month} = req.body;
   const fullYear = year.concat(month);
 
-  const start_time = moment(
+  const startTime = moment(
     momentRandom(
       moment(fullYear).endOf('month'),
       moment(fullYear).startOf('month')
     )
   ).format('YYYY-MM-DD HH:mm');
-  const end_time = momentRandom(
-    moment(start_time).endOf('day'),
-    start_time
+  const endTime = momentRandom(
+    moment(startTime).endOf('day'),
+    startTime
   ).format('YYYY-MM-DD HH:mm');
 
   try {
@@ -61,12 +61,12 @@ const allPassWorkRandom = async (req, res) => {
     );
 
     const totalWorkTime = parseInt(
-      moment.duration(moment(end_time).diff(start_time)).asMinutes()
+      moment.duration(moment(endTime).diff(startTime)).asMinutes()
     );
 
     const timeClock = {
-      start_time,
-      end_time,
+      start_time: startTime,
+      end_time: endTime,
       wage,
       total: totalWorkTime * parseInt(wage / 60),
       totalWorkTime,
@@ -83,7 +83,7 @@ const allPassWorkRandom = async (req, res) => {
 
 const startWork = async (req, res) => {
   const { locationId, wage } = req.body;
-  const start_time = new Date();
+  const startTime = new Date();
 
   try {
     const employee = await Location.checkIfUserBelongsToLocation(
@@ -94,7 +94,7 @@ const startWork = async (req, res) => {
     const judge =
       employee.timeClocks.filter(
         (t) =>
-          moment(t.start_time).isSame(moment(start_time), 'day') && !t.end_time
+          moment(t.start_time).isSame(moment(startTime), 'day') && !t.end_time
       ).length > 0;
 
     if (judge) {
@@ -104,7 +104,7 @@ const startWork = async (req, res) => {
       return;
     }
 
-    const timeClock = { start_time, wage };
+    const timeClock = { start_time: startTime, wage};
 
     if (!timeClock) {
       res.status(500).send({
@@ -124,7 +124,7 @@ const startWork = async (req, res) => {
 
 const endWork = async (req, res) => {
   const { locationId, timeClockId } = req.body;
-  const end_time = new Date();
+  const endTime = new Date();
 
   try {
     const employee = await Location.checkIfUserBelongsToLocation(
@@ -132,31 +132,37 @@ const endWork = async (req, res) => {
       req.staff._id
     );
 
-    const timeClocks = employee.timeClocks;
+    const { timeClocks } = employee;
 
     let updatedTimeClock;
-    for (let timeClock of timeClocks) {
+
+    timeClocks.map((timeClock) => {
+
+    })
+
+
+    for (const timeClock of timeClocks) {
       if (timeClock._id.toString() === timeClockId) {
         updatedTimeClock = timeClock;
         const start = timeClock.start_time;
-        const end = moment(end_time).format();
+        const end = moment(endTime).format();
 
         if (moment(start).isAfter(end)) {
           throw new Error('잘못된 퇴근 정보입니다.');
         }
 
         timeClock.totalWorkTime = parseInt(
-          moment.duration(moment(end_time).diff(start)).asMinutes()
+          moment.duration(moment(endTime).diff(start)).asMinutes()
         );
         timeClock.total = parseInt(
           timeClock.totalWorkTime * (timeClock.wage / 60)
         );
 
         !timeClock.end_time
-          ? (timeClock.end_time = end_time)
+          ? (timeClock.end_time = endTime)
           : res
-              .status(500)
-              .send({ message: '이미 퇴근 처리가 완료되었습니다.' });
+            .status(500)
+            .send({message: '이미 퇴근 처리가 완료되었습니다.'});
 
         break;
       }
@@ -193,7 +199,7 @@ const readTimeClockForStaff = async (req, res) => {
       _id: req.staff._id,
     });
 
-    let timeClocks = staff.timeClocks;
+    let { timeClocks } = staff;
 
     timeClocks = timeClocks
       .sort((a, b) =>
@@ -252,8 +258,8 @@ const readTimeClockForOwner = async (req, res) => {
     });
   }
 
-  const { locationId } = req.params;
-  const { year, month } = req.body;
+  const {locationId} = req.params;
+  const {year, month} = req.body;
 
   try {
     const location = await Location.findOne({
@@ -319,8 +325,8 @@ const updateStartTime = async (req, res) => {
       throw new Error('you are not owner');
     }
 
-    const { locationId } = req.params;
-    const { timeClockId, startTime, staffId } = req.body;
+    const {locationId} = req.params;
+    const {timeClockId, startTime, staffId} = req.body;
 
     const location = await Location.findOne({
       _id: locationId,
@@ -370,8 +376,8 @@ const updateEndTime = async (req, res) => {
       throw new Error('you are not owner');
     }
 
-    const { locationId } = req.params;
-    const { timeClockId, endTime, staffId } = req.body;
+    const {locationId} = req.params;
+    const {timeClockId, endTime, staffId} = req.body;
 
     const location = await Location.findOne({
       _id: locationId,
@@ -421,8 +427,8 @@ const deleteTimeClock = async (req, res) => {
       throw new Error('you are not owner');
     }
 
-    const { locationId } = req.params;
-    const { timeClockId, staffId } = req.body;
+    const {locationId} = req.params;
+    const {timeClockId, staffId} = req.body;
 
     const location = await Location.findOne({
       _id: locationId,

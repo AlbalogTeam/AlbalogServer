@@ -1,16 +1,17 @@
-import Category from '../models/location/category';
-import Location from '../models/location/location';
+const Category = require('../models/location/category');
+const Location = require('../models/location/location');
+
 const createCategory = async (req, res) => {
   const { locationId } = req.params;
   const { name } = req.body;
 
-  const category = await Category.findOne({ locationId, name, deleted:false });
+  const category = await Category.findOne({ locationId, name, deleted: false });
 
   if (!category) {
     const newCategory = new Category({ locationId, name });
     if (!newCategory) {
       res.status(500).send({
-        message: 'Cannot Create Category'
+        message: 'Cannot Create Category',
       });
     }
     await newCategory.save();
@@ -18,8 +19,8 @@ const createCategory = async (req, res) => {
     const categories = await Category.find({ locationId, deleted: false });
 
     res.status(201).send({
-        categories
-      });
+      categories,
+    });
   } else {
     res.status(500).send({
       message: 'Already Exist Category',
@@ -45,8 +46,11 @@ const updateCategory = async (req, res) => {
   const { categoryId, name, locationId } = req.body;
 
   try {
-    const category = await Category.findByIdAndUpdate({ _id: categoryId }, {name: name});
-
+    const category = await Category.findByIdAndUpdate(
+      { _id: categoryId },
+      { name: name },
+      { new: true }
+    );
 
     if (!category) {
       res.status(500).send({
@@ -54,18 +58,12 @@ const updateCategory = async (req, res) => {
       });
     }
 
-
-    const categories = await Category.find({ locationId, deleted: false });
-
-
     res.status(201).send({
       UpdatedCategory: category,
-      categories
+      category,
     });
   } catch (err) {
-    res.status(500).send(
-      err.message
-    );
+    res.status(500).send(err.message);
   }
 };
 
@@ -73,34 +71,35 @@ const deleteCategory = async (req, res) => {
   const { locationId, categoryId } = req.params;
 
   try {
-
     const location = await Location.findById(locationId);
 
-    location.workManuals.map(w => {
-      if(w.category_id.toString() === categoryId) {
-        w.deleted = true
+    location.workManuals.forEach((w) => {
+      if (w.category_id.toString() === categoryId) {
+        w.deleted = true;
       }
     });
 
-    const category = await Category.findOneAndUpdate({ _id: categoryId, deleted: false }, {deleted: true});
+    const category = await Category.findOneAndUpdate(
+      { _id: categoryId, deleted: false },
+      { deleted: true }
+    );
 
-    if(!category){
-      throw new Error("Cannot Delete Category");
+    if (!category) {
+      throw new Error('Cannot Delete Category');
     }
 
     await location.save();
 
     const categories = await Category.find({ locationId, deleted: false });
 
-
     res.status(201).send({
       deletedCategory: category,
-      categories
+      categories,
     });
   } catch (err) {
     res.status(500).send({
       success: false,
-      message: err.toString()
+      message: err.toString(),
     });
   }
 };
