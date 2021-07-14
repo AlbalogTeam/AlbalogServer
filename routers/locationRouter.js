@@ -21,7 +21,7 @@ router.patch(
 // send location name
 router.get('/:locationId/:inviteId/join', locationController.sendLocationName);
 // add employee
-router.get(
+router.post(
   '/:locationId/:inviteId/join',
   locationController.alreadyExistsEmployee
 );
