@@ -1,8 +1,8 @@
-import jwt from 'jsonwebtoken';
-import mongoose from 'mongoose';
-import Employee from '../models/user/employee';
-import Location from '../models/location/location';
-import Invite from '../models/inviteToken';
+const jwt = require('jsonwebtoken');
+const mongoose = require('mongoose');
+const Employee = require('../models/user/employee');
+const Location = require('../models/location/location');
+const Invite = require('../models/inviteToken');
 
 const sendLocationName = async (req, res) => {
   const { inviteId } = req.params;
@@ -13,31 +13,37 @@ const sendLocationName = async (req, res) => {
     if (!isValidInviteToken)
       return res.status(400).send('토큰정보가 유효하지 않습니다');
 
-    const decoded = jwt.verify(
+    jwt.verify(
       isValidInviteToken.invite_token,
-      process.env.JWT_SECRET
+      process.env.JWT_SECRET,
+      async (err, decoded) => {
+        if (err)
+          return res
+            .status(400)
+            .send({ success: false, message: '만료된 토큰입니다' });
+
+        const location = await Location.findById(decoded.location);
+
+        if (!location) {
+          return res.status(400).send({
+            message: '매장정보를 찾을 수 없거나 해당 유저와 관계없는 매장',
+          });
+        }
+        return res.send({
+          location_name: location.name,
+          user_name: decoded.name,
+          user_email: decoded.email,
+        });
+      }
     );
-
-    const location = await Location.findById(decoded.location);
-
-    if (!location) {
-      return res.status(400).send({
-        message: '매장정보를 찾을 수 없거나 해당 유저와 관계없는 매장',
-      });
-    }
-    res.send({
-      location_name: location.name,
-      user_name: decoded.name,
-      user_email: decoded.email,
-    });
   } catch (error) {
-    res.status(500).send(error.toString());
+    return res.status(500).send(error.toString());
   }
 };
 
-//매장 스태프 만들기
-const create_employee = async (req, res) => {
-  const locationId = req.params.locationId;
+// 매장 스태프 만들기
+const createEmployee = async (req, res) => {
+  const { locationId } = req.params;
 
   try {
     const location = await Location.findById(locationId);
@@ -56,21 +62,21 @@ const create_employee = async (req, res) => {
 
     const token = await employee.generateAuthToken();
 
-    //add an employee who belongs to the current location
+    // add an employee who belongs to the current location
     location.employees = location.employees.concat({ employee: newEmployee });
     await location.save();
 
-    res.status(201).send({ employee, token });
+    return res.status(201).send({ employee, token });
   } catch (error) {
-    res.status(400).send(error);
+    return res.status(400).send(error);
   }
 };
 
-const logout_employee = async (req, res) => {
+const logoutEmployee = async (req, res) => {
   try {
-    req.staff.tokens = req.staff.tokens.filter((token) => {
-      return token.token !== req.token;
-    });
+    req.staff.tokens = req.staff.tokens.filter(
+      (token) => token.token !== req.token
+    );
 
     await req.staff.save();
     res.send({
@@ -83,14 +89,14 @@ const logout_employee = async (req, res) => {
   }
 };
 
-const get_employee = async (req, res) => {
+const getEmployeeProfile = async (req, res) => {
   res.send(req.staff);
 };
 
 // 해당 직원의 모든 매장보기
-const get_employee_locations = async (req, res) => {
+const getEmployeeAllLocations = async (req, res) => {
   if (!req.staff) return res.status(400).send('권한이 없습니다');
-  const locIds = req.staff.stores.map((ids) => ids.location); //get all objectIds from user.stores into arrays
+  const locIds = req.staff.stores.map((ids) => ids.location); // get all objectIds from user.stores into arrays
 
   if (locIds.length < 1) {
     return res.status(400).send({
@@ -102,9 +108,9 @@ const get_employee_locations = async (req, res) => {
     const locations = await Location.find({
       _id: { $in: locIds },
     });
-    res.send({ locations });
+    return res.send({ locations });
   } catch (err) {
-    res.status(500).send({
+    return res.status(500).send({
       message: err,
     });
   }
@@ -119,9 +125,9 @@ const getEmployeeSingleLocation = async (req, res) => {
       'employees.employee': req.staff._id,
     }).populate('workManuals.category_id');
     location.workManuals = location.workManuals.filter((n) => !n.deleted);
-    res.send(location);
+    return res.send(location);
   } catch (error) {
-    res.status(500).send(error.message);
+    return res.status(500).send(error.message);
   }
 };
 
@@ -152,17 +158,17 @@ const updateEmployee = async (req, res) => {
 
     const staff = await req.staff.save();
 
-    res.send(staff);
+    return res.send(staff);
   } catch (error) {
-    res.status(400).send(error.toString());
+    return res.status(400).send(error.toString());
   }
 };
 
 module.exports = {
-  create_employee,
-  logout_employee,
-  get_employee,
-  get_employee_locations,
+  createEmployee,
+  logoutEmployee,
+  getEmployeeProfile,
+  getEmployeeAllLocations,
   getEmployeeSingleLocation,
   updateEmployee,
   sendLocationName,

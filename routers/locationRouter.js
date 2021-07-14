@@ -1,42 +1,49 @@
-import express from 'express';
+const express = require('express');
+
 const router = new express.Router();
-//controller
-import locationController from '../controllers/locationController';
-//middleware
-import userAuth from '../middleware/userAuth';
+// controller
+const locationController = require('../controllers/locationController');
+// middleware
+const userAuth = require('../middleware/userAuth');
 
-//create location
-router.post('/', userAuth, locationController.create_location);
+// create location
+router.post('/', userAuth, locationController.createLocation);
 
-//get single location
+// get single location
 router.get('/:locationId', userAuth, locationController.get_location);
 
-//update location info
+// update location info
 router.patch(
   '/:locationId/update',
   userAuth,
   locationController.update_location
 );
-
-//invite employee
+// send location name
+router.get('/:locationId/:inviteId/join', locationController.sendLocationName);
+// add employee
+router.post(
+  '/:locationId/:inviteId/join',
+  locationController.alreadyExistsEmployee
+);
+// invite employee
 router.post(
   '/:locationId/invite',
   userAuth,
   locationController.invite_employee
 );
 
-//get location's employee list
+// get location's employee list
 router.get(
   '/:locationId/employees',
   userAuth,
-  locationController.get_all_employees
+  locationController.getAllEmployees
 );
 
-//get employee info
+// get employee info
 router.get(
   '/:locationId/employees/:employeeId',
   userAuth,
-  locationController.get_employee_info
+  locationController.getEmployeeInfo
 );
 
 router.patch(
@@ -72,20 +79,16 @@ router.delete(
   locationController.deleteNotice
 );
 
-router.post(
-  '/notice/search',
-  userAuth,
-  locationController.searchNotice
-);
+router.post('/notice/search', userAuth, locationController.searchNotice);
 
-//workManual
+// workManual
 router.post(
   '/:locationId/workmanual/create',
   userAuth,
   locationController.createWorkManual
 );
 
-//get all work manuals
+// get all work manuals
 router.get(
   '/:locationId/workmanual',
   userAuth,
@@ -98,7 +101,7 @@ router.get(
   locationController.readOneWorkManual
 );
 
-//update workmanual
+// update workmanual
 router.patch(
   '/:locationId/workmanual/:_id/update',
   userAuth,

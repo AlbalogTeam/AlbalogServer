@@ -1,9 +1,8 @@
-import moment from 'moment';
-import mongoose from 'mongoose';
-import Location from '../models/location/location';
-import Shift from '../models/schedule/shift';
-import Employee from '../models/user/employee';
-import getBetweenDates from '../utils/getDatesBetweenTwoDates';
+const moment = require('moment');
+const mongoose = require('mongoose');
+const Location = require('../models/location/location');
+const Shift = require('../models/schedule/shift');
+const getBetweenDates = require('../utils/getDatesBetweenTwoDates');
 
 // 직원 스케줄 생성
 const createShift = async (req, res) => {
@@ -31,11 +30,9 @@ const createShift = async (req, res) => {
 
     const shift = await Shift.insertMany(datesArr);
 
-    res.status(201).send(shift);
-
-    // res.status(201).send(datesArr);
+    return res.status(201).send(shift);
   } catch (error) {
-    res.status(500).send(error.toString());
+    return res.status(500).send(error.toString());
   }
 };
 
@@ -46,9 +43,9 @@ const getShifts = async (req, res) => {
     return res.status(400).send('직원 ID가 정확하지 않습니다');
   try {
     const shifts = await Shift.find({ owner: employeeId });
-    res.send(shifts);
+    return res.send(shifts);
   } catch (error) {
-    res.status(500).send(error.toString());
+    return res.status(500).send(error.toString());
   }
 };
 
@@ -58,13 +55,12 @@ const getAllShifts = async (req, res) => {
   if (!locationId) return res.status(400).json('매장 정보가 없습니다');
 
   try {
-    const shifts = await Shift.find({ location: locationId }).populate(
-      'owner',
-      'name'
-    );
+    const shifts = await Shift.find({ location: locationId }).populate('owner');
 
     const newShifts = shifts.map((d) => {
       const shiftObj = {
+        _id: d._id,
+        staffId: d.owner._id,
         title: d.owner.name,
         start: d.start,
         end: d.end,
@@ -74,29 +70,56 @@ const getAllShifts = async (req, res) => {
 
     if (!shifts || shifts.length < 1) return res.status(400).send([]);
 
-    res.send(newShifts);
+    return res.send(newShifts);
   } catch (error) {
-    res.status(500).send(error.message);
+    return res.status(500).send(error.message);
   }
 };
 
 const deleteSchedule = async (req, res) => {
-  const { shiftId, staffId } = req.body;
-  const { locationId } = req.params;
+  const { locationId, shiftId, employeeId } = req.params;
 
   try {
     const shift = await Shift.findOneAndRemove({
       _id: shiftId,
-      owner: staffId,
+      owner: employeeId,
       location: locationId,
     });
     if (!shift)
       return res
         .status(400)
         .send({ success: false, message: '해당 스케줄을 삭제 할 수 없습니다' });
-    res.send(shift);
+    return res.send(shift);
   } catch (error) {
-    res.status(500).send(error.message);
+    return res.status(500).send(error.message);
+  }
+};
+
+const deleteAllSchedule = async (req, res) => {
+  const { locationId, employeeId } = req.params;
+  const today = moment().utcOffset(0, true).toDate();
+
+  if (!employeeId || !locationId)
+    return res
+      .status(400)
+      .send({ success: false, message: '매장정보와 직원정보가 필요합니다' });
+
+  try {
+    const shifts = await Shift.deleteMany({
+      owner: employeeId,
+      location: locationId,
+    })
+      .where('date')
+      .gte(today);
+    if (shifts.deletedCount === 0)
+      return res.status(400).send({
+        success: false,
+        message: '삭제 할 일정이 없습니다',
+        count: shifts.deletedCount,
+      });
+    return res.send({ success: true, count: shifts.deletedCount });
+  } catch (error) {
+    return res.status(500).send(error.message);
   }
 };
 
@@ -104,17 +127,6 @@ const getDailySchedule = async (req, res) => {
   const { locationId, date } = req.params;
   const inputDate = moment.utc(date).toDate();
   try {
-    // daily schedule
-    // const shifts = await Shift.find({ location: locationId, date })
-    //   .sort({
-    //     start: '1',
-    //   })
-    //   .populate('owner');
-    // if (shifts.length < 1) return res.status(400).send('스케줄이 없습니다');
-
-    // const employees = shifts.map((d) => d.owner._id);
-
-    // timeclock
     const temp = await Shift.aggregate([
       {
         $match: {
@@ -175,53 +187,16 @@ const getDailySchedule = async (req, res) => {
       },
     ]);
 
-    // const temp = await Employee.aggregate([
-    //   {
-    //     $unwind: { path: '$timeClocks', preserveNullAndEmptyArrays: true },
-    //   },
-
-    //   {
-    //     $match: {
-    //       _id: { $in: employees },
-    //     },
-    //   },
-    //   // {
-    //   //   $match: {
-    //   //     $expr: {
-    //   //       $eq: [
-    //   //         {
-    //   //           $dateFromParts: {
-    //   //             year: { $year: '$timeClocks.start_time' },
-    //   //             month: { $month: '$timeClocks.start_time' },
-    //   //             day: { $dayOfMonth: '$timeClocks.start_time' },
-    //   //           },
-    //   //         },
-    //   //         inputDate,
-    //   //       ],
-    //   //     },
-    //   //   },
-    //   // },
-    //   {
-    //     $group: {
-    //       _id: '$_id',
-    //       name: { $first: '$name' },
-    //       timeClock: {
-    //         $push: {
-    //           start_time: '$timeClocks.start_time',
-    //           end_time: '$timeClocks.end_time',
-    //         },
-    //       },
-    //     },
-    //   },
-    // ]);
-
     const working = [];
     const off = [];
     const before = [];
     temp.forEach((v) => {
-      const a = v.timeClock.filter((d) =>
-        moment.utc(d.start_time).isSame(moment.utc(date).toDate(), 'day')
-      );
+      const a = v.timeClock
+        .filter((value) => Object.keys(value).length !== 0)
+        .filter((d) =>
+          moment.utc(d.start_time).isSame(moment.utc(date).toDate(), 'day')
+        );
+
       // 출근전
       if (!a.length) before.push({ name: v.name, time: v.schedule });
       // 일하는중
@@ -248,4 +223,5 @@ module.exports = {
   getAllShifts,
   getDailySchedule,
   deleteSchedule,
+  deleteAllSchedule,
 };

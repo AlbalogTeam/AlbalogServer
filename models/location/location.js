@@ -1,5 +1,5 @@
-import mongoose from 'mongoose';
-import Employee from '../user/employee';
+const mongoose = require('mongoose');
+const Employee = require('../user/employee');
 
 const locationSchema = new mongoose.Schema(
   {
@@ -55,36 +55,36 @@ const locationSchema = new mongoose.Schema(
           completed: {
             type: Boolean,
             required: true,
-            default: false
+            default: false,
           },
           who_worked: [
-              {
-                userId: {
-                  type: mongoose.Schema.Types.ObjectId,
-                  required: true
-                },
-                name: {
-                  type: String,
-                  required: true
-                },
-                completed: {
-                  type: Boolean,
-                  required: true,
-                  default: false
-                },
-            }
+            {
+              userId: {
+                type: mongoose.Schema.Types.ObjectId,
+                required: true,
+              },
+              name: {
+                type: String,
+                required: true,
+              },
+              completed: {
+                type: Boolean,
+                required: true,
+                default: false,
+              },
+            },
           ],
           modify_person: [
             {
               userId: {
                 type: mongoose.Schema.Types.ObjectId,
-                required:true
+                required: true,
               },
               name: {
                 type: String,
-                required: true
-              }
-            }
+                required: true,
+              },
+            },
           ],
         }),
       },
@@ -101,7 +101,7 @@ const locationSchema = new mongoose.Schema(
             idx: {
               type: Number,
               default: 0,
-              unique: true
+              unique: true,
             },
             title: {
               type: String,
@@ -136,8 +136,8 @@ const locationSchema = new mongoose.Schema(
             },
             deleted: {
               type: Boolean,
-              default: false
-            }
+              default: false,
+            },
           },
           { timestamps: true }
         ),
@@ -147,9 +147,7 @@ const locationSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-
-
-//스태프가 해당매장의 스태프인지 확인
+// 스태프가 해당매장의 스태프인지 확인
 locationSchema.statics.checkIfUserBelongsToLocation = async (
   locationId,
   staffId
@@ -158,12 +156,12 @@ locationSchema.statics.checkIfUserBelongsToLocation = async (
   const staffIds = location.employees.map((empId) => empId.employee);
 
   if (staffIds.includes(staffId)) {
-    return await Employee.findById(staffId);
+    return Employee.findById(staffId);
   }
   return false;
 };
 
-//업주가 해당 매장의 주인인지 확인
+// 업주가 해당 매장의 주인인지 확인
 locationSchema.statics.isValidCreateShift = async (
   locationId,
   ownerId,
@@ -177,7 +175,6 @@ locationSchema.statics.isValidCreateShift = async (
   if (!isValid) return false;
   return true;
 };
-
 const Location = mongoose.model('Location', locationSchema);
 
 module.exports = Location;
