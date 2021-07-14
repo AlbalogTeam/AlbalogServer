@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 const inviteSchema = new mongoose.Schema({
   invite_token: {

@@ -1,5 +1,5 @@
-import Shift from '../models/schedule/shift';
-import moment from 'moment';
+const moment = require('moment');
+const Shift = require('../models/schedule/shift');
 
 async function dateRange(
   startDate,
@@ -15,33 +15,32 @@ async function dateRange(
 
   while (currentDate <= moment.utc(endDate).toDate()) {
     time.forEach((d) => {
+      // 요일이 다르면 리턴
       if (d.day !== moment.utc(currentDate).day()) return;
 
-      let day = days.filter((day) => days.indexOf(day) === d.day);
+      const dayArr = days.filter((day) => days.indexOf(day) === d.day);
 
-      //utc 0 db
-      //server utc 0
+      let startTime = moment.utc(currentDate).toDate();
+      let endTime = moment.utc(currentDate).toDate();
 
-      let start_time = moment.utc(currentDate).toDate();
-      let end_time = moment.utc(currentDate).toDate();
-
-      // const start_time = new Date(currentDate);
-      // const end_time = new Date(currentDate);
       const st = d.start_time.split(':');
       const et = d.end_time.split(':');
-      // start_time.setUTCHours(st[0], st[1]);
-      // end_time.setUTCHours(et[0], et[1]);
-      start_time = moment
-        .utc(start_time)
+
+      startTime = moment
+        .utc(startTime)
         .add(st[0], 'hours')
         .add(st[1], 'minutes');
-      end_time = moment.utc(end_time).add(et[0], 'hours').add(et[1], 'minutes');
+      endTime = moment.utc(endTime).add(et[0], 'hours').add(et[1], 'minutes');
 
+      if (startTime >= endTime) {
+        endTime = moment.utc(endTime).add(1, 'days');
+        console.log(endTime);
+      }
       dateArray.push({
         date: moment.utc(currentDate).toDate(),
-        day: day[0],
-        start: start_time,
-        end: end_time,
+        day: dayArr[0],
+        start: startTime,
+        end: endTime,
         owner: staffId,
         location: locationId,
         exists: [],
@@ -57,18 +56,18 @@ async function dateRange(
   const scheduledDates = shifts.map((d) => moment.utc(d.date).toDate());
   if (scheduledDates.length > 0) {
     scheduledDates.forEach((v) => {
-      for (let d of dateArray) {
+      dateArray.forEach((d) => {
         const isScheduledDate = moment(moment.utc(d.date).toDate()).isSame(
           moment.utc(v).toDate()
         );
         if (isScheduledDate) {
           dateArray.splice(dateArray.indexOf(d), 1);
         }
-      }
+      });
     });
   }
 
   return dateArray;
 }
 
-export default dateRange;
+module.exports = dateRange;
