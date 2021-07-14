@@ -13,27 +13,29 @@ const sendLocationName = async (req, res) => {
     if (!isValidInviteToken)
       return res.status(400).send('토큰정보가 유효하지 않습니다');
 
-    const decoded = jwt.verify(
+    jwt.verify(
       isValidInviteToken.invite_token,
-      process.env.JWT_SECRET
+      process.env.JWT_SECRET,
+      async (err, decoded) => {
+        if (err)
+          return res
+            .status(400)
+            .send({ success: false, message: '만료된 토큰입니다' });
+
+        const location = await Location.findById(decoded.location);
+
+        if (!location) {
+          return res.status(400).send({
+            message: '매장정보를 찾을 수 없거나 해당 유저와 관계없는 매장',
+          });
+        }
+        return res.send({
+          location_name: location.name,
+          user_name: decoded.name,
+          user_email: decoded.email,
+        });
+      }
     );
-    if (!decoded)
-      return res
-        .status(400)
-        .send({ success: false, message: '만료된 토큰입니다' });
-
-    const location = await Location.findById(decoded.location);
-
-    if (!location) {
-      return res.status(400).send({
-        message: '매장정보를 찾을 수 없거나 해당 유저와 관계없는 매장',
-      });
-    }
-    return res.send({
-      location_name: location.name,
-      user_name: decoded.name,
-      user_email: decoded.email,
-    });
   } catch (error) {
     return res.status(500).send(error.toString());
   }
