@@ -96,7 +96,9 @@ const update_location = async (req, res) => {
       return res.status(400).send({
         message: 'invalid update',
       });
-    updates.forEach((update) => (location[update] = req.body[update]));
+    updates.forEach((update) => {
+      location[update] = req.body[update];
+    });
     location.owner = req.owner._id;
     const updatedLocation = await location.save();
     res.send(updatedLocation);
@@ -108,9 +110,8 @@ const update_location = async (req, res) => {
 // 매장 스태프 초대
 const invite_employee = async (req, res) => {
   const { name, email } = req.body;
-  const { locationId } = req.params; //해당 매장 아이디
-  if (!req.owner)
-    return res.status(400).send({ message: '관리자 로그인이 필요합니다' });
+  const { locationId } = req.params;
+
   try {
     const location = await Location.findOne({
       _id: locationId,
@@ -126,7 +127,7 @@ const invite_employee = async (req, res) => {
 
       const employeeIdsArr = location.employees.map((id) => id.employee);
 
-      //check if employee already belongs to the location
+      // check if employee already belongs to the location
       if (employeeIdsArr.includes(existingEmployee._id))
         return res.send('이미 해당 매장의 직원으로 등록되어있습니다');
 
@@ -144,21 +145,24 @@ const invite_employee = async (req, res) => {
       return res.send({
         message: '해당직원을 추가하였습니다',
       });
-    } else {
-      const token = jwt.sign(
-        {
-          name: name,
-          email: email,
-          location: locationId,
-        },
-        process.env.JWT_SECRET
-      );
-      const invite = new Invite({ invite_token: token });
-      await invite.save();
-
-      sendInvitationEmail(name, email, location._id, invite);
-      res.send({ name, email, location, invite });
     }
+    const token = jwt.sign(
+      {
+        name: name,
+        email: email,
+        location: locationId,
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: 10,
+      }
+    );
+
+    const invite = new Invite({ invite_token: token });
+    await invite.save();
+
+    sendInvitationEmail(name, email, location._id, invite);
+    return res.send({ name, email, location, invite });
   } catch (error) {
     res.status(500).send(error.toString());
   }

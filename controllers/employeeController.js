@@ -17,6 +17,10 @@ const sendLocationName = async (req, res) => {
       isValidInviteToken.invite_token,
       process.env.JWT_SECRET
     );
+    if (!decoded)
+      return res
+        .status(400)
+        .send({ success: false, message: '만료된 토큰입니다' });
 
     const location = await Location.findById(decoded.location);
 

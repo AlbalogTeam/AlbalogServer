@@ -14,7 +14,6 @@ router.get(
 );
 
 // get employees all locations
-
 router.get('/locations', userAuth, employeeController.getEmployeeAllLocations);
 
 // get employee's single location
