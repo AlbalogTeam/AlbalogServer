@@ -154,7 +154,7 @@ const invite_employee = async (req, res) => {
       },
       process.env.JWT_SECRET,
       {
-        expiresIn: 10,
+        expiresIn: 20,
       }
     );
 
