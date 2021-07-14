@@ -79,13 +79,12 @@ const getAllShifts = async (req, res) => {
 };
 
 const deleteSchedule = async (req, res) => {
-  const { shiftId, staffId } = req.body;
-  const { locationId } = req.params;
+  const { locationId, shiftId, employeeId } = req.params;
 
   try {
     const shift = await Shift.findOneAndRemove({
       _id: shiftId,
-      owner: staffId,
+      owner: employeeId,
       location: locationId,
     });
     if (!shift)
@@ -99,18 +98,17 @@ const deleteSchedule = async (req, res) => {
 };
 
 const deleteAllSchedule = async (req, res) => {
-  const { staffId } = req.body;
-  const { locationId } = req.params;
+  const { locationId, employeeId } = req.params;
   const today = moment().utcOffset(0, true).toDate();
 
-  if (!staffId || !locationId)
+  if (!employeeId || !locationId)
     return res
       .status(400)
       .send({ success: false, message: '매장정보와 직원정보가 필요합니다' });
 
   try {
     const shifts = await Shift.deleteMany({
-      owner: staffId,
+      owner: employeeId,
       location: locationId,
     })
       .where('date')
