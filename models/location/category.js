@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 const categorySchema = mongoose.Schema({
   locationId: {
@@ -13,8 +13,8 @@ const categorySchema = mongoose.Schema({
   },
   deleted: {
     type: Boolean,
-    default: false
-  }
+    default: false,
+  },
 });
 
 const Category = mongoose.model('Category', categorySchema);

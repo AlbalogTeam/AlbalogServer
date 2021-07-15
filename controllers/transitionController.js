@@ -1,6 +1,6 @@
-import Location from '../models/location/location';
-import Employee from '../models/user/employee';
-import Employer from '../models/user/employer';
+const Location = require('../models/location/location');
+const Employee = require('../models/user/employee');
+const Employer = require('../models/user/employer');
 
 const create_transition = async (req, res) => {
   const { locationId, date, description, userId } = req.body;
@@ -29,7 +29,7 @@ const create_transition = async (req, res) => {
     await location.save();
 
     res.status(201).send({
-      transitions:location.transitions.filter(t => t.date === date)
+      transitions: location.transitions.filter((t) => t.date === date),
     });
   } catch (error) {
     res.status(400).send(error);
@@ -49,7 +49,7 @@ const readTransition = async (req, res) => {
       });
     }
 
-    const transitions = location.transitions;
+    const { transitions } = location;
     const satisfyTransitions = [];
 
     for (let i = 0; i < transitions.length; i++) {
@@ -104,7 +104,6 @@ const updateDescriptionInTransition = async (req, res) => {
       }
     }
 
-
     const date = originalTransition.date;
 
     await location.save();
@@ -117,7 +116,7 @@ const updateDescriptionInTransition = async (req, res) => {
 
     res.status(201).send({
       updatedTransition,
-      transitions: location.transitions.filter(t => t.date === date)
+      transitions: location.transitions.filter((t) => t.date === date),
     });
   } catch (err) {
     res.status(500).send({
@@ -164,7 +163,6 @@ const toggleComplete = async (req, res) => {
       }
     }
 
-
     await location.save();
 
     const date = updatedTransition.date;
@@ -177,7 +175,7 @@ const toggleComplete = async (req, res) => {
 
     res.status(200).send({
       updatedTransition: updatedTransition,
-      transitions: location.transitions.filter(t => t.date === date)
+      transitions: location.transitions.filter((t) => t.date === date),
     });
   } catch (err) {
     res.status(500).send({
@@ -224,7 +222,7 @@ const deleteTransition = async (req, res) => {
 
     res.status(200).send({
       deletedTransition,
-      transitions: location.transitions.filter(t => t.date === date)
+      transitions: location.transitions.filter((t) => t.date === date),
     });
   } catch (err) {
     res.status(500).send({
