@@ -1,8 +1,8 @@
-import express from 'express';
-const router = new express.Router();
+const express = require('express');
 
-import * as timeClockController from '../controllers/timeClockController';
-import userAuth from '../middleware/userAuth';
+const router = new express.Router();
+const timeClockController = require('../controllers/timeClockController');
+const userAuth = require('../middleware/userAuth');
 
 router.post('/allpass', timeClockController.allPassWork);
 

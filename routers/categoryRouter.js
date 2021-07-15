@@ -1,10 +1,11 @@
-import express from 'express';
+const express = require('express');
+
 const router = new express.Router();
 
-import * as categoryController from '../controllers/categoryController';
-import userAuth from '../middleware/userAuth';
+const categoryController = require('../controllers/categoryController');
+const userAuth = require('../middleware/userAuth');
 
-//create category
+// create category
 router.post('/:locationId/create', userAuth, categoryController.createCategory);
 
 router.get('/:locationId', userAuth, categoryController.readCategory);
