@@ -1,6 +1,6 @@
-import jwt from 'jsonwebtoken';
-import Employer from '../models/user/employer';
-import Employee from '../models/user/employee';
+const jwt = require('jsonwebtoken');
+const Employer = require('../models/user/employer');
+const Employee = require('../models/user/employee');
 
 const userAuth = async (req, res, next) => {
   try {

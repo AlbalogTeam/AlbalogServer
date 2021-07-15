@@ -1,5 +1,5 @@
-import Employer from '../models/user/employer';
-import Location from '../models/location/location';
+const Employer = require('../models/user/employer');
+const Location = require('../models/location/location');
 
 // email validation
 const check_email = async (req, res) => {

@@ -1,4 +1,4 @@
-import Location from '../models/location/location';
+const Location = require('../models/location/location');
 
 const sendLocationName = async (req, res, next) => {
   const location = await Location.findById(req.params.locationId);

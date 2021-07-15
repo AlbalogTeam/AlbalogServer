@@ -1,9 +1,9 @@
-import jwt from 'jsonwebtoken';
-import Employer from '../models/user/employer';
-import Employee from '../models/user/employee';
-import { sendResetPasswordEmail } from '../emails/accounts';
+const jwt = require('jsonwebtoken');
+const Employer = require('../models/user/employer');
+const Employee = require('../models/user/employee');
+const { sendResetPasswordEmail } = require('../emails/accounts');
 
-import Invite from '../models/inviteToken';
+const Invite = require('../models/inviteToken');
 
 // login
 const loginUser = async (req, res) => {
@@ -120,7 +120,8 @@ const resetPassword = async (req, res) => {
       await staff.save();
 
       return res.send({ message: '비밀번호가 변경되었습니다', staff });
-    } else return res.send('같은 이메일이 직원과 관리자에 둘다있음');
+    }
+    return res.send('같은 이메일이 직원과 관리자에 둘다있음');
   } catch (error) {
     res.status(500).send(error.message);
   }

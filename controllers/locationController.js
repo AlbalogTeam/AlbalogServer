@@ -22,9 +22,9 @@ const createLocation = async (req, res) => {
     req.owner.stores = req.owner.stores.concat({ location });
     await req.owner.save();
 
-    res.status(201).send({ location });
+    return res.status(201).send({ location });
   } catch (error) {
-    res.status(500).send(error.toString());
+    return res.status(500).send(error.toString());
   }
 };
 
