@@ -243,6 +243,14 @@ const invite_employee = async (req, res) => {
       });
     }
 
+    const existingEmployee = await Employee.findOne({ email });
+
+    const employeeIdsArr = location.employees.map((id) => id.employee);
+
+    // check if employee already belongs to the location
+    if (employeeIdsArr.includes(existingEmployee?._id))
+      return res.status(400).send('이미 해당 매장의 직원으로 등록되어있습니다');
+
     const token = jwt.sign(
       {
         name: name,
