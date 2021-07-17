@@ -40,7 +40,7 @@ const allPassWork = async (req, res) => {
 };
 
 const allPassWorkRandom = async (req, res) => {
-  const { locationId, wage, workerId, year, month} = req.body;
+  const { locationId, wage, workerId, year, month } = req.body;
   const fullYear = year.concat(month);
 
   const startTime = moment(
@@ -104,7 +104,7 @@ const startWork = async (req, res) => {
       return;
     }
 
-    const timeClock = { start_time: startTime, wage};
+    const timeClock = { start_time: startTime, wage };
 
     if (!timeClock) {
       res.status(500).send({
@@ -136,10 +136,7 @@ const endWork = async (req, res) => {
 
     let updatedTimeClock;
 
-    timeClocks.map((timeClock) => {
-
-    })
-
+    timeClocks.map((timeClock) => {});
 
     for (const timeClock of timeClocks) {
       if (timeClock._id.toString() === timeClockId) {
@@ -161,8 +158,8 @@ const endWork = async (req, res) => {
         !timeClock.end_time
           ? (timeClock.end_time = endTime)
           : res
-            .status(500)
-            .send({message: '이미 퇴근 처리가 완료되었습니다.'});
+              .status(500)
+              .send({ message: '이미 퇴근 처리가 완료되었습니다.' });
 
         break;
       }
@@ -208,13 +205,12 @@ const readTimeClockForStaff = async (req, res) => {
       .filter((t) => t.end_time);
 
     const result = [];
+
     timeClocks.map((v) => {
       const yearAndMonth = moment(v.start_time).format('YYYYMM');
       const newClock = {
         start_time: moment(v.start_time).format('YYYY-MM-DD'),
-        workTime: `${moment(v.start_time).format('hhmm')}-${moment(
-          v.end_time
-        ).format('hhmm')}`,
+        workTime: [v.start_time,v.end_time],
         workInToday: parseInt(
           moment.duration(moment(v.end_time).diff(v.start_time)).asMinutes()
         ),
@@ -245,9 +241,15 @@ const readTimeClockForStaff = async (req, res) => {
       throw new Error('근무시작 전 입니다.');
     }
 
-    res.status(200).send(formatedResult.filter((v) => v !== null).sort((a, b) =>
-      moment(a.yearAndMonth).isAfter(moment(b.yearAndMonth)) ? -1 : 1
-    ));
+    res
+      .status(200)
+      .send(
+        formatedResult
+          .filter((v) => v !== null)
+          .sort((a, b) =>
+            moment(a.yearAndMonth).isAfter(moment(b.yearAndMonth)) ? -1 : 1
+          )
+      );
   } catch (error) {
     res.status(400).send(error.toString());
   }
@@ -260,8 +262,8 @@ const readTimeClockForOwner = async (req, res) => {
     });
   }
 
-  const {locationId} = req.params;
-  const {year, month} = req.body;
+  const { locationId } = req.params;
+  const { year, month } = req.body;
 
   try {
     const location = await Location.findOne({
@@ -327,8 +329,8 @@ const updateStartTime = async (req, res) => {
       throw new Error('you are not owner');
     }
 
-    const {locationId} = req.params;
-    const {timeClockId, startTime, staffId} = req.body;
+    const { locationId } = req.params;
+    const { timeClockId, startTime, staffId } = req.body;
 
     const location = await Location.findOne({
       _id: locationId,
@@ -378,8 +380,8 @@ const updateEndTime = async (req, res) => {
       throw new Error('you are not owner');
     }
 
-    const {locationId} = req.params;
-    const {timeClockId, endTime, staffId} = req.body;
+    const { locationId } = req.params;
+    const { timeClockId, endTime, staffId } = req.body;
 
     const location = await Location.findOne({
       _id: locationId,
@@ -429,8 +431,8 @@ const deleteTimeClock = async (req, res) => {
       throw new Error('you are not owner');
     }
 
-    const {locationId} = req.params;
-    const {timeClockId, staffId} = req.body;
+    const { locationId } = req.params;
+    const { timeClockId, staffId } = req.body;
 
     const location = await Location.findOne({
       _id: locationId,
