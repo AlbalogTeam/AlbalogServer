@@ -237,10 +237,6 @@ const readTimeClockForStaff = async (req, res) => {
       return formatedData;
     });
 
-    if (!timeClocks.length) {
-      throw new Error('근무시작 전 입니다.');
-    }
-
     res
       .status(200)
       .send(
