@@ -203,6 +203,7 @@ const invite_employee = async (req, res) => {
   const { name, email } = req.body;
   const { locationId } = req.params;
 
+
   try {
     const location = await Location.findOne({
       _id: locationId,
@@ -239,8 +240,10 @@ const invite_employee = async (req, res) => {
 
     const employeeIdsArr = location.employees.map((id) => id.employee);
 
+
+    console.log(existingEmployee);
     // check if employee already belongs to the location
-    if (employeeIdsArr.includes(existingEmployee._id))
+    if (employeeIdsArr.includes(existingEmployee?._id))
       return res.status(400).send('이미 해당 매장의 직원으로 등록되어있습니다');
 
     const token = jwt.sign(
