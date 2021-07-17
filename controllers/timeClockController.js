@@ -245,7 +245,9 @@ const readTimeClockForStaff = async (req, res) => {
       throw new Error('근무시작 전 입니다.');
     }
 
-    res.status(200).send(formatedResult.filter((v) => v !== null));
+    res.status(200).send(formatedResult.filter((v) => v !== null).sort((a, b) =>
+      moment(a.yearAndMonth).isAfter(moment(b.yearAndMonth)) ? -1 : 1
+    ));
   } catch (error) {
     res.status(400).send(error.toString());
   }
