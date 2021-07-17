@@ -160,7 +160,6 @@ const endWork = async (req, res) => {
           : res
               .status(500)
               .send({ message: '이미 퇴근 처리가 완료되었습니다.' });
-
         break;
       }
     }
@@ -192,9 +191,7 @@ const readTimeClockForStaff = async (req, res) => {
       throw new Error('해당 매장 정보를 찾을수 없습니다.');
     }
 
-    const staff = await Employee.findOne({
-      _id: req.staff._id,
-    });
+    const staff = await Employee.findById(req.staff._id);
 
     let { timeClocks } = staff;
 
@@ -210,7 +207,7 @@ const readTimeClockForStaff = async (req, res) => {
       const yearAndMonth = moment(v.start_time).format('YYYYMM');
       const newClock = {
         start_time: moment(v.start_time).format('YYYY-MM-DD'),
-        workTime: [v.start_time,v.end_time],
+        workTime: [v.start_time, v.end_time],
         workInToday: parseInt(
           moment.duration(moment(v.end_time).diff(v.start_time)).asMinutes()
         ),
