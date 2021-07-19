@@ -98,10 +98,13 @@ const locationSchema = new mongoose.Schema(
       {
         type: new mongoose.Schema(
           {
+<<<<<<< HEAD
             idx: {
               type: Number,
               default: 0,
             },
+=======
+>>>>>>> 2fd394c8122fdef9d96fcaebd52f0a0979585cf8
             title: {
               type: String,
               maxLength: 50,

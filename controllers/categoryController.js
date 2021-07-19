@@ -1,5 +1,7 @@
+
 const Category = require('../models/location/category');
 const Location = require('../models/location/location');
+
 
 const createCategory = async (req, res) => {
   const { locationId } = req.params;
@@ -43,6 +45,7 @@ const readCategory = async (req, res) => {
 };
 
 const updateCategory = async (req, res) => {
+
   const { categoryId, name, locationId } = req.body;
 
   try {
@@ -66,6 +69,7 @@ const updateCategory = async (req, res) => {
     res.status(500).send(err.message);
   }
 };
+
 
 const deleteCategory = async (req, res) => {
   const { locationId, categoryId } = req.params;
