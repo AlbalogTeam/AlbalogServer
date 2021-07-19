@@ -221,7 +221,7 @@ const readTimeClockForStaff = async (req, res) => {
 
     const formatedResult = result.map((v, i) => {
       let sum = 0;
-      for (let timeClock of v) {
+      for (const timeClock of v) {
         sum += timeClock.total;
       }
 
@@ -270,13 +270,13 @@ const readTimeClockForOwner = async (req, res) => {
       });
     }
 
-    const employees = location.employees;
+    const { employees } = location;
 
     const allTimeClocks = [];
 
     for (let i = 0; i < employees.length; i++) {
       const employee = await Employee.findById(employees[i].employee);
-      let timeClocks = employee.timeClocks;
+      let { timeClocks } = employee;
       timeClocks = timeClocks
         .sort((a, b) =>
           moment(a.start_time).isAfter(moment(b.start_time)) ? 1 : -1
@@ -338,10 +338,10 @@ const updateStartTime = async (req, res) => {
 
     const staff = await Employee.findById(staffId);
 
-    const timeClocks = staff.timeClocks;
+    const { timeClocks } = staff;
 
     let originTimeClock;
-    for (let timeClock of timeClocks) {
+    for (const timeClock of timeClocks) {
       if (timeClock._id.toString() === timeClockId) {
         originTimeClock = timeClock;
         timeClock.start_time = startTime;
@@ -389,10 +389,10 @@ const updateEndTime = async (req, res) => {
 
     const staff = await Employee.findById(staffId);
 
-    const timeClocks = staff.timeClocks;
+    const { timeClocks } = staff;
 
     let originTimeClock;
-    for (let timeClock of timeClocks) {
+    for (const timeClock of timeClocks) {
       if (timeClock._id.toString() === timeClockId) {
         originTimeClock = timeClock;
         timeClock.end_time = endTime;
@@ -438,10 +438,10 @@ const deleteTimeClock = async (req, res) => {
 
     const staff = await Employee.findById(staffId);
 
-    const timeClocks = staff.timeClocks;
+    const { timeClocks } = staff;
 
     let deletedTimeClock;
-    for (let idx in timeClocks) {
+    for (const idx in timeClocks) {
       const id = timeClocks[idx]._id;
       if (id.equals(timeClockId)) {
         deletedTimeClock = timeClocks[idx];

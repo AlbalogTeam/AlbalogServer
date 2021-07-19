@@ -54,26 +54,34 @@ const get_profile_employer = async (req, res) => {
 };
 
 // update profile
-const update_employer_profile = async (req, res) => {
+const updateEmployerProfile = async (req, res) => {
   const { name, password, newPassword } = req.body;
 
   if (!req.owner) return res.status(400).send('권한이 없습니다');
 
+  if (password === '' || !password || password.length < 1) {
+    return res.status(400).send({
+      success: false,
+      message: '정보변경을 위해서 암호를 입력해주세요',
+    });
+  }
   try {
     const isMatch = await req.owner.comparePasswords(password);
     if (!isMatch)
       return res.status(400).send({ message: '현재 비밀번호가 다릅니다' });
 
-    if (newPassword === '' || !newPassword || newPassword.length < 1)
+    if (newPassword === '' || !newPassword || newPassword.length < 1) {
       req.owner.password = password;
+    } else {
+      req.owner.password = newPassword;
+    }
 
     req.owner.name = name;
-    req.owner.password = newPassword;
 
     await req.owner.save();
-    res.send(req.owner);
+    return res.send(req.owner);
   } catch (error) {
-    res.status(400).send(error.toString());
+    return res.status(400).send(error.toString());
   }
 };
 
@@ -132,7 +140,7 @@ module.exports = {
   createEmployer,
   login_employer,
   get_profile_employer,
-  update_employer_profile,
+  updateEmployerProfile,
   getAllLocations,
   logoutEmployer,
   killAllSession,
