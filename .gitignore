@@ -123,3 +123,4 @@ dist
 
 # config folder
 config
+server-nestjs

@@ -41,8 +41,7 @@ const userAuth = async (req, res, next) => {
         throw new Error('Auth Error');
     }
   } catch (err) {
-    res.status(401).send({ error: 'Please authenticate',
-    err:err.toString()});
+    res.status(401).send({ error: 'Please authenticate', err: err.toString() });
   }
 };
 
