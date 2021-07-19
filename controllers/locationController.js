@@ -361,11 +361,8 @@ const createNotice = async (req, res) => {
     });
 
     const { title, content } = req.body;
-    const idx = !location.notices[location.notices.length - 1]
-      ? 0
-      : location.notices[location.notices.length - 1].idx + 1;
 
-    const notice = { idx, title, content };
+    const notice = { title, content };
 
     if (!notice) {
       res.status(500).send({
@@ -505,7 +502,7 @@ const deleteNotice = async (req, res) => {
     const notices = location.notices;
     let deletedNotice;
 
-    for (let idx in notices) {
+    for (const idx in notices) {
       const notice = notices[idx];
       if (notice._id.toString() === _id) {
         deletedNotice = notice;
@@ -754,7 +751,7 @@ const deleteWorkManual = async (req, res) => {
     const workManuals = location.workManuals;
     let deletedWorkManual;
 
-    for (let idx in workManuals) {
+    for (const idx in workManuals) {
       const workManual = workManuals[idx];
       if (workManual._id.toString() === _id) {
         workManual.deleted = true;

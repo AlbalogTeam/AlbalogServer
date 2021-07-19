@@ -98,11 +98,6 @@ const locationSchema = new mongoose.Schema(
       {
         type: new mongoose.Schema(
           {
-            idx: {
-              type: Number,
-              default: 0,
-              unique: true,
-            },
             title: {
               type: String,
               maxLength: 50,
