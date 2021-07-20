@@ -12,7 +12,11 @@ router.post(
 );
 
 // get 1 employee shift
-router.get('/employee/:employeeId', userAuth, shiftController.getShifts);
+router.get(
+  ':locationId/employee/:employeeId',
+  userAuth,
+  shiftController.getShifts
+);
 
 // get all shifts for current location
 router.get('/location/:locationId', userAuth, shiftController.getAllShifts);
