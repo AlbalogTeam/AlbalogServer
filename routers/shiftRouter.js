@@ -13,7 +13,7 @@ router.post(
 
 // get 1 employee shift
 router.get(
-  ':locationId/employee/:employeeId',
+  '/:locationId/employee/:employeeId',
   userAuth,
   shiftController.getShifts
 );
