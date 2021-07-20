@@ -38,11 +38,14 @@ const createShift = async (req, res) => {
 
 // emloyee: get all shifts
 const getShifts = async (req, res) => {
-  const { employeeId } = req.params;
+  const { employeeId, locationId } = req.params;
   if (!employeeId || employeeId.length < 1)
     return res.status(400).send('직원 ID가 정확하지 않습니다');
   try {
-    const shifts = await Shift.find({ owner: employeeId });
+    const shifts = await Shift.find({
+      owner: employeeId,
+      location: locationId,
+    });
     return res.send(shifts);
   } catch (error) {
     return res.status(500).send(error.toString());
