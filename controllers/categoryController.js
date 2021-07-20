@@ -4,18 +4,16 @@ const Location = require('../models/location/location');
 
 
 const createCategory = async (req, res) => {
+
   const { locationId } = req.params;
   const { name } = req.body;
 
   const category = await Category.findOne({ locationId, name, deleted: false });
 
   if (!category) {
+
     const newCategory = new Category({ locationId, name });
-    if (!newCategory) {
-      res.status(500).send({
-        message: 'Cannot Create Category',
-      });
-    }
+
     await newCategory.save();
 
     const categories = await Category.find({ locationId, deleted: false });
