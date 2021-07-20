@@ -160,7 +160,6 @@ const endWork = async (req, res) => {
           : res
               .status(500)
               .send({ message: '이미 퇴근 처리가 완료되었습니다.' });
-
         break;
       }
     }
@@ -192,9 +191,7 @@ const readTimeClockForStaff = async (req, res) => {
       throw new Error('해당 매장 정보를 찾을수 없습니다.');
     }
 
-    const staff = await Employee.findOne({
-      _id: req.staff._id,
-    });
+    const staff = await Employee.findById(req.staff._id);
 
     let { timeClocks } = staff;
 
@@ -210,7 +207,7 @@ const readTimeClockForStaff = async (req, res) => {
       const yearAndMonth = moment(v.start_time).format('YYYYMM');
       const newClock = {
         start_time: moment(v.start_time).format('YYYY-MM-DD'),
-        workTime: [v.start_time,v.end_time],
+        workTime: [v.start_time, v.end_time],
         workInToday: parseInt(
           moment.duration(moment(v.end_time).diff(v.start_time)).asMinutes()
         ),
@@ -224,7 +221,7 @@ const readTimeClockForStaff = async (req, res) => {
 
     const formatedResult = result.map((v, i) => {
       let sum = 0;
-      for (let timeClock of v) {
+      for (const timeClock of v) {
         sum += timeClock.total;
       }
 
@@ -273,13 +270,13 @@ const readTimeClockForOwner = async (req, res) => {
       });
     }
 
-    const employees = location.employees;
+    const { employees } = location;
 
     const allTimeClocks = [];
 
     for (let i = 0; i < employees.length; i++) {
       const employee = await Employee.findById(employees[i].employee);
-      let timeClocks = employee.timeClocks;
+      let { timeClocks } = employee;
       timeClocks = timeClocks
         .sort((a, b) =>
           moment(a.start_time).isAfter(moment(b.start_time)) ? 1 : -1
@@ -341,10 +338,10 @@ const updateStartTime = async (req, res) => {
 
     const staff = await Employee.findById(staffId);
 
-    const timeClocks = staff.timeClocks;
+    const { timeClocks } = staff;
 
     let originTimeClock;
-    for (let timeClock of timeClocks) {
+    for (const timeClock of timeClocks) {
       if (timeClock._id.toString() === timeClockId) {
         originTimeClock = timeClock;
         timeClock.start_time = startTime;
@@ -392,10 +389,10 @@ const updateEndTime = async (req, res) => {
 
     const staff = await Employee.findById(staffId);
 
-    const timeClocks = staff.timeClocks;
+    const { timeClocks } = staff;
 
     let originTimeClock;
-    for (let timeClock of timeClocks) {
+    for (const timeClock of timeClocks) {
       if (timeClock._id.toString() === timeClockId) {
         originTimeClock = timeClock;
         timeClock.end_time = endTime;
@@ -441,10 +438,10 @@ const deleteTimeClock = async (req, res) => {
 
     const staff = await Employee.findById(staffId);
 
-    const timeClocks = staff.timeClocks;
+    const { timeClocks } = staff;
 
     let deletedTimeClock;
-    for (let idx in timeClocks) {
+    for (const idx in timeClocks) {
       const id = timeClocks[idx]._id;
       if (id.equals(timeClockId)) {
         deletedTimeClock = timeClocks[idx];

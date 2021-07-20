@@ -53,7 +53,7 @@ const employeeSchema = new mongoose.Schema(
     hourly_wage: {
       type: Number,
       trim: true,
-      default: 0,
+      default: 8720,
     },
     timeClocks: [
       {
@@ -127,6 +127,7 @@ employeeSchema.methods.toJSON = function () {
 
 employeeSchema.methods.generateAuthToken = async function () {
   const employee = this;
+  console.log('generate tken');
   const token = jwt.sign(
     {
       _id: employee._id.toString(),

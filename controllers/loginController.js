@@ -12,18 +12,24 @@ const loginUser = async (req, res) => {
       req.body.email,
       req.body.password
     );
+
     if (!user) {
       user = await Employee.findByCredentials(
         req.body.email,
         req.body.password
       );
     }
+
+    if (!user) {
+      return res.status(400).send({ success: false, message: '유저없음' });
+    }
+
     const token = await user.generateAuthToken();
 
     res.send({ user, token });
   } catch (error) {
     res
-      .status(400)
+      .status(500)
       .send({ message: 'Unable to login', error: error.toString() });
   }
 };
@@ -115,7 +121,8 @@ const resetPassword = async (req, res) => {
       await owner.save();
 
       return res.send({ message: '비밀번호가 변경되었습니다', owner });
-    } else if (!owner && staff) {
+    }
+    if (!owner && staff) {
       staff.password = newPassword;
       await staff.save();
 
