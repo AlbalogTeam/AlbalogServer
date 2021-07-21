@@ -1,5 +1,8 @@
 const Employer = require('../models/user/employer');
 const Location = require('../models/location/location');
+const EmployersService = require('../services/users/employerService');
+
+const employerService = new EmployersService();
 
 // email validation
 const check_email = async (req, res) => {
@@ -15,42 +18,22 @@ const check_email = async (req, res) => {
 
 // create
 const createEmployer = async (req, res) => {
-  const employer = new Employer(req.body);
   try {
-    const checkEmail = await Employer.checkIfEmailExist(employer.email);
-
-    if (checkEmail) {
-      return res.status(400).send({ message: 'Email is already taken' }); // check if user's email already exist
-    }
-    await employer.save();
-    const token = await employer.generateAuthToken();
-    res.status(201).send({ employer, token });
+    const newEmployer = await employerService.createEmployer(req.body);
+    res.status(201).send(newEmployer);
   } catch (error) {
-    res.status(400).send(error);
-  }
-};
-
-// login
-const login_employer = async (req, res) => {
-  try {
-    const employer = await Employer.findByCredentials(
-      req.body.email,
-      req.body.password
-    );
-    const token = await employer.generateAuthToken();
-
-    res.send({ employer, token });
-  } catch (error) {
-    res
-      .status(400)
-      .send({ message: 'Unable to login', error: error.toString() });
+    return res.status(500).send(error.message);
   }
 };
 
 // get profile
 const get_profile_employer = async (req, res) => {
-  if (!req.owner) return res.status(400).send('권한이 없습니다');
-  res.send(req.owner);
+  try {
+    const employer = await employerService.getEmployerProfile(req.owner);
+    res.send(employer);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
 };
 
 // update profile
@@ -138,7 +121,6 @@ const getAllLocations = async (req, res) => {
 module.exports = {
   check_email,
   createEmployer,
-  login_employer,
   get_profile_employer,
   updateEmployerProfile,
   getAllLocations,
