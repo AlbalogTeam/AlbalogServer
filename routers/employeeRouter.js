@@ -1,6 +1,7 @@
 const express = require('express');
 const employeeController = require('../controllers/employeeController');
 const userAuth = require('../middleware/userAuth');
+const checkIfUserBelongsToLocation = require('../middleware/checkIfUserBelongsToLocation');
 
 const router = new express.Router();
 
@@ -20,6 +21,7 @@ router.get('/locations', userAuth, employeeController.getEmployeeAllLocations);
 router.get(
   '/:locationId',
   userAuth,
+  checkIfUserBelongsToLocation,
   employeeController.getEmployeeSingleLocation
 );
 

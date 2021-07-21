@@ -7,7 +7,7 @@ const router = new express.Router();
 router.post('/check', employerController.check_email);
 router.post('/signup', employerController.createEmployer);
 
-router.get('/me', userAuth, employerController.get_profile_employer);
+router.get('/me', userAuth, employerController.getEmployerProfile);
 
 router.get('/me/locations', userAuth, employerController.getAllLocations);
 

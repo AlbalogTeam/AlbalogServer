@@ -15,7 +15,7 @@ const userAuth = async (req, res, next) => {
             'tokens.token': token,
           });
           if (!employer) {
-            throw new Error('Auth Error');
+            throw new Error('Please authenticate');
           }
           req.owner = employer;
           req.token = token;
@@ -30,7 +30,7 @@ const userAuth = async (req, res, next) => {
           });
 
           if (!employee) {
-            throw new Error();
+            throw new Error('Please authenticate');
           }
           req.staff = employee;
           req.token = token;
@@ -41,7 +41,7 @@ const userAuth = async (req, res, next) => {
         throw new Error('Auth Error');
     }
   } catch (err) {
-    res.status(401).send({ error: 'Please authenticate', err: err.toString() });
+    res.status(401).send({ success: false, error: err.message });
   }
 };
 

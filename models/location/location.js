@@ -151,7 +151,7 @@ locationSchema.statics.checkIfUserBelongsToLocation = async (
   const staffIds = location.employees.map((empId) => empId.employee);
 
   if (staffIds.includes(staffId)) {
-    return Employee.findById(staffId);
+    return await Employee.findById(staffId);
   }
   return false;
 };
