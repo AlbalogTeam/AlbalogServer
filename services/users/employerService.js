@@ -10,7 +10,6 @@ class EmployersService {
 
     try {
       const checkEmail = await this.Employer.checkIfEmailExist(employer.email);
-      console.log(checkEmail);
 
       if (checkEmail) {
         throw new Error('이미 가입되어있는 이메일입니다');

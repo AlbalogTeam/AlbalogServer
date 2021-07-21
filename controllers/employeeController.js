@@ -120,11 +120,75 @@ const getEmployeeSingleLocation = async (req, res) => {
   const { locationId } = req.params;
   if (!req.staff) return res.status(400).send('권한이 없습니다');
   try {
-    const location = await Location.findOne({
-      _id: mongoose.Types.ObjectId(locationId),
-      'employees.employee': req.staff._id,
-    }).populate('workManuals.category_id');
-    location.workManuals = location.workManuals.filter((n) => !n.deleted);
+    // const location = await Location.findOne({
+    //   _id: mongoose.Types.ObjectId(locationId),
+    //   'employees.employee': req.staff._id,
+    // }).populate('workManuals.category_id');
+    // location.workManuals = location.workManuals.filter((n) => !n.deleted);
+
+    const location = await Location.aggregate([
+      {
+        $match: {
+          _id: mongoose.Types.ObjectId(locationId),
+          'employees.employee': req.staff._id,
+        },
+      },
+
+      {
+        $unwind: {
+          path: '$notices',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $sort: {
+          notices: -1,
+        },
+      },
+      {
+        $group: {
+          _id: '$_id',
+          name: { $first: '$name' },
+          address: { $first: '$address' },
+          postal_code: { $first: '$postal_code' },
+          phone_number: { $first: '$phone_number' },
+          owner: { $first: '$owner' },
+          employees: { $first: '$employees' },
+          schedule_changes: { $first: '$schedule_changes' },
+          transitions: { $first: '$transitions' },
+          workManuals: {
+            $first: '$workManuals',
+          },
+          notices: { $push: '$notices' },
+        },
+      },
+      {
+        $lookup: {
+          from: 'categories',
+          localField: 'workManuals.category_id',
+          foreignField: '_id',
+          as: 'category',
+        },
+      },
+      {
+        $group: {
+          _id: '$_id',
+          name: { $first: '$name' },
+          address: { $first: '$address' },
+          postal_code: { $first: '$postal_code' },
+          phone_number: { $first: '$phone_number' },
+          owner: { $first: '$owner' },
+          employees: { $first: '$employees' },
+          schedule_changes: { $first: '$schedule_changes' },
+          transitions: { $first: '$transitions' },
+          workManuals: {
+            $first: '$workManuals',
+          },
+          category: { $first: '$category' },
+          notices: { $push: '$notices' },
+        },
+      },
+    ]);
     return res.send(location);
   } catch (error) {
     return res.status(500).send(error.message);

@@ -45,7 +45,6 @@ const updateEmployerProfile = async (req, res) => {
     );
     return res.send({ success: true, employer });
   } catch (error) {
-    console.log(error);
     return res.status(500).send(error.message);
   }
 };
