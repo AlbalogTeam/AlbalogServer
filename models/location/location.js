@@ -1,98 +1,98 @@
-const mongoose = require('mongoose');
-const Employee = require('../user/employee');
+const mongoose = require("mongoose");
+const Employee = require("../user/employee");
 
 const locationSchema = new mongoose.Schema(
   {
     name: {
       type: String,
       required: true,
-      trim: true,
+      trim: true
     },
     address: {
       type: String,
       required: true,
-      trim: true,
+      trim: true
     },
     postal_code: {
       type: String,
       required: true,
-      trim: true,
+      trim: true
     },
     phone_number: {
       type: String,
       required: true,
-      trim: true,
+      trim: true
     },
     employees: [
       {
         employee: {
           type: mongoose.Schema.Types.ObjectId,
-          ref: 'Employee',
-          default: null,
-        },
-      },
+          ref: "Employee",
+          default: null
+        }
+      }
     ],
     schedule_changes: [
       {
         schedule_change: {
           type: mongoose.Schema.Types.ObjectId,
-          required: true,
-        },
-      },
+          required: true
+        }
+      }
     ],
     transitions: [
       {
         type: new mongoose.Schema({
           date: {
             type: String,
-            required: true,
+            required: true
           },
           description: {
             type: String,
             required: true,
-            trim: true,
+            trim: true
           },
           completed: {
             type: Boolean,
             required: true,
-            default: false,
+            default: false
           },
           who_worked: [
             {
               userId: {
                 type: mongoose.Schema.Types.ObjectId,
-                required: true,
+                required: true
               },
               name: {
                 type: String,
-                required: true,
+                required: true
               },
               completed: {
                 type: Boolean,
                 required: true,
-                default: false,
-              },
-            },
+                default: false
+              }
+            }
           ],
           modify_person: [
             {
               userId: {
                 type: mongoose.Schema.Types.ObjectId,
-                required: true,
+                required: true
               },
               name: {
                 type: String,
-                required: true,
-              },
-            },
-          ],
-        }),
-      },
+                required: true
+              }
+            }
+          ]
+        })
+      }
     ],
     owner: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Employer',
-      required: true,
+      ref: "Employer",
+      required: true
     },
     notices: [
       {
@@ -101,43 +101,38 @@ const locationSchema = new mongoose.Schema(
             title: {
               type: String,
               maxLength: 50,
-              required: true,
+              required: true
             },
             content: {
               type: String,
-              required: true,
-            },
+              required: true
+            }
           },
           { timestamps: true }
-        ),
-      },
+        )
+      }
     ],
     workManuals: [
       {
-        type: new mongoose.Schema(
-          {
-            title: {
-              type: String,
-              maxLength: 50,
-              required: true,
-            },
-            content: {
-              type: String,
-              required: true,
-            },
-            category_id: {
-              type: mongoose.SchemaTypes.ObjectId,
-              ref: 'Category',
-            },
-            deleted: {
-              type: Boolean,
-              default: false,
-            },
-          },
-          { timestamps: true }
-        ),
-      },
-    ],
+        title: {
+          type: String,
+          maxLength: 50,
+          required: true
+        },
+        content: {
+          type: String,
+          required: true
+        },
+        category_id: {
+          type: mongoose.SchemaTypes.ObjectId,
+          ref: "Category"
+        },
+        deleted: {
+          type: Boolean,
+          default: false
+        },
+      }
+    ]
   },
   { timestamps: true }
 );
@@ -165,11 +160,11 @@ locationSchema.statics.isValidCreateShift = async (
   const isValid = await Location.findOne({
     _id: locationId,
     owner: ownerId,
-    'employees.employee': mongoose.Types.ObjectId(staffId),
+    "employees.employee": mongoose.Types.ObjectId(staffId)
   });
   if (!isValid) return false;
   return true;
 };
-const Location = mongoose.model('Location', locationSchema);
+const Location = mongoose.model("Location", locationSchema);
 
 module.exports = Location;
