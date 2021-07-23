@@ -124,7 +124,8 @@ const locationSchema = new mongoose.Schema(
           required: true
         },
         category_id: {
-          type: mongoose.SchemaTypes.ObjectId,
+          // type:String,
+          type: mongoose.Types.ObjectId,
           ref: "Category"
         },
         deleted: {

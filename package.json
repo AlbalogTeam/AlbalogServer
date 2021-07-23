@@ -36,12 +36,12 @@
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.29.1",
+    "moment-random": "^1.1.0",
     "moment-range": "^4.0.2",
-    "mongoose": "^5.12.7",
+    "mongoose": "^5.13.3",
     "morgan": "^1.10.0",
     "prettier": "^2.3.2",
-    "validator": "^13.6.0",
-    "moment-random": "^1.1.0"
+    "validator": "^13.6.0"
   },
   "devDependencies": {
     "eslint": "^7.30.0",
