@@ -55,7 +55,7 @@ const removeWorkManualIfCategoryDeleted = (locationId, categoryId) => {
     {
       arrayFilters: [{ "elem.category_id": categoryId }]
     });
-}
+};
 
 module.exports = {
   findNotDeletedCategory,

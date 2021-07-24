@@ -47,10 +47,11 @@ const updateCategory = async (req, res) => {
   try {
     const category = await categoryService.updateCategoryName(locationId, categoryId, name);
 
+    const allCategoryList = await Category.find({ locationId, deleted: false });
+
     // TODO 업데이트 된 애를 보낼것인지, 아니면 카테고리 전체목록을 보낼것인지, 아니면 둘다 보낼것인지
     res.status(201).send({
-      UpdatedCategory: category,
-      category
+      categories: allCategoryList
     });
   } catch (err) {
     res.status(500).send(err.message);
