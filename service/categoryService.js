@@ -5,9 +5,7 @@ const findNotDeletedCategory = (locationId, limit, name = "") => {
   return Category.find(
     {
       locationId,
-      name: {
-        $regex: `.*${name}.*`
-      },
+      name,
       deleted: false
     }).limit(limit);
 
