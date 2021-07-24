@@ -1,5 +1,13 @@
-const Category = require('../models/location/category');
-const Location = require('../models/location/location');
+const Category = require("../models/location/category");
+const Location = require("../models/location/location");
+const findNotDeletedCategory = (locationId, limit, name = "") => {
+
+  return Category.find(
+    {
+      locationId,
+      name,
+      deleted: false
+    }).limit(limit);
 
 const findNotDeletedCategory = (locationId, limit, name = '') => {
   return Category.find({
