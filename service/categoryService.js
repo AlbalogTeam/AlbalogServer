@@ -8,16 +8,7 @@ const findNotDeletedCategory = (locationId, limit, name = "") => {
       name,
       deleted: false
     }).limit(limit);
-
-const findNotDeletedCategory = (locationId, limit, name = '') => {
-  return Category.find({
-    locationId,
-    name: {
-      $regex: `.*${name}.*`,
-    },
-    deleted: false,
-  }).limit(limit);
-};
+}
 
 const createCategory = async (locationId, name) => {
   const newCategory = new Category({ locationId, name });
