@@ -89,22 +89,22 @@ const startWork = async (req, res) => {
   const { locationId, wage } = req.body;
 
   const workStartTime = new Date();
-
-  const workDateMatchJudge = await Shift.find({
-    date: moment.utc(moment(workStartTime).format("YYYY-MM-DD")).toDate()
-  });
-
-  const haveSchedule = workDateMatchJudge.filter(s => {
-    const range = moment.range(s.start, s.end);
-    return range.contains(workStartTime);
-  }).length;
-
-  if(!haveSchedule) {
-    res.status(500).send({
-      message: "현재시간에 지정된 스케줄이 없습니다."
-    });
-    return;
-  }
+  //
+  // const workDateMatchJudge = await Shift.find({
+  //   date: moment.utc(moment(workStartTime).format("YYYY-MM-DD")).toDate()
+  // });
+  //
+  // const haveSchedule = workDateMatchJudge.filter(s => {
+  //   const range = moment.range(s.start, s.end);
+  //   return range.contains(workStartTime);
+  // }).length;
+  //
+  // if(!haveSchedule) {
+  //   res.status(500).send({
+  //     message: "현재시간에 지정된 스케줄이 없습니다."
+  //   });
+  //   return;
+  // }
 
   try {
 

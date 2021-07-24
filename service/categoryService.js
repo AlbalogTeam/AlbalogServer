@@ -1,14 +1,23 @@
-const Category = require("../models/location/category");
-const Location = require("../models/location/location");
-const findNotDeletedCategory = (locationId, limit, name = "") => {
+const Category = require('../models/location/category');
+const Location = require('../models/location/location');
 
-  return Category.find(
-    {
-      locationId,
-      name,
-      deleted: false
-    }).limit(limit);
-}
+const findNotDeletedCategory = (locationId, limit, name = '') => {
+  return Category.find({
+    locationId,
+    name,
+    deleted: false,
+  }).limit(limit);
+};
+
+// const findNotDeletedCategory = (locationId, limit, name = '') => {
+//   return Category.find({
+//     locationId,
+//     name: {
+//       $regex: `.*${name}.*`,
+//     },
+//     deleted: false,
+//   }).limit(limit);
+// };
 
 const createCategory = async (locationId, name) => {
   const newCategory = new Category({ locationId, name });
