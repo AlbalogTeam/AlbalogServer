@@ -1,3 +1,4 @@
+
 const Category = require('../models/location/category');
 const Location = require('../models/location/location');
 

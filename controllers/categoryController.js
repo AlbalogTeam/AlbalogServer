@@ -1,7 +1,6 @@
 const Category = require("../models/location/category");
 const categoryService = require("../service/categoryService");
 
-
 const createCategory = async (req, res) => {
 
   const { locationId } = req.params;
@@ -12,7 +11,8 @@ const createCategory = async (req, res) => {
   if (!category.length) {
 
     await categoryService.createCategory(locationId, name);
-    const allCategoryList = await categoryService.findNotDeletedCategory(locationId, 0);
+    const allCategoryList = await Category.find({locationId, deleted:false});
+    // const allCategoryList = await categoryService.findNotDeletedCategory(locationId, 0);
 
     res.status(201).send({
       categories: allCategoryList
@@ -28,7 +28,8 @@ const readCategory = async (req, res) => {
   const { locationId } = req.params;
 
   try {
-    const allCategoryList = await categoryService.findNotDeletedCategory(locationId, 0);
+    // const allCategoryList = await categoryService.findNotDeletedCategory(locationId, 0);
+    const allCategoryList = await Category.find({locationId, deleted:false});
 
     res.status(200).send({
       categories: allCategoryList
