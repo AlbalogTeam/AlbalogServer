@@ -75,6 +75,7 @@ const employeeSchema = new mongoose.Schema(
           totalWorkTime: {
             type: Number,
           },
+          // TODO LocationID
         }),
       },
     ],
@@ -97,6 +98,7 @@ const employeeSchema = new mongoose.Schema(
       type: String,
       enum: ['재직자', '퇴직자'],
       default: '재직자',
+      // TODO LocationID
     },
     tokens: [
       {

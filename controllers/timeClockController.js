@@ -2,6 +2,7 @@ const moment = require('moment');
 const momentRandom = require('moment-random');
 const Location = require('../models/location/location');
 const Employee = require('../models/user/employee');
+const timeClockService = require('../service/timeClockService');
 
 const allPassWork = async (req, res) => {
   const { locationId, wage, workerId } = req.body;
@@ -83,18 +84,19 @@ const allPassWorkRandom = async (req, res) => {
 
 const startWork = async (req, res) => {
   const { locationId, wage } = req.body;
-  const startTime = new Date();
+  const workStartTime = new Date();
 
   try {
-    const employee = await Location.checkIfUserBelongsToLocation(
-      locationId,
-      req.staff._id
-    );
+
+    console.log(await Location.find().where("name").equals("테스트"));
+
+
+    const employee = await timeClockService.checkIfUserBelongsToLocation(locationId, req.staff._id);
 
     const judge =
       employee.timeClocks.filter(
         (t) =>
-          moment(t.start_time).isSame(moment(startTime), 'day') && !t.end_time
+          moment(t.start_time).isSame(moment(workStartTime), 'day') && !t.end_time
       ).length > 0;
 
     if (judge) {
@@ -104,7 +106,7 @@ const startWork = async (req, res) => {
       return;
     }
 
-    const timeClock = { start_time: startTime, wage };
+    const timeClock = { start_time: workStartTime, wage };
 
     if (!timeClock) {
       res.status(500).send({
