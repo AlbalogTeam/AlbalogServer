@@ -71,7 +71,7 @@ const getAllShifts = async (req, res) => {
       return shiftObj;
     });
 
-    if (!shifts || shifts.length < 1) return res.status(400).send([]);
+    if (!shifts || shifts.length < 1) return res.send([]);
 
     return res.send(newShifts);
   } catch (error) {
