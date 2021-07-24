@@ -1,6 +1,6 @@
 const Employer = require('../models/user/employer');
 const Location = require('../models/location/location');
-const EmployersService = require('../services/users/employerService');
+const EmployersService = require('../service/employerService');
 
 const employerService = new EmployersService();
 
@@ -48,7 +48,6 @@ const updateEmployerProfile = async (req, res) => {
   }
 };
 
-// logout
 const logoutEmployer = async (req, res) => {
   try {
     req.owner.tokens = req.owner.tokens.filter(
@@ -64,7 +63,6 @@ const logoutEmployer = async (req, res) => {
   }
 };
 
-// kill all session
 const killAllSession = async (req, res) => {
   try {
     req.owner.tokens = [];
