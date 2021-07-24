@@ -189,7 +189,7 @@ const getEmployeeSingleLocation = async (req, res) => {
     if (!location) throw new Error('매장정보없음');
     // console.log(location);
     // location.workManuals = location.workManuals.filter((n) => !n.deleted);
-    return res.send(location);
+    return res.send(...location);
   } catch (error) {
     return res.status(500).send(error.message);
   }
