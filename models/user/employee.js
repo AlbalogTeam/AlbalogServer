@@ -127,7 +127,7 @@ employeeSchema.methods.toJSON = function () {
 
 employeeSchema.methods.generateAuthToken = async function () {
   const employee = this;
-  console.log('generate tken');
+
   const token = jwt.sign(
     {
       _id: employee._id.toString(),

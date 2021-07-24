@@ -1,87 +1,50 @@
 const Employer = require('../models/user/employer');
 const Location = require('../models/location/location');
+const EmployersService = require('../services/users/employerService');
+
+const employerService = new EmployersService();
 
 // email validation
 const check_email = async (req, res) => {
   try {
     const checkEmail = await Employer.checkIfEmailExist(req.body.email);
-    if (checkEmail)
-      return res.status(400).send({ message: 'Email is already taken' });
+    if (checkEmail) throw new Error('이미 가입된 이메일');
     res.status(200).send({ message: 'Email is valid' });
   } catch (error) {
     res.status(500).send(error.message);
   }
 };
 
-// create
 const createEmployer = async (req, res) => {
-  const employer = new Employer(req.body);
   try {
-    const checkEmail = await Employer.checkIfEmailExist(employer.email);
-
-    if (checkEmail) {
-      return res.status(400).send({ message: 'Email is already taken' }); // check if user's email already exist
-    }
-    await employer.save();
-    const token = await employer.generateAuthToken();
-    res.status(201).send({ employer, token });
+    const newEmployer = await employerService.createEmployer(req.body);
+    res.status(201).send(newEmployer);
   } catch (error) {
-    res.status(400).send(error);
+    return res.status(500).send(error.message);
   }
 };
 
-// login
-const login_employer = async (req, res) => {
+const getEmployerProfile = async (req, res) => {
   try {
-    const employer = await Employer.findByCredentials(
-      req.body.email,
-      req.body.password
-    );
-    const token = await employer.generateAuthToken();
-
-    res.send({ employer, token });
+    const employer = await employerService.getEmployerProfile(req.owner);
+    res.send(employer);
   } catch (error) {
-    res
-      .status(400)
-      .send({ message: 'Unable to login', error: error.toString() });
+    res.status(500).send(error.message);
   }
 };
 
-// get profile
-const get_profile_employer = async (req, res) => {
-  if (!req.owner) return res.status(400).send('권한이 없습니다');
-  res.send(req.owner);
-};
-
-// update profile
 const updateEmployerProfile = async (req, res) => {
   const { name, password, newPassword } = req.body;
-
-  if (!req.owner) return res.status(400).send('권한이 없습니다');
-
-  if (password === '' || !password || password.length < 1) {
-    return res.status(400).send({
-      success: false,
-      message: '정보변경을 위해서 암호를 입력해주세요',
-    });
-  }
   try {
-    const isMatch = await req.owner.comparePasswords(password);
-    if (!isMatch)
-      return res.status(400).send({ message: '현재 비밀번호가 다릅니다' });
-
-    if (newPassword === '' || !newPassword || newPassword.length < 1) {
-      req.owner.password = password;
-    } else {
-      req.owner.password = newPassword;
-    }
-
-    req.owner.name = name;
-
-    await req.owner.save();
-    return res.send(req.owner);
+    const employer = await employerService.updateEmployerProfile(
+      req.owner,
+      name,
+      password,
+      newPassword
+    );
+    return res.send({ success: true, employer });
   } catch (error) {
-    return res.status(400).send(error.toString());
+    return res.status(500).send(error.message);
   }
 };
 
@@ -138,8 +101,7 @@ const getAllLocations = async (req, res) => {
 module.exports = {
   check_email,
   createEmployer,
-  login_employer,
-  get_profile_employer,
+  getEmployerProfile,
   updateEmployerProfile,
   getAllLocations,
   logoutEmployer,
