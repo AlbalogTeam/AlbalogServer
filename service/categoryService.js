@@ -1,16 +1,14 @@
-const Category = require("../models/location/category");
-const Location = require("../models/location/location");
-const findNotDeletedCategory = (locationId, limit, name = "") => {
+const Category = require('../models/location/category');
+const Location = require('../models/location/location');
 
-  return Category.find(
-    {
-      locationId,
-      name: {
-        $regex: `.*${name}.*`
-      },
-      deleted: false
-    }).limit(limit);
-
+const findNotDeletedCategory = (locationId, limit, name = '') => {
+  return Category.find({
+    locationId,
+    name: {
+      $regex: `.*${name}.*`,
+    },
+    deleted: false,
+  }).limit(limit);
 };
 
 const createCategory = async (locationId, name) => {
@@ -23,7 +21,7 @@ const updateCategoryName = async (locationId, categoryId, name) => {
     {
       _id: categoryId,
       locationId,
-      deleted: false
+      deleted: false,
     },
     { name },
     { new: true }
@@ -35,7 +33,7 @@ const deleteCategory = async (locationId, categoryId) => {
     {
       _id: categoryId,
       locationId,
-      deleted: false
+      deleted: false,
     },
     { deleted: true },
     { new: true }
@@ -43,18 +41,20 @@ const deleteCategory = async (locationId, categoryId) => {
 };
 
 const removeWorkManualIfCategoryDeleted = (locationId, categoryId) => {
-  return Location.updateMany({
+  return Location.updateMany(
+    {
       _id: locationId,
-      "workManuals.category_id": categoryId
+      'workManuals.category_id': categoryId,
     },
     {
-      "$set": {
-        "workManuals.$[elem].deleted": true
-      }
+      $set: {
+        'workManuals.$[elem].deleted': true,
+      },
     },
     {
-      arrayFilters: [{ "elem.category_id": categoryId }]
-    });
+      arrayFilters: [{ 'elem.category_id': categoryId }],
+    }
+  );
 };
 
 module.exports = {
@@ -62,5 +62,5 @@ module.exports = {
   createCategory,
   updateCategoryName,
   deleteCategory,
-  removeWorkManualIfCategoryDeleted
+  removeWorkManualIfCategoryDeleted,
 };

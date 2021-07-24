@@ -1,4 +1,4 @@
-const Employer = require('../../models/user/employer');
+const Employer = require('../models/user/employer');
 
 class EmployersService {
   constructor() {
