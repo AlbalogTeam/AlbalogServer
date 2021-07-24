@@ -7,7 +7,7 @@ const sendInvitationEmail = (name, email, locationId, invite) => {
     to: email,
     from: 'dongwan.don.kim@gmail.com',
     subject: '알바로그: 직원초대',
-    html: `안녕하세요, ${name}님. <br> <a href="http://localhost:3000/parttime/${locationId}/${invite._id}/signup" to=_blank>링크</a>를 눌러 회원가입을 완료하세요 `,
+    html: `<img src="https://user-images.githubusercontent.com/64634992/122313912-13b79b80-cf52-11eb-900a-a1d50bb073f9.png" /> <br> 안녕하세요, ${name}님. <br> <a href="http://localhost:3000/parttime/${locationId}/${invite._id}/signup" to=_blank>링크</a>를 눌러 회원가입을 완료하세요 `,
   });
 };
 
