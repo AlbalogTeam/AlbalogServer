@@ -47,6 +47,27 @@ class EmployersService {
       throw new Error(error.message);
     }
   }
+  // getEmployersAllLocation() {
+  //   if (!req.owner) return res.status(400).send('권한이 없습니다');
+  //   const locIds = req.owner.stores.map((ids) => ids.location); // get all objectIds from user.stores into arrays
+
+  //   if (locIds.length < 1) {
+  //     return res.status(400).send({
+  //       message: '매장이 없습니다.',
+  //     });
+  //   }
+
+  //   try {
+  //     const locations = await Location.find({
+  //       _id: { $in: locIds },
+  //     });
+  //     res.send({ locations });
+  //   } catch (err) {
+  //     res.status(500).send({
+  //       message: err,
+  //     });
+  //   }
+  // }
 }
 
 module.exports = EmployersService;

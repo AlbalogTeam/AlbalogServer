@@ -123,7 +123,10 @@ const getEmployeeSingleLocation = async (req, res) => {
     // const location = await Location.findOne({
     //   _id: mongoose.Types.ObjectId(locationId),
     //   'employees.employee': req.staff._id,
-    // }).populate('workManuals.category_id');
+    // })
+    //   .populate('workManuals.category_id')
+    //   .sort({ 'notices._id': -1 });
+
     // location.workManuals = location.workManuals.filter((n) => !n.deleted);
 
     const location = await Location.aggregate([
@@ -146,21 +149,7 @@ const getEmployeeSingleLocation = async (req, res) => {
         },
       },
       {
-        $group: {
-          _id: '$_id',
-          name: { $first: '$name' },
-          address: { $first: '$address' },
-          postal_code: { $first: '$postal_code' },
-          phone_number: { $first: '$phone_number' },
-          owner: { $first: '$owner' },
-          employees: { $first: '$employees' },
-          schedule_changes: { $first: '$schedule_changes' },
-          transitions: { $first: '$transitions' },
-          workManuals: {
-            $first: '$workManuals',
-          },
-          notices: { $push: '$notices' },
-        },
+        $unwind: '$workManuals',
       },
       {
         $lookup: {
@@ -171,6 +160,15 @@ const getEmployeeSingleLocation = async (req, res) => {
         },
       },
       {
+        $unwind: '$category',
+      },
+      { $match: { 'workManuals.deleted': { $eq: false } } },
+      {
+        $addFields: {
+          workManuals: { $mergeObjects: ['$workManuals', '$category'] },
+        },
+      },
+      {
         $group: {
           _id: '$_id',
           name: { $first: '$name' },
@@ -182,13 +180,14 @@ const getEmployeeSingleLocation = async (req, res) => {
           schedule_changes: { $first: '$schedule_changes' },
           transitions: { $first: '$transitions' },
           workManuals: {
-            $first: '$workManuals',
+            $addToSet: '$workManuals',
           },
-          category: { $first: '$category' },
-          notices: { $push: '$notices' },
+          notices: { $addToSet: '$notices' },
         },
       },
     ]);
+    // console.log(location.workManuals);
+    // location.workManuals = location.workManuals.filter((n) => !n.deleted);
     return res.send(location);
   } catch (error) {
     return res.status(500).send(error.message);

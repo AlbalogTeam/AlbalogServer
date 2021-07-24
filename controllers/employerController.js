@@ -8,8 +8,7 @@ const employerService = new EmployersService();
 const check_email = async (req, res) => {
   try {
     const checkEmail = await Employer.checkIfEmailExist(req.body.email);
-    if (checkEmail)
-      return res.status(400).send({ message: 'Email is already taken' });
+    if (checkEmail) throw new Error('이미 가입된 이메일');
     res.status(200).send({ message: 'Email is valid' });
   } catch (error) {
     res.status(500).send(error.message);
