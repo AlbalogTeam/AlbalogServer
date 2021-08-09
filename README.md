@@ -2,84 +2,58 @@
 
 ### <div align="center">사장님과 알바생의 편한 업무 관리를 위한 웹앱</div>
 
-
 <div align="center">Albalog를 통해서 편안한 업무관리, 급여관리, 스케줄관리, 출-퇴근관리를 해보세요😁 
-</div>  
+</div>
 
-
-<img src="https://user-images.githubusercontent.com/64634992/122313912-13b79b80-cf52-11eb-900a-a1d50bb073f9.png" />  
-
-
-
+<img src="https://user-images.githubusercontent.com/64634992/122313912-13b79b80-cf52-11eb-900a-a1d50bb073f9.png" />
 
 ## Albalog 기능
 
-
 #### 관리자
 
-
 - 매장 관리 ( 매장등록, 매장수정, 직원초대)
-
-
 - 직원 관리 ( 시급설정, 자동급여계산, 급여 내역 조회)
-
-
 - 스케줄 관리 ( 근무 일정 관리, 출-퇴근 관리)
-
-
 - 공지사항 등록
-
-
 - 업무 매뉴얼 관리
 
-
-#### 알바( or 직원)
-
+#### 알바
 
 - 출-퇴근 기능
-
-
 - 개인/전체 스케줄 확인 , 스케줄 변경 신청
-
-
 - 근무 시간 조회
-
-
 - 급여 내역 조회
-
-
 - 인수인계(메모) 기능
 
+<br/>
 
-<br/>  
+## 프로젝트 시연 (10분 7초 부터)
 
-## UI/UX
-완성되면 업로드😂😂😂
+[Albalog 시연 영상 보러 가기!](https://youtu.be/54CIqoor-Cc?t=607)
+
 <br />
-
 
 ## DataBase
 
 <div>
-<img src="https://user-images.githubusercontent.com/44861205/122632213-57ee9b80-d10c-11eb-9bad-b6125c2ca389.jpeg" align="left" height="450" width="1100" />    
-</div> 
-
-
+<img src="https://user-images.githubusercontent.com/64634992/127862389-2f8af062-b325-401b-9a60-7d789b335b21.png" align="left" height="450" width="1100" />    
+</div>
 
 ## API DOCS
-완성되면 업로드😂😂😂
+
+[API 문서 클릭!](https://documenter.getpostman.com/view/11655118/TzsfmQrU#900919bb-ddb0-4fb5-8c7e-8be75e1a839c)
+
 <br />
 
 ## 개발 스택
 
-
 ### Front-End
 
 - React
+- React-Router
 - Redux
 - Redux-toolkit
 - SCSS
-- ckeditor5
 
 ### Back-End
 
@@ -88,12 +62,81 @@
 - mongoDB
 - mongoose
 
-<br/>  
+<br/>
+
+## 프로젝트 실행 방법
+
+- https://github.com/AlbalogTeam/AlbalogClient
+- https://github.com/AlbalogTeam/AlbalogServer
+
+<br />
+
+### 필수 구성 요소
+
+- Node.js
+- MongoDB
+
+<br />
+
+### 설치
+
+<b>Front-End</b>
+
+1. 프로젝트 클론
+
+```
+$ git clone "https://github.com/AlbalogTeam/AlbalogClient.git"
+```
+
+2. 패키지 설치
+
+```
+$ cd albalog-client
+$ npm install
+```
+
+3. 서버 실행
+
+```
+$ cd albalog-client
+$ npm start
+```
+
+<b>Back-End</b>
+
+1. 프로젝트 클론
+
+```
+$ git clone "https://github.com/AlbalogTeam/AlbalogServer.git"
+```
+
+2. 패키지 설치
+
+```
+$ npm install
+```
+
+3. .env 설정
+   AlbalogServer 폴더 안에 config폴더 생성후 .env 파일 생성 후 아래 내용 추가
+
+```
+PORT=5000
+DBURL='몽고디비 주소'
+JWT_SECRET=albalogTeam
+SENDGRID_API_KEY="SENDGRID_API_KEY"
+BASE_URL=http://localhost:5000/api/v1
+```
+
+4. 서버 실행
+
+```
+$ npm run dev
+```
 
 ## 개발 내용
 
 <details>
-<summary>1주차</summary> 
+<summary>1주차</summary>
 
 ### Implements
 
@@ -109,11 +152,8 @@
 ### Issue
 
 - 회원가입 유효성 체크
-
 - 매장 삭제 부분은 넣을려다가 , 삭제를 했을 경우 해당 데이터가 다 날라가기 때문에 , 매장 status를 만들어서 운영중, 폐업 과 같은 상태로 관리하려 함
-
 - 로그인 부분 보안을 위해 기존 accessToken의 유효기간을 줄이고 refreshToken 도입 예정
-
 - 공지사항 게시물 리스트 순서를 역순으로 해야함
 - 공지사항 이미지 업로드 구현 예정
 
@@ -125,8 +165,7 @@
 </details>
 
 <details>
-<summary>2주차</summary> 
-
+<summary>2주차</summary>
 
 ### Implements
 
@@ -139,16 +178,16 @@
 - 백엔드 테스트 배포
 
 ### Fix
+
 - 공지사항 최신순 나열
 - 각 페이지 접근권한 설정
 - 스케줄 Date 전송 방식
 
 ### Issue
 
-- *회원가입 유효성 체크*
-- *공지사항 이미지*
+- _회원가입 유효성 체크_
+- _공지사항 이미지_
 - embedded document 쿼리 방식
--
 
 ### Styles
 
@@ -161,18 +200,17 @@
 <details>
  <summary>3주차</summary>
 
-
-
 ### Implements
+
 - 인수인계 조회, 등록, 수정, 삭제
-- 출근, 퇴근 기능  
+- 출근, 퇴근 기능
 - 공지사항 검색
 - 직원,관리자 개인정보 변경
 - 직원 스케줄 등록
 - 직원 스케줄 조회
 
-
 ### Fix
+
 - 관리자 / 알바 로그인 분리를 하나로 통합
 - 공지사항 최신순 나열
 - 기존 로그인 방식 LocalStorage -> SessionStorage로 변경
@@ -181,62 +219,103 @@
 - 업무 매뉴얼 페이지 카테고리 관리를 위한 카테고리 설정 추가
 - 업무 매뉴얼 카테고리에 속한 매뉴얼이 있을 경우 삭제 안되게 설정
 
-
 ### Styles
+
 - messageModal 생성
 - header, aside 반응형으로 구현
 - mobile category page 구현
 - No data 이미지 삽입
 
 ### Issue
+
 - 스케줄 등록 하루씩 밀림
 
 </details>
 
-
 <details>
  <summary>4주차</summary>
- 
- ### Fix
- - 관리자, 직원 deleted된 workManual 정보를 제공하지 않게함
- - workManual, Category, WorkManual에 deleted field 추가
- - TimeClock 일급, 월급 정보 제공
- - TimeClock for Owner 해당하는 년, 월 기준으로 TimeClock 정보 제공
- - 
 
-- 급여관리
-- 아이디, 비밀번호 찾기 BackEnd
+### Implements
+
+- 관리자 스케줄 추가
+- 직원 스케줄 확인 ( 개인, 전체 )
+- 직원 계정정보 페이지 내 급여 확인
+- 직원 일한시간 페이지
+- 관리자 급여관리
+- 회원가입 유효성 (프론트 + 백앤드)
+- 비밀번호 찾기
+
+### Fix
+
+- 출퇴근 부분 : 기존 프론트단에서 기록하던 시간을 서버에서 기록하도록 변경
+- 기존 업무매뉴얼 삭제버튼 클릭시, 매뉴얼 존재하면 삭제 안됐던걸 그래도 삭제하시겠습니까로 변경
+- 비밀번호 없이 직원 계정정보 수정 가능
+- 관리자페이지 직원이 없을경우 employee 정보가 없어서 랜더링 오류 - 해결
+
+### Styles
+
+- 인수인계 UI 수정
+
+### Issue
+
+- payroll 날짜 sort
+
 </details>
-
 
 <details>
  <summary>5주차</summary>
+ 
+### Implements
 
-- 테스트 및 오류해결
+- 직원 일한시간 당월 전후 달 조회
+- 직원 대시보드 개인스케줄 확인
+- 관리자 대시보드 공지사항, 인수인계 조회
+
+### Fix
+
+- 일한시간, payroll 날짜 sort
+- 출근 누르고 퇴근 누르지 않은 상태에서 payroll 부분 들어갈시 에러나는거 해결
+
+### Issue
+
+### Styles
+
+- 회원가입 페이지 반응형 구현
+- 로그인 페이지 반응형 구현
+
 </details>
-
 
 <details>
  <summary>6주차</summary>
 
-- 테스트 및 오류해결
-</details>
+### Implements
 
+- 관리자 대시보드 (출근전, 근무중, 퇴근) 상태보기
+- 기존 유저 다른 매장에 가입하기
+- 기간 지난 토큰(1시간) 에 접속시 "유효하지 않은 주소 입니다" 출력
+- 스케줄 삭제 (하루, 전체)
+- 랜딩페이지 헤더 생성
+- 알바 대시보드 전체스케줄
+
+### Fix
+
+- axios 중복 요청 막기
+- 재직 유무 (radio 버튼으로 변경)
+- 서버 히로쿠(너무느림!) -> 아마존 웹서버로 변경
+- 스케줄 추가시 (오후 3시 ~ 오전 5시 하면 그날 오전 5시~ 오후3시 이랬는데 오후3시 ~ 다음날 오전5시로 나오게 설정)
+- payroll 날짜 역순
+- 직원 계정정보, 일한시간 페이지 timezone issue 해결
+
+### Styles
+
+- 스케줄 이름 구분하기 쉽게 색 추가
+- 직원 대쉬보드 내 전체 스케줄 UI 변경
+- 출퇴근 시 모달창 추가
+
+</details>
 
 <details>
  <summary>7주차</summary>
 
 - 테스트 및 오류해결
 </details>
-
-
-## 파트 소개
-| 이름  |  메인 역할  |
-|:----:|:-------:|
-| [서우리](https://github.com/Alexis1226) | `프론트엔드` |
-| [이도현](https://github.com/ksmfou98) | `프론트엔드` |
-| [윤영훈](https://github.com/yoonyounghoon) | `프론트엔드` |
-| [정원석](https://github.com/Dseok12) | `프론트엔드` |
-| [김동완](https://github.com/dongwandonkim)  | `백엔드` |
-| [김태희](https://github.com/godtaehee)  | `백엔드` |  
-
