@@ -1,17 +1,16 @@
 # <div align="center">Albalog</div>
 
 ### <div align="center">사장님과 알바생의 편한 업무 관리를 위한 웹앱</div>
+### <div align="center">HR Management system for small business owners!</div>
 
-<div align="center">Albalog를 통해서 편안한 업무관리, 급여관리, 스케줄관리, 출-퇴근관리를 해보세요😁 
-</div>
+<div align="center">Albalog를 통해서 편안한 업무관리, 급여관리, 스케줄관리, 출-퇴근관리를 해보세요😁 </div>
+<div align="center">Easy employee scheduleing, payroll calculation and timestamp😁 </div>
 
 <img src="https://user-images.githubusercontent.com/64634992/122313912-13b79b80-cf52-11eb-900a-a1d50bb073f9.png" />
 
-## Albalog 기능
-## Key Features
+## Albalog 기능 Key Features
 
-#### 관리자
-#### Manager/Employer
+#### 관리자 Manager/Employer
 
 - 매장 관리 ( 매장등록, 매장수정, 직원초대)
 - Location Manage (add Locations, update Locations, invite Employee via E-mail)
@@ -28,8 +27,7 @@
 - 업무 매뉴얼 관리
 - add Work Manuals
 
-#### 알바
-#### Employee
+#### 알바 Employee
 
 - 출-퇴근 기능
 - Timestamp
@@ -51,8 +49,7 @@
 ## 프로젝트 시연 (10분 7초 부터)
 ## Project demonstration video (starts at 10:07)
 
-[Albalog 시연 영상 보러 가기!](https://youtu.be/54CIqoor-Cc?t=607)
-[demo](https://youtu.be/54CIqoor-Cc?t=607)
+[Albalog 시연 영상 보러 가기!](https://youtu.be/54CIqoor-Cc?t=607)     [demo](https://youtu.be/54CIqoor-Cc?t=607)
 
 <br />
 
@@ -69,8 +66,7 @@
 
 <br />
 
-## 개발 스택
-## Tech Stack
+## 개발 스택 Tech Stack
 
 ### Front-End
 
@@ -96,16 +92,14 @@
 
 <br />
 
-### 필수 구성 요소
-### Prerequisites
+### 필수 구성 요소 Prerequisites
 
 - Node.js
 - MongoDB
 
 <br />
 
-### 설치
-### Installation
+### 설치 Installation
 
 <b>Front-End</b>
 
@@ -164,7 +158,7 @@ $ npm run dev
 ## Development Logs
 
 <details>
-<summary>1주차/Week 1</summary>
+<summary>1주차 / Week 1</summary>
 
 ### Implements
 
@@ -193,7 +187,7 @@ $ npm run dev
 </details>
 
 <details>
-<summary>2주차</summary>
+<summary>2주차 / Week 2</summary>
 
 ### Implements
 
@@ -226,7 +220,7 @@ $ npm run dev
 </details>
 
 <details>
- <summary>3주차</summary>
+ <summary>3주차 / Week 3</summary>
 
 ### Implements
 
@@ -261,7 +255,7 @@ $ npm run dev
 </details>
 
 <details>
- <summary>4주차</summary>
+ <summary>4주차 / Week 4</summary>
 
 ### Implements
 
@@ -291,7 +285,7 @@ $ npm run dev
 </details>
 
 <details>
- <summary>5주차</summary>
+ <summary>5주차 / Week 5</summary>
  
 ### Implements
 
@@ -314,7 +308,7 @@ $ npm run dev
 </details>
 
 <details>
- <summary>6주차</summary>
+ <summary>6주차 / Week 6</summary>
 
 ### Implements
 
@@ -343,7 +337,7 @@ $ npm run dev
 </details>
 
 <details>
- <summary>7주차</summary>
+ <summary>7주차 / Week 7</summary>
 
 - 테스트 및 오류해결 / fixed bugs, errors
 </details>
